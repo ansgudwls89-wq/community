@@ -4,23 +4,35 @@ import AdBanner from "@/components/AdBanner";
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  // 1. Supabase에서 게시글 데이터 가져오기
+  // 1. 환경 변수 체크 (빌드 시점 또는 런타임 시점의 누락 방지)
+  const isEnvMissing = !process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (isEnvMissing) {
+    return (
+      <div className="p-10 bg-zinc-900 border border-zinc-800 rounded-2xl text-zinc-400">
+        <h2 className="text-xl font-bold mb-4 text-white">⚙️ 설정 필요</h2>
+        <p className="mb-4">Supabase 환경 변수가 설정되지 않았습니다.</p>
+        <ul className="list-disc list-inside text-sm space-y-2">
+          <li>로컬 개발: <code className="bg-zinc-800 px-1.5 py-0.5 rounded">.env.local</code> 파일 확인</li>
+          <li>배포 환경: 서비스 대시보드에서 <code className="bg-zinc-800 px-1.5 py-0.5 rounded">Environment Variables</code> 등록</li>
+        </ul>
+      </div>
+    );
+  }
+
+  // 2. Supabase에서 데이터 가져오기
   const { data: posts, error } = await supabase
     .from('posts')
     .select('*')
     .order('created_at', { ascending: false });
 
-  // 2. 에러가 있을 경우 디버깅 정보를 보여줌
   if (error) {
     return (
-      <div className="p-10 bg-red-900/20 border border-red-500 rounded-2xl text-red-500">
-        <h2 className="text-xl font-bold mb-4">데이터를 불러오는 중 오류가 발생했습니다.</h2>
-        <pre className="text-xs overflow-auto bg-black p-4 rounded-lg">
+      <div className="p-10 bg-red-900/10 border border-red-500/50 rounded-2xl text-red-400">
+        <h2 className="text-lg font-bold mb-2">데이터베이스 오류</h2>
+        <pre className="text-xs bg-black/50 p-4 rounded-lg overflow-auto max-h-40">
           {JSON.stringify(error, null, 2)}
         </pre>
-        <p className="mt-4 text-sm font-medium">
-          힌트: Supabase의 API URL이나 Anon Key가 올바른지 확인해 주세요. (.env.local 파일)
-        </p>
       </div>
     );
   }
@@ -80,7 +92,6 @@ export default async function Home() {
         </table>
       </div>
 
-      {/* 하단 페이지네이션 및 액션 */}
       <div className="flex items-center justify-between pt-4">
         <div className="flex gap-1">
           <button className="w-8 h-8 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-lg shadow-blue-900/20">1</button>
