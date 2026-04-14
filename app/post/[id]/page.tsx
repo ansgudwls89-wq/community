@@ -1,20 +1,26 @@
 import { supabase } from '@/utils/supabase';
 import { notFound } from 'next/navigation';
 
-// 강력한 동적 렌더링 강제
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export default async function PostDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  // 1. 조회수 1 증가 (서버 사이드 즉시 반영)
-  const { data: currentData } = await supabase.from('posts').select('views').eq('id', id).single();
-  if (currentData) {
-    await supabase.from('posts').update({ views: (currentData.views || 0) + 1 }).eq('id', id);
+  // 1. RPC 함수를 호출하여 조회수 1 증가 (가장 확실한 방법)
+  // SQL Editor에서 increment_views 함수를 먼저 생성해야 작동합니다.
+  const { error: rpcError } = await supabase.rpc('increment_views', { post_id: id });
+  
+  if (rpcError) {
+    console.error('RPC Error (Views):', rpcError.message);
+    // RPC가 실패할 경우 수동 업데이트 시도 (임시 대안)
+    const { data: currentData } = await supabase.from('posts').select('views').eq('id', id).single();
+    if (currentData) {
+      await supabase.from('posts').update({ views: (currentData.views || 0) + 1 }).eq('id', id);
+    }
   }
 
-  // 2. 최신 게시글 데이터 가져오기 (캐시 무시)
+  // 2. 최신 게시글 데이터 가져오기
   const { data: post, error } = await supabase
     .from('posts')
     .select('*')
@@ -80,8 +86,8 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
           </div>
         </article>
 
-        <section className="border-t border-zinc-800 bg-zinc-900/10 p-6 sm:p-8">
-          <h2 className="text-xs font-black text-white uppercase tracking-widest mb-6 flex items-center gap-2">
+        <section className="border-t border-zinc-800 bg-zinc-900/10 p-6 sm:p-8 text-center sm:text-left">
+          <h2 className="text-xs font-black text-white uppercase tracking-widest mb-6 flex items-center gap-2 justify-center sm:justify-start">
             <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
             Comments
           </h2>
