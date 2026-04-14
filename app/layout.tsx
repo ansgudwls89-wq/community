@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "My Community",
-  description: "현대적인 커뮤니티 경험",
+  title: "My Community - 아카라이브 스타일",
+  description: "커뮤니티 플랫폼",
 };
 
 export default function RootLayout({
@@ -13,78 +13,90 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className="flex flex-col min-h-screen bg-slate-50">
-        {/* 네비게이션 */}
-        <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
-          <div className="container-custom h-16 flex items-center justify-between">
-            <div className="flex items-center gap-8">
-              <a href="/" className="text-2xl font-black tracking-tight text-primary">COMMU.</a>
+      <body className="flex flex-col min-h-screen">
+        {/* 상단 네비게이션 */}
+        <header className="bg-primary text-white sticky top-0 z-50">
+          <div className="container-custom h-12 flex items-center justify-between px-3">
+            <div className="flex items-center gap-4">
+              <a href="/" className="text-xl font-black tracking-tight uppercase">MyCommunity</a>
               <nav className="hidden md:flex items-center gap-1">
-                <a href="/" className="nav-link">홈</a>
-                <a href="/popular" className="nav-link">인기</a>
-                <a href="/channels" className="nav-link">채널</a>
+                <a href="/best" className="px-3 py-1.5 hover:bg-white/10 rounded font-bold">개념</a>
+                <a href="/all" className="px-3 py-1.5 hover:bg-white/10 rounded">전체</a>
+                <a href="/recent" className="px-3 py-1.5 hover:bg-white/10 rounded">최신</a>
               </nav>
             </div>
             
             <div className="flex items-center gap-3">
-              <button className="text-sm font-semibold px-4 py-2 text-slate-600 hover:text-slate-900 transition-colors">
-                로그인
-              </button>
-              <button className="text-sm font-semibold px-5 py-2.5 bg-primary text-white rounded-xl shadow-sm hover:bg-primary-dark transition-all">
-                회원가입
-              </button>
+              <div className="relative hidden sm:block">
+                <input 
+                  type="text" 
+                  placeholder="통합 검색"
+                  className="bg-black/20 border-none rounded py-1 px-3 text-xs focus:ring-1 focus:ring-white outline-none w-40"
+                />
+              </div>
+              <button className="text-xs font-bold hover:underline">로그인</button>
             </div>
           </div>
         </header>
 
-        {/* 메인 콘텐츠 영역 */}
-        <main className="container-custom flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 py-8">
-          <div className="lg:col-span-8">
+        {/* 메인 레이아웃 (2컬럼) */}
+        <main className="container-custom flex gap-4 mt-4 px-3 flex-1">
+          <div className="w-full lg:w-[calc(100%-320px)]">
             {children}
           </div>
 
-          <aside className="hidden lg:block lg:col-span-4 space-y-6">
-            {/* 검색창 */}
-            <div className="card p-4">
-              <div className="relative">
-                <input 
-                  type="text" 
-                  placeholder="관심있는 게시글을 검색해보세요"
-                  className="w-full px-4 py-3 bg-slate-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none"
-                />
+          {/* 우측 사이드바 (아카라이브 특유의 구성) */}
+          <aside className="hidden lg:block w-[300px]">
+            {/* 최근 댓글 */}
+            <div className="sidebar-card">
+              <div className="sidebar-header">최근 댓글</div>
+              <div className="p-2 space-y-1.5 text-xs">
+                {[
+                  "이거 진짜 대박인듯ㅋㅋㅋ",
+                  "M4 맥북 가성비 미쳤네요",
+                  "성수동 거기 저도 가봤는데 굿",
+                  "내년 출시 게임 다들 뭐 기다림?",
+                  "고양이 사진 좀 더 올려주세요"
+                ].map((comment, i) => (
+                  <div key={i} className="flex items-center gap-2 truncate text-slate-600 hover:text-primary cursor-pointer">
+                    <span className="text-[10px] text-slate-300">•</span> {comment}
+                  </div>
+                ))}
               </div>
             </div>
 
-            {/* 인기 채널 목록 */}
-            <div className="card p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-bold text-slate-800">🔥 인기 채널</h2>
-                <button className="text-xs text-slate-400 hover:text-primary transition-colors">더보기</button>
-              </div>
-              <div className="space-y-3">
+            {/* 인기 채널 순위 */}
+            <div className="sidebar-card">
+              <div className="sidebar-header">채널 순위 <span className="text-[10px] font-normal text-slate-400">전체보기</span></div>
+              <div className="p-0">
                 {[
-                  { name: "게임 라운지", icon: "🎮", count: "1.2k" },
-                  { name: "IT & 테크 뉴스", icon: "💻", count: "850" },
-                  { name: "오늘의 일상", icon: "☕", count: "2.4k" },
-                  { name: "질문 & 답변", icon: "💡", count: "420" }
+                  { name: "게임 라운지", rank: "1", up: true },
+                  { name: "IT & 테크", rank: "2", up: true },
+                  { name: "오늘의 일상", rank: "3", up: false },
+                  { name: "질문 & 답변", rank: "4", up: true },
+                  { name: "반려동물", rank: "5", up: false }
                 ].map((channel, i) => (
-                  <a key={i} href="#" className="flex items-center justify-between p-2 rounded-xl hover:bg-slate-50 transition-colors group">
+                  <div key={i} className="flex items-center justify-between px-3 py-2 border-b border-gray-50 last:border-none hover:bg-slate-50 transition-colors cursor-pointer group">
                     <div className="flex items-center gap-3">
-                      <span className="w-10 h-10 flex items-center justify-center bg-slate-100 rounded-lg text-lg group-hover:bg-white transition-colors">{channel.icon}</span>
-                      <span className="text-sm font-medium text-slate-700">{channel.name}</span>
+                      <span className={`w-4 text-center font-bold italic ${i < 3 ? 'text-primary' : 'text-slate-400'}`}>{channel.rank}</span>
+                      <span className="text-[13px] text-slate-700 font-medium group-hover:text-primary">{channel.name}</span>
                     </div>
-                    <span className="text-xs font-semibold text-slate-400">{channel.count}</span>
-                  </a>
+                    <span className={`text-[10px] ${channel.up ? 'text-red-500' : 'text-blue-500'}`}>{channel.up ? '▲' : '▼'}</span>
+                  </div>
                 ))}
               </div>
             </div>
           </aside>
         </main>
 
-        <footer className="bg-white border-t border-slate-200 py-12 mt-auto">
-          <div className="container-custom flex flex-col items-center gap-4">
-            <span className="text-xl font-black text-slate-200">COMMU.</span>
-            <p className="text-sm text-slate-400">&copy; 2026 Community Platform Inc.</p>
+        <footer className="bg-white border-t border-slate-200 py-6 mt-8">
+          <div className="container-custom px-3 flex items-center justify-between text-[11px] text-slate-400">
+            <div className="flex gap-4">
+              <a href="#" className="hover:underline">회사소개</a>
+              <a href="#" className="hover:underline">이용약관</a>
+              <a href="#" className="hover:underline font-bold text-slate-600">개인정보처리방침</a>
+            </div>
+            <span>&copy; MyCommunity Corp.</span>
           </div>
         </footer>
       </body>

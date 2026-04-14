@@ -1,89 +1,90 @@
 export default function Home() {
+  const notices = [
+    { id: 101, title: "[공지] 커뮤니티 이용 규칙 안내 (필독)", author: "운영진", date: "24.01.01", likes: 1250 },
+    { id: 102, title: "[공지] 신규 채널 개설 신청 게시판", author: "운영진", date: "24.01.05", likes: 420 },
+  ];
+
   const posts = [
-    { 
-      id: 1, 
-      title: "2026년 최고의 오픈월드 게임은 무엇일까요?", 
-      channel: "게임 라운지", 
-      author: "김게이머", 
-      time: "10분 전", 
-      comments: 142, 
-      likes: 85,
-      preview: "내년에 출시 예정인 신작들 중에서 벌써부터 기대되는 작품들이 많네요. 여러분은 어떤 게임을 가장 기다리고 계신가요?"
-    },
-    { 
-      id: 2, 
-      title: "새로운 M4 칩 성능 체감이 확실하네요", 
-      channel: "IT & 테크", 
-      author: "애플유저", 
-      time: "25분 전", 
-      comments: 48, 
-      likes: 32,
-      preview: "어제 수령해서 이것저것 돌려보고 있는데, 기존 모델보다 확실히 빠릿빠릿한 느낌입니다. 영상 편집 하시는 분들께 추천드려요."
-    },
-    { 
-      id: 3, 
-      title: "서울 맛집 탐방 후기 (스압주의)", 
-      channel: "오늘의 일상", 
-      author: "맛객", 
-      time: "1시간 전", 
-      comments: 215, 
-      likes: 120,
-      preview: "이번 주말에 다녀온 성수동 맛집 5곳 리뷰입니다. 개인적으로 세 번째 집이 가장 맛있었네요."
-    }
+    { id: 1, channel: "게임", title: "롤드컵 결승 보시는 분 계신가요?", author: "페이커팬", date: "21:30", likes: 45, comments: 12 },
+    { id: 2, channel: "IT", title: "M4 아이패드 프로 13인치 한달 사용기", author: "애플농장", date: "20:15", likes: 32, comments: 8 },
+    { id: 3, channel: "일상", title: "오늘 퇴근길 노을 진짜 예쁘네요 (사진)", author: "풍경덕후", date: "19:40", likes: 85, comments: 24 },
+    { id: 4, channel: "질문", title: "코딩 공부 독학 vs 학원 추천 좀 해주세요", author: "뉴비", date: "18:22", likes: 12, comments: 45 },
+    { id: 5, channel: "게임", title: "스팀 세일 품목 중에서 살만한 거 있나요?", author: "할인마", date: "17:50", likes: 28, comments: 15 },
+    { id: 6, channel: "IT", title: "엔비디아 주가 어디까지 갈까요?", author: "개미", date: "16:10", likes: 64, comments: 52 },
+    { id: 7, channel: "반려동물", title: "우리집 고양이 꾹꾹이 보고 가세요", author: "집사1", date: "15:30", likes: 142, comments: 10 },
   ];
 
   return (
-    <div className="space-y-6">
-      {/* 필터 및 액션 버튼 */}
-      <div className="flex items-center justify-between">
-        <div className="flex bg-white p-1 rounded-xl shadow-sm border border-slate-200">
-          <button className="px-5 py-2 text-sm font-bold bg-primary text-white rounded-lg transition-all">최신글</button>
-          <button className="px-5 py-2 text-sm font-semibold text-slate-500 hover:text-slate-800 transition-all">인기글</button>
-        </div>
-        <button className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-slate-800 transition-all shadow-md active:scale-95">
-          <span>새 글 작성</span>
-        </button>
+    <div className="bg-white border border-border">
+      {/* 탭 네비게이션 */}
+      <div className="flex bg-[#f8f9fa] border-b border-border">
+        <button className="px-4 py-2.5 text-[13px] font-bold border-b-2 border-primary text-primary bg-white">전체</button>
+        <button className="px-4 py-2.5 text-[13px] font-medium text-slate-500 hover:text-slate-800">베스트</button>
+        <button className="px-4 py-2.5 text-[13px] font-medium text-slate-500 hover:text-slate-800">정보</button>
       </div>
 
-      {/* 게시글 목록 */}
-      <div className="space-y-4">
-        {posts.map((post) => (
-          <article key={post.id} className="card p-6 cursor-pointer group hover:-translate-y-1">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-xs font-bold text-primary px-2 py-1 bg-primary/10 rounded-md">{post.channel}</span>
-              <span className="text-xs text-slate-400">• {post.time}</span>
-            </div>
-            
-            <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-primary transition-colors">
-              {post.title}
-            </h3>
-            
-            <p className="text-sm text-slate-500 line-clamp-2 mb-4 leading-relaxed">
-              {post.preview}
-            </p>
+      <table className="board-table">
+        <colgroup>
+          <col width="50" />
+          <col width="80" />
+          <col />
+          <col width="100" />
+          <col width="70" />
+          <col width="60" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th>번호</th>
+            <th>채널</th>
+            <th className="text-left px-3">제목</th>
+            <th>작성자</th>
+            <th>날짜</th>
+            <th>추천</th>
+          </tr>
+        </thead>
+        <tbody className="text-[13px]">
+          {/* 공지사항 */}
+          {notices.map((notice) => (
+            <tr key={notice.id} className="bg-red-50/30 font-bold">
+              <td className="text-center text-accent text-xs">공지</td>
+              <td className="text-center"><span className="badge-channel bg-accent">운영</span></td>
+              <td className="px-3">
+                <a href="#" className="hover:underline">{notice.title}</a>
+              </td>
+              <td className="text-center text-slate-500">{notice.author}</td>
+              <td className="text-center text-slate-400 text-xs">{notice.date}</td>
+              <td className="text-center text-accent font-bold">{notice.likes}</td>
+            </tr>
+          ))}
 
-            <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-              <div className="flex items-center gap-3">
-                <span className="text-sm font-semibold text-slate-700">{post.author}</span>
-                <div className="flex items-center gap-4 ml-4">
-                  <div className="flex items-center gap-1.5 text-slate-400 hover:text-red-500 transition-colors">
-                    <span className="text-sm">❤️ {post.likes}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-slate-400 hover:text-primary transition-colors">
-                    <span className="text-sm">💬 {post.comments}</span>
-                  </div>
+          {/* 일반 게시글 */}
+          {posts.map((post) => (
+            <tr key={post.id} className="hover:bg-slate-50/80 cursor-pointer">
+              <td className="text-center text-slate-400 text-xs">{post.id}</td>
+              <td className="text-center"><span className="badge-channel">{post.channel}</span></td>
+              <td className="px-3">
+                <div className="flex items-center gap-1.5 overflow-hidden">
+                  <span className="truncate hover:underline text-slate-900">{post.title}</span>
+                  <span className="text-[11px] text-primary font-bold">[{post.comments}]</span>
+                  <span className="text-[10px] text-primary">🖼️</span>
                 </div>
-              </div>
-            </div>
-          </article>
-        ))}
-      </div>
+              </td>
+              <td className="text-center text-slate-600 truncate max-w-[100px]">{post.author}</td>
+              <td className="text-center text-slate-400 text-xs">{post.date}</td>
+              <td className="text-center text-slate-500 font-medium">{post.likes}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
-      {/* 페이지네이션 (간소화) */}
-      <div className="flex justify-center pt-8">
-        <button className="px-8 py-3 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 transition-colors">
-          더 많은 게시글 불러오기
-        </button>
+      {/* 하단 글쓰기 및 검색 */}
+      <div className="flex items-center justify-between p-3 bg-[#f8f9fa] border-t border-border">
+        <div className="flex gap-1">
+          <button className="px-3 py-1.5 bg-white border border-border text-xs font-bold rounded hover:bg-slate-50 transition-colors">새로고침</button>
+        </div>
+        <div className="flex gap-1">
+          <button className="px-4 py-1.5 bg-primary text-white text-xs font-bold rounded hover:bg-primary-light transition-colors shadow-sm">글쓰기</button>
+        </div>
       </div>
     </div>
   );
