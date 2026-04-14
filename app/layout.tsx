@@ -31,21 +31,14 @@ export default function RootLayout({
           </div>
         </header>
 
-        {/* 상단 광고 슬롯 (수익화용) */}
-        <div className="container-custom py-4">
-          <div className="w-full h-24 bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-sm">
-            광고 슬롯 (728x90)
-          </div>
-        </div>
-
         {/* 메인 콘텐츠 영역 */}
-        <main className="container-custom flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 pb-12">
+        <main className="container-custom flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 py-8">
           {/* 중앙 게시판 영역 */}
           <div className="lg:col-span-9">
             {children}
           </div>
 
-          {/* 우측 사이드바 (채널 순위, 광고 등) */}
+          {/* 우측 사이드바 (채널 순위 등) */}
           <aside className="hidden lg:block lg:col-span-3 space-y-6">
             <div className="card p-4">
               <h2 className="font-bold mb-3 border-b pb-2">인기 채널</h2>
@@ -54,11 +47,6 @@ export default function RootLayout({
                 <li><a href="#" className="hover:underline"># 자유 게시판</a></li>
                 <li><a href="#" className="hover:underline"># IT 뉴스</a></li>
               </ul>
-            </div>
-
-            {/* 사이드바 광고 슬롯 */}
-            <div className="w-full aspect-square bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-sm">
-              사이드바 광고 (300x300)
             </div>
           </aside>
         </main>

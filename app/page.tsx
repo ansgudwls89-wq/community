@@ -55,11 +55,6 @@ export default function Home() {
           글쓰기
         </button>
       </div>
-
-      {/* 게시글 목록 사이 광고 (수익화) */}
-      <div className="w-full h-32 bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-sm my-6">
-        인피드 광고 슬롯
-      </div>
     </div>
   );
 }
