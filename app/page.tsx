@@ -1,65 +1,65 @@
-import Image from "next/image";
-
 export default function Home() {
+  const mockPosts = [
+    { id: 1, title: "이번에 출시된 게임 해보신 분?", channel: "게임", author: "유저1", date: "2분 전", comments: 12 },
+    { id: 2, title: "오늘 점심 뭐 먹을까요?", channel: "자유", author: "유저2", date: "5분 전", comments: 5 },
+    { id: 3, title: "최신 IT 뉴스 모음", channel: "IT뉴스", author: "에디터", date: "10분 전", comments: 24 },
+    { id: 4, title: "컴퓨터 견적 좀 봐주세요", channel: "컴퓨터", author: "컴린이", date: "15분 전", comments: 8 },
+    { id: 5, title: "고양이 사진 보고 가세요", channel: "반려동물", author: "애묘가", date: "20분 전", comments: 45 },
+  ];
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-bold">전체 게시글</h2>
+        <div className="flex gap-2 text-sm">
+          <button className="px-3 py-1 bg-white border border-gray-300 rounded hover:bg-gray-50">최신순</button>
+          <button className="px-3 py-1 bg-white border border-gray-300 rounded hover:bg-gray-50">인기순</button>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      </div>
+
+      <div className="card overflow-hidden">
+        <table className="w-full text-sm text-left">
+          <thead className="bg-gray-50 border-b border-gray-200 text-gray-600 font-medium">
+            <tr>
+              <th className="px-4 py-2 w-16 text-center">채널</th>
+              <th className="px-4 py-2">제목</th>
+              <th className="px-4 py-2 w-24 text-center">작성자</th>
+              <th className="px-4 py-2 w-20 text-center">날짜</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {mockPosts.map((post) => (
+              <tr key={post.id} className="hover:bg-blue-50/30 cursor-pointer">
+                <td className="px-4 py-3 text-center">
+                  <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
+                    {post.channel}
+                  </span>
+                </td>
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-gray-900 line-clamp-1">{post.title}</span>
+                    <span className="text-xs text-blue-600 font-bold">[{post.comments}]</span>
+                  </div>
+                </td>
+                <td className="px-4 py-3 text-center text-gray-500">{post.author}</td>
+                <td className="px-4 py-3 text-center text-gray-400 text-xs">{post.date}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* 게시글 목록 하단 버튼 */}
+      <div className="flex justify-end">
+        <button className="bg-primary text-white px-4 py-2 rounded-md text-sm font-bold shadow-sm hover:bg-blue-700 transition-colors">
+          글쓰기
+        </button>
+      </div>
+
+      {/* 게시글 목록 사이 광고 (수익화) */}
+      <div className="w-full h-32 bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-sm my-6">
+        인피드 광고 슬롯
+      </div>
     </div>
   );
 }
