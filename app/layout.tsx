@@ -118,9 +118,8 @@ export default function RootLayout({
 
             {/* 광고 영역 */}
             <AdBanner label="Sidebar Ad" />
-          </div>
-        </aside>
-      </div>
+          </aside>
+        </div>
 
       <footer className="bg-zinc-950 border-t border-zinc-900 py-12 mt-12">
         <div className="container-main px-4 text-center">
