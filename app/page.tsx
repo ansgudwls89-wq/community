@@ -5,17 +5,25 @@ export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   // 1. 환경 변수 체크 (빌드 시점 또는 런타임 시점의 누락 방지)
-  const isEnvMissing = !process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const isEnvMissing = !supabaseUrl || !supabaseAnonKey;
 
   if (isEnvMissing) {
     return (
       <div className="p-10 bg-zinc-900 border border-zinc-800 rounded-2xl text-zinc-400">
-        <h2 className="text-xl font-bold mb-4 text-white">⚙️ 설정 필요</h2>
-        <p className="mb-4">Supabase 환경 변수가 설정되지 않았습니다.</p>
-        <ul className="list-disc list-inside text-sm space-y-2">
-          <li>로컬 개발: <code className="bg-zinc-800 px-1.5 py-0.5 rounded">.env.local</code> 파일 확인</li>
-          <li>배포 환경: 서비스 대시보드에서 <code className="bg-zinc-800 px-1.5 py-0.5 rounded">Environment Variables</code> 등록</li>
-        </ul>
+        <h2 className="text-xl font-bold mb-4 text-white">⚙️ 설정 필요 (Vercel/Local)</h2>
+        <div className="space-y-4 text-sm">
+          <p>다음 환경 변수가 감지되지 않았습니다:</p>
+          <ul className="list-disc list-inside space-y-1 font-mono text-zinc-500">
+            <li>URL: {supabaseUrl ? '✅ OK' : '❌ MISSING'}</li>
+            <li>Key: {supabaseAnonKey ? '✅ OK' : '❌ MISSING'}</li>
+          </ul>
+          <div className="bg-black/50 p-4 rounded-lg">
+            <p className="mb-2 font-bold text-zinc-300">💡 해결 방법:</p>
+            <p>Vercel 대시보드에서 환경 변수를 등록한 후 <strong>재배포(Redeploy)</strong> 하세요.</p>
+          </div>
+        </div>
       </div>
     );
   }
