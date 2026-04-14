@@ -35,8 +35,9 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
   }
 
   return (
-    <div className="bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl">
-      {/* 게시글 헤더 영역 */}
+    <div className="w-full space-y-4">
+      <div className="bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl w-full">
+        {/* 게시글 헤더 영역 */}
       <header className="p-6 border-b border-zinc-800 bg-zinc-900/30">
         <div className="flex items-center gap-2 mb-3">
           <span className="text-xs font-black text-blue-500 bg-blue-500/10 px-2 py-1 rounded uppercase tracking-wider">
