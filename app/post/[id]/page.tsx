@@ -1,19 +1,20 @@
 import { supabase } from '@/utils/supabase';
 import { notFound } from 'next/navigation';
 
+// 강력한 동적 렌더링 강제
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default async function PostDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  // 1. 조회수 1 증가 (안전한 업데이트 방식)
-  // 현재 조회수를 가져온 뒤 +1 하여 업데이트합니다.
+  // 1. 조회수 1 증가 (서버 사이드 즉시 반영)
   const { data: currentData } = await supabase.from('posts').select('views').eq('id', id).single();
   if (currentData) {
     await supabase.from('posts').update({ views: (currentData.views || 0) + 1 }).eq('id', id);
   }
 
-  // 2. 최신 게시글 데이터 가져오기 (증가된 조회수 포함)
+  // 2. 최신 게시글 데이터 가져오기 (캐시 무시)
   const { data: post, error } = await supabase
     .from('posts')
     .select('*')
@@ -52,7 +53,10 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
               <span>{new Date(post.created_at).toLocaleString('ko-KR')}</span>
             </div>
             <div className="flex items-center gap-4 font-bold">
-              <span className="flex items-center gap-1.5">조회 <span className="text-zinc-100 font-black">{post.views ?? 0}</span></span>
+              <span className="flex items-center gap-1.5">
+                <span className="text-blue-500 animate-pulse">●</span> 조회 
+                <span className="text-zinc-100 font-black">{post.views ?? 0}</span>
+              </span>
               <span>추천 {post.likes ?? 0}</span>
               <span className="text-blue-500">댓글 {post.comments_count ?? 0}</span>
             </div>
