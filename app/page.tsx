@@ -4,14 +4,25 @@ import AdBanner from "@/components/AdBanner";
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  // 1. Supabase에서 게시글 데이터 가져오기 (실제 DB 연동)
+  // 1. Supabase에서 게시글 데이터 가져오기
   const { data: posts, error } = await supabase
     .from('posts')
     .select('*')
     .order('created_at', { ascending: false });
 
+  // 2. 에러가 있을 경우 디버깅 정보를 보여줌
   if (error) {
-    console.error('Error fetching posts:', error);
+    return (
+      <div className="p-10 bg-red-900/20 border border-red-500 rounded-2xl text-red-500">
+        <h2 className="text-xl font-bold mb-4">데이터를 불러오는 중 오류가 발생했습니다.</h2>
+        <pre className="text-xs overflow-auto bg-black p-4 rounded-lg">
+          {JSON.stringify(error, null, 2)}
+        </pre>
+        <p className="mt-4 text-sm font-medium">
+          힌트: Supabase의 API URL이나 Anon Key가 올바른지 확인해 주세요. (.env.local 파일)
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -44,37 +55,25 @@ export default async function Home() {
               </tr>
             ) : (
               posts.map((post, index) => (
-                <>
-                  {/* 5번째 게시물 이후 광고 삽입 */}
-                  {index === 5 && (
-                    <tr key="ad-row">
-                      <td colSpan={3} className="p-0 border-b border-zinc-800 bg-zinc-900/20">
-                        <div className="px-4 py-2">
-                          <AdBanner label="In-feed Ad" />
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                  <tr key={post.id} className="border-b border-zinc-900/50 hover:bg-zinc-900/40 transition-all group cursor-pointer">
-                    <td className="py-3 px-4 text-center text-zinc-600 text-[11px] truncate">{post.id}</td>
-                    <td className="py-3 px-4 text-center">
-                      <span className="bg-zinc-900 text-zinc-400 text-[10px] font-bold px-2 py-0.5 rounded border border-zinc-800 block truncate">
-                        {post.category}
+                <tr key={post.id} className="border-b border-zinc-900/50 hover:bg-zinc-900/40 transition-all group cursor-pointer">
+                  <td className="py-3 px-4 text-center text-zinc-600 text-[11px] truncate">{post.id}</td>
+                  <td className="py-3 px-4 text-center">
+                    <span className="bg-zinc-900 text-zinc-400 text-[10px] font-bold px-2 py-0.5 rounded border border-zinc-800 block truncate">
+                      {post.category}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4 truncate">
+                    <a href={`/post/${post.id}`} className="flex items-center gap-2 group-hover:translate-x-1 transition-transform overflow-hidden">
+                      <span className="text-zinc-200 font-medium truncate group-hover:text-blue-400 transition-colors">
+                        {post.title}
                       </span>
-                    </td>
-                    <td className="py-3 px-4 truncate">
-                      <a href={`/post/${post.id}`} className="flex items-center gap-2 group-hover:translate-x-1 transition-transform overflow-hidden">
-                        <span className="text-zinc-200 font-medium truncate group-hover:text-blue-400 transition-colors">
-                          {post.title}
-                        </span>
-                        <span className="text-[11px] font-black text-blue-500/80 flex-shrink-0">
-                          [{post.comments_count || 0}]
-                        </span>
-                        {post.has_image && <span className="text-[10px] flex-shrink-0">🖼️</span>}
-                      </a>
-                    </td>
-                  </tr>
-                </>
+                      <span className="text-[11px] font-black text-blue-500/80 flex-shrink-0">
+                        [{post.comments_count || 0}]
+                      </span>
+                      {post.has_image && <span className="text-[10px] flex-shrink-0">🖼️</span>}
+                    </a>
+                  </td>
+                </tr>
               ))
             )}
           </tbody>
