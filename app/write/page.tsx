@@ -27,7 +27,8 @@ export default function WritePage() {
           author,
           has_image: false,
           comments_count: 0,
-          likes: 0
+          likes: 0,
+          views: 0
         }
       ]);
 
