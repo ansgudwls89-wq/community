@@ -6,14 +6,30 @@ export const dynamic = 'force-dynamic';
 export default async function PostDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
 
-  // 1. 게시글 데이터 가져오기
+  // 1. Supabase에서 게시글 데이터 가져오기
   const { data: post, error } = await supabase
     .from('posts')
     .select('*')
     .eq('id', id)
     .single();
 
-  if (error || !post) {
+  // 2. 에러 디버깅 정보 추가
+  if (error) {
+    return (
+      <div className="p-10 bg-zinc-900 border border-zinc-800 rounded-2xl text-zinc-400">
+        <h2 className="text-xl font-bold mb-4 text-white">게시글을 불러올 수 없습니다 (ID: {id})</h2>
+        <pre className="text-xs bg-black/50 p-4 rounded-lg overflow-auto">
+          {JSON.stringify(error, null, 2)}
+        </pre>
+        <p className="mt-4 text-sm font-medium">
+          힌트: 환경 변수 설정이나 데이터베이스 연결을 확인해 보세요.
+        </p>
+        <a href="/" className="inline-block mt-4 text-blue-400 hover:underline">← 홈으로 돌아가기</a>
+      </div>
+    );
+  }
+
+  if (!post) {
     return notFound();
   }
 
