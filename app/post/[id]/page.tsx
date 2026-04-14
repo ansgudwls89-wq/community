@@ -3,8 +3,9 @@ import { notFound } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
-export default async function PostDetailPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default async function PostDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params;
+  const id = resolvedParams.id;
 
   // 1. Supabase에서 게시글 데이터 가져오기
   const { data: post, error } = await supabase
