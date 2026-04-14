@@ -15,7 +15,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full">
       {/* 상단 탭 및 필터 */}
       <div className="flex items-center justify-between pb-2 border-b border-zinc-800">
         <div className="flex gap-4">
@@ -29,19 +29,18 @@ export default function Home() {
       </div>
 
       {/* 게시글 리스트 테이블 */}
-      <div className="bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl">
-        <table className="w-full border-collapse">
+      <div className="bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl w-full">
+        <table className="w-full border-collapse table-fixed">
           <thead>
             <tr className="bg-zinc-900/50 border-b border-zinc-800 text-[11px] font-black text-zinc-500 uppercase tracking-widest">
-              <th className="py-3 px-4 text-center w-20">No</th>
-              <th className="py-3 px-4 text-center w-24">Cat</th>
+              <th className="py-3 px-4 text-center w-[80px]">No</th>
+              <th className="py-3 px-4 text-center w-[100px]">Cat</th>
               <th className="py-3 px-4 text-left">Subject</th>
             </tr>
           </thead>
           <tbody className="text-[13px]">
             {posts.map((post, index) => (
               <>
-                {/* 5번째 게시물 이후 광고 삽입 */}
                 {index === 5 && (
                   <tr key="ad-row">
                     <td colSpan={3} className="p-0 border-b border-zinc-800 bg-zinc-900/20">
@@ -52,21 +51,21 @@ export default function Home() {
                   </tr>
                 )}
                 <tr key={post.id} className="border-b border-zinc-900/50 hover:bg-zinc-900/40 transition-all group cursor-pointer">
-                  <td className="py-3 px-4 text-center text-zinc-600 text-[11px]">{post.id}</td>
+                  <td className="py-3 px-4 text-center text-zinc-600 text-[11px] truncate">{post.id}</td>
                   <td className="py-3 px-4 text-center">
-                    <span className="bg-zinc-900 text-zinc-400 text-[10px] font-bold px-2 py-0.5 rounded border border-zinc-800">
+                    <span className="bg-zinc-900 text-zinc-400 text-[10px] font-bold px-2 py-0.5 rounded border border-zinc-800 block truncate">
                       {post.category}
                     </span>
                   </td>
-                  <td className="py-3 px-4">
-                    <a href={`/post/${post.id}`} className="flex items-center gap-2 group-hover:translate-x-1 transition-transform">
-                      <span className="text-zinc-200 font-medium line-clamp-1 group-hover:text-blue-400 transition-colors">
+                  <td className="py-3 px-4 truncate">
+                    <a href={`/post/${post.id}`} className="flex items-center gap-2 group-hover:translate-x-1 transition-transform overflow-hidden">
+                      <span className="text-zinc-200 font-medium truncate group-hover:text-blue-400 transition-colors">
                         {post.title}
                       </span>
-                      <span className="text-[11px] font-black text-blue-500/80">
+                      <span className="text-[11px] font-black text-blue-500/80 flex-shrink-0">
                         [{post.comments}]
                       </span>
-                      {index % 3 === 0 && <span className="text-[10px]">🖼️</span>}
+                      {index % 3 === 0 && <span className="text-[10px] flex-shrink-0">🖼️</span>}
                     </a>
                   </td>
                 </tr>
