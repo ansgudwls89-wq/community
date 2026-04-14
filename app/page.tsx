@@ -1,90 +1,111 @@
 export default function Home() {
   const notices = [
-    { id: 101, title: "[공지] 커뮤니티 이용 규칙 안내 (필독)", author: "운영진", date: "24.01.01", likes: 1250 },
-    { id: 102, title: "[공지] 신규 채널 개설 신청 게시판", author: "운영진", date: "24.01.05", likes: 420 },
+    { id: 0, channel: "공지", title: "커뮤니티 이용 규칙 안내 (24.01.01 수정)", author: "운영진", date: "24.01.01", view: "152k", likes: 125 },
+    { id: -1, channel: "공지", title: "채널 개설 신청 및 관리 가이드", author: "운영진", date: "24.01.05", view: "42k", likes: 85 },
   ];
 
   const posts = [
-    { id: 1, channel: "게임", title: "롤드컵 결승 보시는 분 계신가요?", author: "페이커팬", date: "21:30", likes: 45, comments: 12 },
-    { id: 2, channel: "IT", title: "M4 아이패드 프로 13인치 한달 사용기", author: "애플농장", date: "20:15", likes: 32, comments: 8 },
-    { id: 3, channel: "일상", title: "오늘 퇴근길 노을 진짜 예쁘네요 (사진)", author: "풍경덕후", date: "19:40", likes: 85, comments: 24 },
-    { id: 4, channel: "질문", title: "코딩 공부 독학 vs 학원 추천 좀 해주세요", author: "뉴비", date: "18:22", likes: 12, comments: 45 },
-    { id: 5, channel: "게임", title: "스팀 세일 품목 중에서 살만한 거 있나요?", author: "할인마", date: "17:50", likes: 28, comments: 15 },
-    { id: 6, channel: "IT", title: "엔비디아 주가 어디까지 갈까요?", author: "개미", date: "16:10", likes: 64, comments: 52 },
-    { id: 7, channel: "반려동물", title: "우리집 고양이 꾹꾹이 보고 가세요", author: "집사1", date: "15:30", likes: 142, comments: 10 },
+    { id: 1234567, channel: "원신", title: "나히다 성유물 세팅 질문드려요", author: "여행자", date: "14:22", view: "1.2k", likes: 12, comments: 24, hasImg: true },
+    { id: 1234566, channel: "사회", title: "내일 날씨 전국적으로 비 온다고 하네요", author: "기상캐스터", date: "14:15", view: "850", likes: 5, comments: 3, hasImg: false },
+    { id: 1234565, channel: "일상", title: "오늘 점심 제육볶음 먹었는데 꿀맛이네요", author: "직장인A", date: "13:50", view: "2.1k", likes: 32, comments: 15, hasImg: true },
+    { id: 1234564, channel: "게임", title: "M4 아이패드로 게임 돌려보신 분 계신가요?", author: "겜돌이", date: "13:40", view: "3.4k", likes: 45, comments: 52, hasImg: false },
+    { id: 1234563, channel: "유머", title: "댕댕이 꾹꾹이 시도하다 실패하는 짤.gif", author: "멍멍이", date: "13:20", view: "12k", likes: 156, comments: 84, hasImg: true },
+    { id: 1234562, channel: "IT", title: "엔비디아 시총 1위 달성 관련 분석글", author: "주식개미", date: "12:55", view: "5.2k", likes: 82, comments: 31, hasImg: false },
+    { id: 1234561, channel: "일상", title: "서울 야경 명소 추천 부탁드립니다", author: "야경꾼", date: "12:30", view: "1.5k", likes: 24, comments: 18, hasImg: true },
   ];
 
   return (
-    <div className="bg-white border border-border">
-      {/* 탭 네비게이션 */}
-      <div className="flex bg-[#f8f9fa] border-b border-border">
-        <button className="px-4 py-2.5 text-[13px] font-bold border-b-2 border-primary text-primary bg-white">전체</button>
-        <button className="px-4 py-2.5 text-[13px] font-medium text-slate-500 hover:text-slate-800">베스트</button>
-        <button className="px-4 py-2.5 text-[13px] font-medium text-slate-500 hover:text-slate-800">정보</button>
+    <div className="flex flex-col gap-2">
+      {/* 채널 헤더 / 필터 */}
+      <div className="flex items-center justify-between py-1 border-b border-arca-border/40">
+        <h2 className="text-lg font-bold flex items-center gap-2">
+          전체 게시글
+        </h2>
+        <div className="flex gap-1">
+          <button className="px-2 py-1 bg-white border border-arca-border/60 text-[11px] hover:bg-slate-50">최신순</button>
+          <button className="px-2 py-1 bg-white border border-arca-border/60 text-[11px] hover:bg-slate-50">추천순</button>
+        </div>
       </div>
 
-      <table className="board-table">
-        <colgroup>
-          <col width="50" />
-          <col width="80" />
-          <col />
-          <col width="100" />
-          <col width="70" />
-          <col width="60" />
-        </colgroup>
-        <thead>
-          <tr>
-            <th>번호</th>
-            <th>채널</th>
-            <th className="text-left px-3">제목</th>
-            <th>작성자</th>
-            <th>날짜</th>
-            <th>추천</th>
-          </tr>
-        </thead>
-        <tbody className="text-[13px]">
-          {/* 공지사항 */}
-          {notices.map((notice) => (
-            <tr key={notice.id} className="bg-red-50/30 font-bold">
-              <td className="text-center text-accent text-xs">공지</td>
-              <td className="text-center"><span className="badge-channel bg-accent">운영</span></td>
-              <td className="px-3">
-                <a href="#" className="hover:underline">{notice.title}</a>
-              </td>
-              <td className="text-center text-slate-500">{notice.author}</td>
-              <td className="text-center text-slate-400 text-xs">{notice.date}</td>
-              <td className="text-center text-accent font-bold">{notice.likes}</td>
+      <div className="overflow-x-auto">
+        <table className="arca-table">
+          <colgroup>
+            <col className="hidden sm:table-column w-[70px]" />
+            <col className="w-[80px]" />
+            <col />
+            <col className="w-[100px]" />
+            <col className="w-[60px]" />
+            <col className="hidden sm:table-column w-[60px]" />
+            <col className="w-[50px]" />
+          </colgroup>
+          <thead>
+            <tr>
+              <th className="hidden sm:table-cell">번호</th>
+              <th>분류</th>
+              <th className="text-left px-2">제목</th>
+              <th>작성자</th>
+              <th>날짜</th>
+              <th className="hidden sm:table-cell">조회</th>
+              <th>추천</th>
             </tr>
-          ))}
+          </thead>
+          <tbody className="text-[12px]">
+            {/* 공지사항 */}
+            {notices.map((notice) => (
+              <tr key={notice.id} className="arca-notice">
+                <td className="hidden sm:table-cell text-center text-red-500">공지</td>
+                <td className="text-center"><span className="badge badge-notice">운영</span></td>
+                <td className="px-2">
+                  <a href="#" className="hover:underline text-slate-900 line-clamp-1">{notice.title}</a>
+                </td>
+                <td className="text-center text-slate-500 font-normal">{notice.author}</td>
+                <td className="text-center text-slate-400">{notice.date}</td>
+                <td className="hidden sm:table-cell text-center text-slate-400">{notice.view}</td>
+                <td className="text-center text-red-500">{notice.likes}</td>
+              </tr>
+            ))}
 
-          {/* 일반 게시글 */}
-          {posts.map((post) => (
-            <tr key={post.id} className="hover:bg-slate-50/80 cursor-pointer">
-              <td className="text-center text-slate-400 text-xs">{post.id}</td>
-              <td className="text-center"><span className="badge-channel">{post.channel}</span></td>
-              <td className="px-3">
-                <div className="flex items-center gap-1.5 overflow-hidden">
-                  <span className="truncate hover:underline text-slate-900">{post.title}</span>
-                  <span className="text-[11px] text-primary font-bold">[{post.comments}]</span>
-                  <span className="text-[10px] text-primary">🖼️</span>
-                </div>
-              </td>
-              <td className="text-center text-slate-600 truncate max-w-[100px]">{post.author}</td>
-              <td className="text-center text-slate-400 text-xs">{post.date}</td>
-              <td className="text-center text-slate-500 font-medium">{post.likes}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            {/* 일반 게시글 */}
+            {posts.map((post) => (
+              <tr key={post.id}>
+                <td className="hidden sm:table-cell text-center text-slate-400 text-[10px]">{post.id}</td>
+                <td className="text-center"><span className="badge badge-channel">{post.channel}</span></td>
+                <td className="px-2">
+                  <div className="flex items-center gap-1">
+                    <a href="#" className="hover:underline text-slate-800 line-clamp-1">{post.title}</a>
+                    <span className="comment-count">[{post.comments}]</span>
+                    {post.hasImg && <span className="text-[10px] text-arca-blue">🖼️</span>}
+                  </div>
+                </td>
+                <td className="text-center text-slate-600 truncate max-w-[100px]">{post.author}</td>
+                <td className="text-center text-slate-400 text-[11px]">{post.date}</td>
+                <td className="hidden sm:table-cell text-center text-slate-400">{post.view}</td>
+                <td className={`text-center font-bold ${post.likes >= 100 ? 'text-orange-500' : post.likes >= 50 ? 'text-green-600' : 'text-slate-500'}`}>
+                  {post.likes}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-      {/* 하단 글쓰기 및 검색 */}
-      <div className="flex items-center justify-between p-3 bg-[#f8f9fa] border-t border-border">
+      {/* 하단 버튼 및 검색 */}
+      <div className="flex items-center justify-between mt-2">
         <div className="flex gap-1">
-          <button className="px-3 py-1.5 bg-white border border-border text-xs font-bold rounded hover:bg-slate-50 transition-colors">새로고침</button>
+          <button className="px-3 py-1.5 bg-white border border-arca-border/60 text-xs font-bold hover:bg-slate-50">새로고침</button>
         </div>
         <div className="flex gap-1">
-          <button className="px-4 py-1.5 bg-primary text-white text-xs font-bold rounded hover:bg-primary-light transition-colors shadow-sm">글쓰기</button>
+          <button className="px-5 py-1.5 bg-arca-blue text-white text-xs font-bold shadow-sm hover:opacity-90">글쓰기</button>
         </div>
+      </div>
+
+      {/* 하단 페이지네이션 (단순화) */}
+      <div className="flex justify-center gap-1 mt-6">
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => (
+          <button key={n} className={`w-7 h-7 flex items-center justify-center text-xs border ${n === 1 ? 'border-arca-blue text-arca-blue font-bold bg-white' : 'border-arca-border/30 text-slate-500 bg-white hover:bg-slate-50'}`}>
+            {n}
+          </button>
+        ))}
       </div>
     </div>
   );
