@@ -24,16 +24,22 @@ export default function RootLayout({
               </a>
             </div>
 
-            {/* 중앙 검색 영역 + 드롭다운 */}
+            {/* 중앙 검색 영역 + 커스텀 DIV 드롭다운 */}
             <div className="flex-1 max-w-3xl flex items-center gap-2">
-              <div className="relative">
-                <select className="appearance-none bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs font-bold text-zinc-400 outline-none focus:ring-2 focus:ring-blue-600/50 cursor-pointer pr-8 hover:bg-zinc-800 transition-all">
-                  <option>베스트</option>
-                  <option>공지</option>
-                  <option>문의</option>
-                  <option>유머</option>
-                </select>
-                <span className="absolute right-3 top-3.5 text-[8px] text-zinc-600 pointer-events-none">▼</span>
+              <div className="relative group">
+                {/* 드롭다운 버튼 역할을 하는 DIV */}
+                <div className="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs font-black text-zinc-400 cursor-pointer hover:bg-zinc-800 hover:text-white transition-all flex items-center gap-2 min-w-[80px] justify-between">
+                  <span>베스트</span>
+                  <span className="text-[8px] text-zinc-600 group-hover:rotate-180 transition-transform duration-200">▼</span>
+                </div>
+
+                {/* 드롭다운 메뉴 (DIV 리스트) */}
+                <div className="absolute top-full left-0 mt-2 w-32 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 transform origin-top scale-95 group-hover:scale-100">
+                  <div className="px-4 py-2 text-xs font-bold text-zinc-400 hover:bg-blue-600 hover:text-white cursor-pointer transition-colors">베스트</div>
+                  <div className="px-4 py-2 text-xs font-bold text-zinc-400 hover:bg-blue-600 hover:text-white cursor-pointer transition-colors">공지</div>
+                  <div className="px-4 py-2 text-xs font-bold text-zinc-400 hover:bg-blue-600 hover:text-white cursor-pointer transition-colors">문의</div>
+                  <div className="px-4 py-2 text-xs font-bold text-zinc-400 hover:bg-blue-600 hover:text-white cursor-pointer transition-colors">유머</div>
+                </div>
               </div>
               
               <div className="flex-1 relative">
@@ -42,26 +48,26 @@ export default function RootLayout({
                   placeholder="관심 있는 스페이스를 검색해 보세요"
                   className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-600/50 outline-none transition-all placeholder:text-zinc-600"
                 />
-                <span className="absolute right-3 top-2.5 text-zinc-500 cursor-pointer">🔍</span>
+                <span className="absolute right-3 top-2.5 text-zinc-500 cursor-pointer hover:text-white transition-colors">🔍</span>
               </div>
             </div>
 
             {/* 우측 유틸리티 */}
             <div className="flex items-center gap-2">
               <button className="hidden sm:block text-zinc-400 hover:text-white transition-all text-sm font-bold px-3 py-2">로그인</button>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold px-4 py-2 rounded-xl shadow-lg shadow-blue-900/20 transition-all">회원가입</button>
+              <button className="bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold px-4 py-2 rounded-xl shadow-lg shadow-blue-900/20 transition-all active:scale-95">회원가입</button>
             </div>
           </div>
         </header>
 
-        <main className="max-w-[1280px] mx-auto pt-24 px-4 flex-1 w-full text-zinc-100">
+        <main className="max-w-[1280px] mx-auto pt-24 px-4 flex-1 w-full text-zinc-100 font-sans">
           {children}
         </main>
 
         <footer className="bg-zinc-950 border-t border-zinc-900 py-12 mt-12">
           <div className="max-w-[1280px] mx-auto px-4 text-center text-zinc-100">
             <div className="text-2xl font-black text-zinc-800 mb-4 tracking-tighter">ARCA.</div>
-            <p className="text-xs text-zinc-600">&copy; 2026 Arca Community Platform. All rights reserved.</p>
+            <p className="text-xs text-zinc-600 font-medium">&copy; 2026 Arca Community Platform. All rights reserved.</p>
           </div>
         </footer>
       </body>
