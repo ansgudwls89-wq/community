@@ -1,5 +1,6 @@
 import { supabase } from '@/utils/supabase';
 import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 
 export default function WritePage() {
   async function createPost(formData: FormData) {
@@ -11,10 +12,12 @@ export default function WritePage() {
     const author = formData.get('author') as string || '익명';
 
     if (!title || !category || !content) {
+      console.error('필수 입력 항목이 누락되었습니다.');
       return;
     }
 
-    const { data, error } = await supabase
+    // 1. Supabase에 데이터 삽입
+    const { error } = await supabase
       .from('posts')
       .insert([
         { 
@@ -26,28 +29,29 @@ export default function WritePage() {
           comments_count: 0,
           likes: 0
         }
-      ])
-      .select();
+      ]);
 
     if (error) {
-      console.error('Error creating post:', error);
+      console.error('글 작성 중 에러 발생:', error.message);
+      // 에러 발생 시 리다이렉트를 하지 않고 멈춥니다.
       return;
     }
 
-    if (data) {
-      redirect('/');
-    }
+    // 2. 메인 페이지 캐시 갱신 (새 글이 바로 보이게 함)
+    revalidatePath('/');
+    
+    // 3. 메인 페이지로 이동
+    redirect('/');
   }
 
   return (
     <div className="w-full max-w-4xl mx-auto">
       <div className="bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl">
-        <header className="p-6 border-b border-zinc-800 bg-zinc-900/30">
+        <header className="p-6 border-b border-zinc-800 bg-zinc-900/30 text-center sm:text-left">
           <h1 className="text-xl font-black text-white uppercase tracking-tight">새 글 작성</h1>
         </header>
 
         <form action={createPost} className="p-6 sm:p-8 space-y-6">
-          {/* 스페이스 선택 및 작성자 */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest px-1">Select Space</label>
@@ -64,7 +68,7 @@ export default function WritePage() {
               </select>
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest px-1">Author (Optional)</label>
+              <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest px-1">Author</label>
               <input 
                 type="text"
                 name="author"
@@ -74,7 +78,6 @@ export default function WritePage() {
             </div>
           </div>
 
-          {/* 제목 입력 */}
           <div className="space-y-2">
             <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest px-1">Title</label>
             <input 
@@ -86,18 +89,16 @@ export default function WritePage() {
             />
           </div>
 
-          {/* 본문 입력 */}
           <div className="space-y-2">
             <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest px-1">Content</label>
             <textarea 
               name="content"
               required
-              placeholder="커뮤니티 가이드를 준수하여 내용을 작성해 주세요"
+              placeholder="내용을 작성해 주세요"
               className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-4 text-sm text-zinc-300 min-h-[300px] outline-none focus:ring-2 focus:ring-blue-600/50 transition-all resize-none placeholder:text-zinc-700 leading-relaxed"
             />
           </div>
 
-          {/* 하단 버튼 */}
           <div className="flex items-center justify-end gap-4 pt-6 border-t border-zinc-900">
             <a href="/" className="text-xs font-bold text-zinc-500 hover:text-white transition-all px-4 py-2">취소</a>
             <button 
