@@ -40,7 +40,7 @@ export default async function Home() {
         <div className="flex items-center justify-between pb-2 border-b border-zinc-800">
           <div className="flex gap-4">
             <button className="text-sm font-black text-white border-b-2 border-blue-500 pb-2">실시간 베스트</button>
-            <button className="text-sm font-bold text-zinc-500 hover:text-zinc-300 pb-2 transition-colors">주간 인기</button>
+            <button className="text-sm font-bold text-zinc-500 hover:text-zinc-300 pb-2 transition-colors text-xs sm:text-sm">주간 인기</button>
           </div>
           <button className="bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-[11px] font-bold px-3 py-1.5 rounded-lg border border-zinc-800 transition-all">새로고침</button>
         </div>
@@ -50,7 +50,7 @@ export default async function Home() {
             <thead>
               <tr className="bg-zinc-900/50 border-b border-zinc-800 text-[11px] font-black text-zinc-500 uppercase tracking-widest">
                 <th className="py-3 px-4 text-center w-[80px]">No</th>
-                <th className="py-3 px-4 text-center w-[100px]">Cat</th>
+                <th className="py-3 px-4 text-center w-[100px]">Space</th>
                 <th className="py-3 px-4 text-left">Subject</th>
               </tr>
             </thead>
@@ -59,14 +59,16 @@ export default async function Home() {
                 <tr><td colSpan={3} className="py-12 text-center text-zinc-500 italic">게시글이 없습니다.</td></tr>
               ) : (
                 posts.map((post) => (
-                  <tr key={post.id} className="border-b border-zinc-900/50 hover:bg-zinc-900/40 transition-all group cursor-pointer">
-                    <td className="py-3 px-4 text-center text-zinc-600 text-[11px]">{post.id}</td>
+                  <tr key={post.id} className="border-b border-zinc-900/50 hover:bg-zinc-900/40 transition-all group cursor-pointer text-zinc-300">
+                    <td className="py-3 px-4 text-center text-zinc-600 text-[11px] font-mono">{post.id}</td>
                     <td className="py-3 px-4 text-center">
-                      <span className="bg-zinc-900 text-zinc-400 text-[10px] font-bold px-2 py-0.5 rounded border border-zinc-800">{post.category}</span>
+                      <span className="bg-zinc-900 text-blue-400 text-[10px] font-black px-2 py-0.5 rounded border border-zinc-800 uppercase tracking-tighter">
+                        {post.category}
+                      </span>
                     </td>
-                    <td className="py-3 px-4 truncate">
+                    <td className="py-3 px-4 truncate font-medium">
                       <a href={`/post/${post.id}`} className="flex items-center gap-2 group-hover:translate-x-1 transition-transform overflow-hidden">
-                        <span className="text-zinc-200 font-medium truncate group-hover:text-blue-400">{post.title}</span>
+                        <span className="truncate group-hover:text-blue-400 transition-colors">{post.title}</span>
                         <span className="text-[11px] font-black text-blue-500/80">[{post.comments_count || 0}]</span>
                       </a>
                     </td>
@@ -80,9 +82,9 @@ export default async function Home() {
         {/* 하단 페이지네이션 및 액션 */}
         <div className="flex items-center justify-between pt-4">
           <div className="flex gap-1">
-            <button className="w-8 h-8 rounded-lg text-xs font-bold bg-blue-600 text-white">1</button>
+            <button className="w-8 h-8 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-lg shadow-blue-900/20 transition-all active:scale-95">1</button>
           </div>
-          <button className="bg-white text-black font-black text-sm px-6 py-2.5 rounded-xl hover:bg-zinc-200 transition-all shadow-xl">
+          <button className="bg-white text-black font-black text-sm px-6 py-2.5 rounded-xl hover:bg-zinc-200 transition-all shadow-xl active:scale-95">
             새 글 작성
           </button>
         </div>
