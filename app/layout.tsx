@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import AdBanner from "@/components/AdBanner";
 
 export const metadata: Metadata = {
-  title: "아카라이브 - 전체",
-  description: "아카라이브 스타일 커뮤니티",
+  title: "Arca Style Community",
+  description: "Next.js 14 App Router Dark Mode Community",
 };
 
 export default function RootLayout({
@@ -14,97 +15,120 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className="flex flex-col min-h-screen">
-        {/* 상단 네비게이션 바 */}
-        <header className="bg-arca-blue text-white">
-          <div className="container-arca h-[46px] flex items-center justify-between">
-            <div className="flex items-center h-full">
-              <a href="/" className="text-xl font-black mr-6 flex items-center h-full">ARCA.LIVE</a>
-              <nav className="hidden md:flex items-center h-full text-sm">
-                <a href="#" className="px-4 h-full flex items-center hover:bg-white/10 font-bold">베스트</a>
-                <a href="#" className="px-4 h-full flex items-center hover:bg-white/10">채널</a>
-                <a href="#" className="px-4 h-full flex items-center hover:bg-white/10">위키</a>
-              </nav>
+        {/* 상단 고정 헤더 */}
+        <header className="fixed top-0 w-full h-16 bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-800 z-50">
+          <div className="container-main h-full px-4 flex items-center justify-between gap-8">
+            {/* 로고 */}
+            <div className="flex-shrink-0">
+              <a href="/" className="text-2xl font-black text-white tracking-tighter hover:text-blue-500 transition-colors">
+                ARCA.
+              </a>
             </div>
-            <div className="flex items-center gap-4 text-xs font-bold h-full">
-              <div className="flex items-center h-full px-2 hover:bg-white/10 cursor-pointer">🔍</div>
-              <a href="#" className="h-full flex items-center px-2 hover:bg-white/10">로그인</a>
+
+            {/* 중앙 검색창 */}
+            <div className="flex-1 max-w-2xl relative">
+              <input 
+                type="text" 
+                placeholder="관심 있는 주제를 검색해 보세요"
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-600/50 outline-none transition-all placeholder:text-zinc-600"
+              />
+              <span className="absolute right-3 top-2.5 text-zinc-500 cursor-pointer">🔍</span>
+            </div>
+
+            {/* 우측 유틸리티 */}
+            <div className="flex items-center gap-2">
+              <button className="text-zinc-400 hover:text-white transition-all text-sm font-bold px-3 py-2">
+                로그인
+              </button>
+              <button className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-4 py-2 rounded-xl shadow-lg shadow-blue-900/20 transition-all">
+                회원가입
+              </button>
+              <button className="w-10 h-10 flex items-center justify-center bg-zinc-900 rounded-xl hover:bg-zinc-800 transition-colors text-xl">
+                🌙
+              </button>
             </div>
           </div>
         </header>
 
-        {/* 서브 네비게이션 (채널 바로가기) */}
-        <div className="bg-white border-b border-arca-border/50 text-xs">
-          <div className="container-arca flex h-[34px] items-center text-slate-500 overflow-x-auto whitespace-nowrap scrollbar-hide">
-            <a href="#" className="mr-4 hover:text-arca-blue">종합</a>
-            <a href="#" className="mr-4 hover:text-arca-blue font-bold text-arca-blue">전체</a>
-            <a href="#" className="mr-4 hover:text-arca-blue">인기</a>
-            <span className="text-slate-200 mx-2">|</span>
-            <a href="#" className="mx-2 hover:text-arca-blue">원신</a>
-            <a href="#" className="mx-2 hover:text-arca-blue">게임</a>
-            <a href="#" className="mx-2 hover:text-arca-blue">사회</a>
-            <a href="#" className="mx-2 hover:text-arca-blue">일상</a>
-          </div>
-        </div>
+        {/* 메인 콘텐츠 구조 */}
+        <div className="container-main pt-20 flex gap-6 min-h-screen px-4">
+          {/* 왼쪽 사이드바 (240px) */}
+          <aside className="hidden lg:block w-[240px] flex-shrink-0 space-y-8">
+            <nav className="space-y-1">
+              <h3 className="px-3 text-[11px] font-black text-zinc-500 uppercase tracking-[2px] mb-2">Navigation</h3>
+              <div className="sidebar-item font-bold text-white bg-zinc-900">🏠 전체 게시판</div>
+              <div className="sidebar-item">🔥 실시간 베스트</div>
+              <div className="sidebar-item">💎 인기 게시판</div>
+            </nav>
 
-        {/* 메인 레이아웃 (게시판 리스트 + 우측 사이드바) */}
-        <main className="container-arca flex gap-4 mt-4 px-2 pb-10 flex-1">
-          <div className="w-full lg:w-[calc(100%-300px)] flex flex-col gap-4">
-            {children}
-          </div>
+            <nav className="space-y-1">
+              <h3 className="px-3 text-[11px] font-black text-zinc-500 uppercase tracking-[2px] mb-2">Categories</h3>
+              <div className="sidebar-item">🎮 게임 채널</div>
+              <div className="sidebar-item">📺 애니메이션</div>
+              <div className="sidebar-item">💻 IT & 테크</div>
+              <div className="sidebar-item">🖼️ 유머 / 짤방</div>
+              <div className="sidebar-item">💬 자유 게시판</div>
+            </nav>
 
-          {/* 우측 사이드바 위젯 */}
-          <aside className="hidden lg:block w-[300px] flex-shrink-0 space-y-4">
-            {/* 최근 댓글 위젯 */}
-            <div className="bg-white border border-arca-border/60">
-              <div className="bg-slate-50 border-b border-arca-border/60 px-3 py-2 text-[12px] font-bold text-slate-700 flex justify-between items-center">
-                <span>최근 댓글</span>
-                <span className="text-[10px] font-normal text-slate-400">더보기</span>
-              </div>
-              <div className="p-2 space-y-1.5 text-xs text-slate-600">
-                {["ㅋㅋㅋㅋㅋ 이거 진짜인가요?", "M4 맥북 오늘 주문했습니다.", "성수동 맛집 정보 감사합니다.", "다들 내일 출근하시나요?", "고양이 너무 귀엽네요ㅠㅠ"].map((txt, i) => (
-                  <div key={i} className="flex gap-2 truncate hover:text-arca-blue cursor-pointer items-center">
-                    <span className="text-[10px] text-slate-300">•</span>
-                    <span className="truncate">{txt}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* 인기 채널 위젯 */}
-            <div className="bg-white border border-arca-border/60">
-              <div className="bg-slate-50 border-b border-arca-border/60 px-3 py-2 text-[12px] font-bold text-slate-700">채널 순위</div>
-              <div className="p-0">
-                {[
-                  { name: "원신 채널", rank: "1", up: true },
-                  { name: "블루 아카이브", rank: "2", up: true },
-                  { name: "사회 채널", rank: "3", up: false },
-                  { name: "유머 채널", rank: "4", up: true },
-                  { name: "자유 게시판", rank: "5", up: false }
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center justify-between px-3 py-1.5 border-b border-slate-50 hover:bg-slate-50 cursor-pointer text-xs">
-                    <div className="flex items-center gap-2">
-                      <span className={`w-4 text-center font-bold italic ${i < 3 ? 'text-arca-blue' : 'text-slate-400'}`}>{item.rank}</span>
-                      <span className="text-slate-700 hover:text-arca-blue truncate max-w-[180px]">{item.name}</span>
-                    </div>
-                    <span className={`text-[10px] ${item.up ? 'text-red-500' : 'text-blue-500'}`}>{item.up ? '▲' : '▼'}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <nav className="space-y-1">
+              <h3 className="px-3 text-[11px] font-black text-zinc-500 uppercase tracking-[2px] mb-2">Favorites</h3>
+              <div className="sidebar-item text-zinc-600 italic">즐겨찾기가 없습니다.</div>
+            </nav>
           </aside>
-        </main>
 
-        <footer className="bg-[#444] text-[#ccc] py-8 text-xs">
-          <div className="container-arca flex justify-between">
-            <div className="space-x-4">
-              <a href="#" className="hover:text-white">회사소개</a>
-              <a href="#" className="hover:text-white">이용약관</a>
-              <a href="#" className="hover:text-white font-bold">개인정보처리방침</a>
+          {/* 중앙 섹션 (Flex-1) */}
+          <main className="flex-1 min-w-0">
+            {children}
+          </main>
+
+          {/* 오른쪽 사이드바 (300px) */}
+          <aside className="hidden xl:block w-[300px] flex-shrink-0 space-y-6">
+            {/* 로그인 위젯 */}
+            <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+              <div className="text-sm text-zinc-400 mb-4 font-medium leading-relaxed">
+                커뮤니티에 가입하고<br/>관심 있는 주제의 정보를 나눠보세요!
+              </div>
+              <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-all mb-3">
+                로그인 시작하기
+              </button>
+              <div className="flex justify-center gap-4 text-xs text-zinc-500">
+                <a href="#" className="hover:text-zinc-300">아이디 찾기</a>
+                <span>|</span>
+                <a href="#" className="hover:text-zinc-300">회원가입</a>
+              </div>
             </div>
-            <span>&copy; ArcaLive Copy. All rights reserved.</span>
+
+            {/* 실시간 인기 글 */}
+            <div className="bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden">
+              <div className="px-4 py-3 bg-zinc-900 border-b border-zinc-800 flex justify-between items-center">
+                <h3 className="text-xs font-black text-white uppercase tracking-wider">실시간 인기 글</h3>
+                <span className="text-[10px] text-zinc-500">More</span>
+              </div>
+              <div className="p-2 space-y-1">
+                {[...Array(5)].map((_, i) => (
+                  <a key={i} href="#" className="flex gap-3 p-2 rounded-lg hover:bg-zinc-900 transition-colors group">
+                    <span className="text-blue-500 font-bold italic w-4">{i + 1}</span>
+                    <span className="text-xs text-zinc-300 line-clamp-1 group-hover:text-white transition-colors">
+                      {i === 0 ? "나히다 성유물 세팅 정보 집대성" : "내일 날씨 전국 비 소식 알려드림"}
+                    </span>
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            {/* 광고 영역 */}
+            <AdBanner label="Sidebar Ad" />
           </div>
-        </footer>
-      </body>
+        </aside>
+      </div>
+
+      <footer className="bg-zinc-950 border-t border-zinc-900 py-12 mt-12">
+        <div className="container-main px-4 text-center">
+          <div className="text-2xl font-black text-zinc-800 mb-4 tracking-tighter">ARCA.</div>
+          <p className="text-xs text-zinc-600">&copy; 2026 Arca Community Platform. All rights reserved.</p>
+        </div>
+      </footer>
+    </body>
     </html>
   );
 }
