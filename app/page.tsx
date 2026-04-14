@@ -71,11 +71,11 @@ export default async function Home() {
 
       <div className="flex items-center justify-between pt-4">
         <div className="flex gap-1">
-          <button className="w-8 h-8 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-lg shadow-blue-900/20">1</button>
+          <button className="w-8 h-8 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-lg shadow-blue-900/20 transition-all active:scale-95">1</button>
         </div>
-        <button className="bg-white text-black font-black text-sm px-6 py-2.5 rounded-xl hover:bg-zinc-200 transition-all shadow-xl">
+        <a href="/write" className="bg-white text-black font-black text-sm px-6 py-2.5 rounded-xl hover:bg-zinc-200 transition-all shadow-xl active:scale-95">
           새 글 작성
-        </button>
+        </a>
       </div>
     </div>
   );
