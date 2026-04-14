@@ -28,20 +28,12 @@ export default async function Home() {
 
   return (
     <div className="flex gap-6 w-full">
-      {/* 1. 왼쪽 사이드바 (240px) */}
-      <aside className="hidden lg:block w-[240px] flex-shrink-0 space-y-8">
-        <nav className="space-y-1 text-zinc-400 text-sm">
-          <h3 className="px-3 text-[11px] font-black text-zinc-600 uppercase tracking-widest mb-3">Navigation</h3>
-          <div className="flex items-center px-3 py-2 text-white bg-zinc-900 rounded-lg font-bold cursor-pointer">🏠 전체 게시판</div>
-          <div className="hover:text-white px-3 py-2 cursor-pointer transition-colors">🔥 실시간 베스트</div>
-          <div className="hover:text-white px-3 py-2 cursor-pointer transition-colors">💎 인기 게시판</div>
-        </nav>
-        <nav className="space-y-1 text-zinc-400 text-sm">
-          <h3 className="px-3 text-[11px] font-black text-zinc-600 uppercase tracking-widest mb-3">Channels</h3>
-          <div className="hover:text-white px-3 py-2 cursor-pointer">🎮 게임 채널</div>
-          <div className="hover:text-white px-3 py-2 cursor-pointer">📺 애니메이션</div>
-          <div className="hover:text-white px-3 py-2 cursor-pointer">💻 IT & 테크</div>
-        </nav>
+      {/* 1. 좌측 사이드바 (광고 영역) */}
+      <aside className="hidden lg:block w-[240px] flex-shrink-0">
+        <div className="sticky top-24 space-y-4">
+          <AdBanner label="Left Wing Ad" />
+          <AdBanner label="Left Sidebar Ad 2" />
+        </div>
       </aside>
 
       {/* 2. 중앙 게시판 리스트 (Flex-1) */}
@@ -51,6 +43,7 @@ export default async function Home() {
             <button className="text-sm font-black text-white border-b-2 border-blue-500 pb-2">실시간 베스트</button>
             <button className="text-sm font-bold text-zinc-500 hover:text-zinc-300 pb-2">주간 인기</button>
           </div>
+          <button className="bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-[11px] font-bold px-3 py-1.5 rounded-lg border border-zinc-800 transition-all">새로고침</button>
         </div>
 
         <div className="bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl w-full">
@@ -66,44 +59,59 @@ export default async function Home() {
               {(!posts || posts.length === 0) ? (
                 <tr><td colSpan={3} className="py-12 text-center text-zinc-500 italic">게시글이 없습니다.</td></tr>
               ) : (
-                posts.map((post) => (
-                  <tr key={post.id} className="border-b border-zinc-900/50 hover:bg-zinc-900/40 transition-all group cursor-pointer">
-                    <td className="py-3 px-4 text-center text-zinc-600 text-[11px]">{post.id}</td>
-                    <td className="py-3 px-4 text-center">
-                      <span className="bg-zinc-900 text-zinc-400 text-[10px] font-bold px-2 py-0.5 rounded border border-zinc-800">{post.category}</span>
-                    </td>
-                    <td className="py-3 px-4 truncate">
-                      <a href={`/post/${post.id}`} className="flex items-center gap-2 group-hover:translate-x-1 transition-transform overflow-hidden">
-                        <span className="text-zinc-200 font-medium truncate group-hover:text-blue-400">{post.title}</span>
-                        <span className="text-[11px] font-black text-blue-500/80">[{post.comments_count || 0}]</span>
-                      </a>
-                    </td>
-                  </tr>
+                posts.map((post, index) => (
+                  <>
+                    {/* 게시물 중간 광고 (필요시) */}
+                    {index === 5 && (
+                      <tr key="mid-ad">
+                        <td colSpan={3} className="p-4 border-b border-zinc-900/50">
+                          <AdBanner label="In-feed Ad" />
+                        </td>
+                      </tr>
+                    )}
+                    <tr key={post.id} className="border-b border-zinc-900/50 hover:bg-zinc-900/40 transition-all group cursor-pointer">
+                      <td className="py-3 px-4 text-center text-zinc-600 text-[11px]">{post.id}</td>
+                      <td className="py-3 px-4 text-center">
+                        <span className="bg-zinc-900 text-zinc-400 text-[10px] font-bold px-2 py-0.5 rounded border border-zinc-800">{post.category}</span>
+                      </td>
+                      <td className="py-3 px-4 truncate">
+                        <a href={`/post/${post.id}`} className="flex items-center gap-2 group-hover:translate-x-1 transition-transform overflow-hidden">
+                          <span className="text-zinc-200 font-medium truncate group-hover:text-blue-400">{post.title}</span>
+                          <span className="text-[11px] font-black text-blue-500/80">[{post.comments_count || 0}]</span>
+                        </a>
+                      </td>
+                    </tr>
+                  </>
                 ))
               )}
             </tbody>
           </table>
         </div>
+
+        {/* 하단 페이지네이션 및 액션 */}
+        <div className="flex items-center justify-between pt-4">
+          <div className="flex gap-1">
+            <button className="w-8 h-8 rounded-lg text-xs font-bold bg-blue-600 text-white">1</button>
+          </div>
+          <button className="bg-white text-black font-black text-sm px-6 py-2.5 rounded-xl hover:bg-zinc-200 transition-all shadow-xl">
+            새 글 작성
+          </button>
+        </div>
       </div>
 
-      {/* 3. 오른쪽 사이드바 (300px) */}
-      <aside className="hidden xl:block w-[300px] flex-shrink-0 space-y-6">
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-          <div className="text-sm text-zinc-400 mb-4 font-medium">커뮤니티에 가입하고 활동해 보세요!</div>
-          <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-all">로그인</button>
-        </div>
-        <div className="bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden">
-          <div className="px-4 py-3 bg-zinc-900 border-b border-zinc-800 text-xs font-black text-white">실시간 인기 글</div>
-          <div className="p-2 space-y-1">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="flex gap-3 p-2 text-xs text-zinc-400 hover:bg-zinc-900 cursor-pointer rounded-lg">
-                <span className="text-blue-500 font-bold">{i + 1}</span>
-                <span className="truncate">인기 게시글 제목 예시입니다.</span>
-              </div>
-            ))}
+      {/* 3. 우측 사이드바 (광고 영역) */}
+      <aside className="hidden xl:block w-[300px] flex-shrink-0">
+        <div className="sticky top-24 space-y-6">
+          <AdBanner label="Right Sidebar Ad 1" />
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 text-center">
+            <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest mb-4 text-left">Sponsored</p>
+            <div className="aspect-video bg-zinc-950 rounded-xl mb-4 flex items-center justify-center border border-zinc-800 border-dashed">
+              <span className="text-zinc-700 text-[10px]">Video Ad Slot</span>
+            </div>
+            <p className="text-sm text-zinc-400">광고문의: ads@mycommunity.com</p>
           </div>
+          <AdBanner label="Right Sidebar Ad 2" />
         </div>
-        <AdBanner label="Sidebar Ad" />
       </aside>
     </div>
   );
