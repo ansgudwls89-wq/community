@@ -7,13 +7,26 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
   const resolvedParams = await params;
   const id = resolvedParams.id;
 
+  // 1. 조회수 1 증가 (조회수 컬럼이 없을 경우 에러가 나지만 무시됨)
+  await supabase.rpc('increment_views', { post_id: id }).catch(() => {
+    // RPC가 없는 경우 직접 업데이트 시도 (대안)
+    console.log('Using direct update for views');
+  });
+  
+  // 직접 업데이트 방식 (RPC 설정 전까지 사용)
+  const { data: currentPost } = await supabase.from('posts').select('views').eq('id', id).single();
+  if (currentPost) {
+    await supabase.from('posts').update({ views: (currentPost.views || 0) + 1 }).eq('id', id);
+  }
+
+  // 2. 게시글 데이터 가져오기
   const { data: post, error } = await supabase
     .from('posts')
     .select('*')
     .eq('id', id)
     .single();
 
-  if (error) {
+  if (error || !post) {
     return (
       <div className="w-full p-10 bg-zinc-900 border border-zinc-800 rounded-2xl text-zinc-400 text-center">
         <h2 className="text-xl font-bold mb-4 text-white">게시글을 불러올 수 없습니다.</h2>
@@ -22,14 +35,9 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
     );
   }
 
-  if (!post) {
-    return notFound();
-  }
-
   return (
     <div className="w-full space-y-4">
       <div className="bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl">
-        {/* 헤더 - 제목 크기 축소 (text-2xl) */}
         <header className="p-5 sm:p-6 border-b border-zinc-800 bg-zinc-900/30">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-[10px] font-black text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded uppercase tracking-wider">
@@ -50,20 +58,18 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
               <span>{new Date(post.created_at).toLocaleString('ko-KR')}</span>
             </div>
             <div className="flex items-center gap-4 font-medium">
-              <span>조회 1,242</span>
+              <span className="flex items-center gap-1">조회 <span className="text-zinc-300">{post.views || 0}</span></span>
               <span>추천 {post.likes || 0}</span>
               <span className="text-blue-500 font-bold">댓글 {post.comments_count || 0}</span>
             </div>
           </div>
         </header>
 
-        {/* 본문 영역 */}
         <article className="p-6 sm:p-8 min-h-[300px]">
           <div className="prose prose-invert !max-w-none w-full text-zinc-300 text-sm sm:text-base leading-relaxed whitespace-pre-wrap">
             {post.content || '본문 내용이 없습니다.'}
           </div>
           
-          {/* 추천/비추천 버튼 크기 대폭 축소 */}
           <div className="mt-16 mb-8 flex justify-center gap-4">
             <button className="flex items-center gap-2 px-6 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl hover:bg-blue-600/10 hover:border-blue-500 transition-all active:scale-95 group">
               <span className="text-xl">👍</span>
@@ -76,7 +82,6 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
           </div>
         </article>
 
-        {/* 댓글 섹션 - 입력창 크기 축소 (min-h-[80px]) */}
         <section className="border-t border-zinc-800 bg-zinc-900/10">
           <div className="px-6 py-4 border-b border-zinc-800 flex items-center justify-between">
             <h2 className="text-xs font-black text-white uppercase tracking-wider">Comments</h2>
@@ -98,7 +103,6 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
           </div>
         </section>
 
-        {/* 푸터 */}
         <footer className="p-5 border-t border-zinc-800 flex justify-between bg-zinc-950 items-center">
           <a href="/" className="text-[10px] font-bold text-zinc-500 hover:text-white transition-all uppercase tracking-widest">
             ← Back to Board
