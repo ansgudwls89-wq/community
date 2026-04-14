@@ -14,17 +14,14 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
     .eq('id', id)
     .single();
 
-  // 2. 에러 디버깅 정보 추가
+  // 2. 에러 디버깅 정보
   if (error) {
     return (
-      <div className="p-10 bg-zinc-900 border border-zinc-800 rounded-2xl text-zinc-400">
+      <div className="w-full p-10 bg-zinc-900 border border-zinc-800 rounded-2xl text-zinc-400">
         <h2 className="text-xl font-bold mb-4 text-white">게시글을 불러올 수 없습니다 (ID: {id})</h2>
         <pre className="text-xs bg-black/50 p-4 rounded-lg overflow-auto">
           {JSON.stringify(error, null, 2)}
         </pre>
-        <p className="mt-4 text-sm font-medium">
-          힌트: 환경 변수 설정이나 데이터베이스 연결을 확인해 보세요.
-        </p>
         <a href="/" className="inline-block mt-4 text-blue-400 hover:underline">← 홈으로 돌아가기</a>
       </div>
     );
@@ -35,10 +32,11 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
   }
 
   return (
-    <div className="w-full space-y-4">
-      <div className="bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl">
-        {/* 게시글 헤더 영역 */}
-        <header className="p-6 border-b border-zinc-800 bg-zinc-900/30">
+    <div className="w-full space-y-4 flex flex-col">
+      {/* 게시글 전체 카드 */}
+      <div className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+        {/* 헤더 */}
+        <header className="w-full p-6 border-b border-zinc-800 bg-zinc-900/30">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-xs font-black text-blue-500 bg-blue-500/10 px-2 py-1 rounded uppercase tracking-wider">
               {post.category}
@@ -65,13 +63,12 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
           </div>
         </header>
 
-        {/* 게시글 본문 영역 */}
-        <article className="p-8 min-h-[400px]">
-          <div className="prose prose-invert max-w-none text-zinc-300 leading-loose whitespace-pre-wrap">
+        {/* 본문 - max-w-none을 사용하여 폭 제한 해제 */}
+        <article className="w-full p-8 min-h-[400px]">
+          <div className="prose prose-invert max-w-none w-full text-zinc-300 leading-loose whitespace-pre-wrap overflow-hidden">
             {post.content || '본문 내용이 없습니다.'}
           </div>
           
-          {/* 게시글 하단 추천/비추천 버튼 */}
           <div className="mt-16 flex justify-center gap-4">
             <button className="flex flex-col items-center gap-1 px-8 py-4 bg-zinc-900 border border-zinc-800 rounded-2xl hover:bg-blue-600/10 hover:border-blue-500 transition-all group">
               <span className="text-2xl group-hover:scale-110 transition-transform">👍</span>
@@ -84,14 +81,13 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
           </div>
         </article>
 
-        {/* 댓글 섹션 헤더 */}
-        <section className="border-t border-zinc-800 bg-zinc-900/20">
+        {/* 댓글 섹션 */}
+        <section className="w-full border-t border-zinc-800 bg-zinc-900/20">
           <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
             <h2 className="text-sm font-black text-white uppercase tracking-widest">Comments</h2>
             <span className="text-xs text-zinc-500">총 {post.comments_count || 0}개</span>
           </div>
           
-          {/* 댓글 입력창 placeholder */}
           <div className="p-6 bg-zinc-900/40">
             <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-4">
               <textarea 
@@ -107,8 +103,8 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
           </div>
         </section>
 
-        {/* 하단 목록으로 이동 버튼 */}
-        <footer className="p-6 border-t border-zinc-800 flex justify-between bg-zinc-900/10">
+        {/* 푸터 */}
+        <footer className="w-full p-6 border-t border-zinc-800 flex justify-between bg-zinc-900/10">
           <a href="/" className="text-xs font-bold text-zinc-500 hover:text-white transition-all">
             ← 목록으로 돌아가기
           </a>
