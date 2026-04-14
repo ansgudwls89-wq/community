@@ -52,9 +52,9 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
               <span>{new Date(post.created_at).toLocaleString('ko-KR')}</span>
             </div>
             <div className="flex items-center gap-4 font-bold">
-              <span className="flex items-center gap-1">조회 <span className="text-zinc-300">{post.views || 0}</span></span>
-              <span>추천 {post.likes || 0}</span>
-              <span className="text-blue-500">댓글 {post.comments_count || 0}</span>
+              <span className="flex items-center gap-1.5">조회 <span className="text-zinc-100 font-black">{post.views ?? 0}</span></span>
+              <span>추천 {post.likes ?? 0}</span>
+              <span className="text-blue-500">댓글 {post.comments_count ?? 0}</span>
             </div>
           </div>
         </header>
