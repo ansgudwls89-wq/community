@@ -40,7 +40,7 @@ export default async function Home() {
     return acc;
   }, {} as Record<string, any[]>);
 
-  const PostList = ({ title, posts, showView = true, href }: { title: string, posts: any[] | null, showView?: boolean, href?: string }) => (
+  const PostList = ({ title, posts, showView = true, href, showRank = false }: { title: string, posts: any[] | null, showView?: boolean, href?: string, showRank?: boolean }) => (
     <div className="flex-1 min-w-0">
       <div className="flex items-center justify-between pb-1.5 mb-2 border-b border-zinc-200 dark:border-zinc-800 transition-colors">
         {href ? (
@@ -63,10 +63,14 @@ export default async function Home() {
             {(!posts || posts.length === 0) ? (
               <tr><td colSpan={3} className="py-8 text-center text-zinc-400 dark:text-zinc-500 italic text-[11px]">게시글이 없습니다.</td></tr>
             ) : (
-              posts.map((post) => (
+              posts.map((post, index) => (
                 <tr key={post.id} className="border-b border-zinc-100 dark:border-zinc-800 last:border-0 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all group cursor-pointer text-zinc-600 dark:text-zinc-300">
                   <td className="py-1.5 px-3 text-center text-zinc-400 dark:text-zinc-600 text-[10px] font-mono w-10">
-                    {post.idx || post.id}
+                    {showRank ? (
+                      <span className={index < 3 ? 'text-blue-600 dark:text-blue-500 font-black' : ''}>{index + 1}</span>
+                    ) : (
+                      post.idx || post.id
+                    )}
                   </td>
                   <td className="py-1.5 px-3 truncate font-medium">
                     <a href={`/post/${post.id}`} className="flex items-center gap-2 overflow-hidden">
@@ -92,8 +96,8 @@ export default async function Home() {
     <div className="space-y-10 w-full pb-20">
       {/* 상단 메인 리스트 */}
       <div className="flex flex-col lg:flex-row gap-6">
-        <PostList title="실시간 베스트" posts={realtimePosts} href="/s/best" />
-        <PostList title="주간 인기" posts={weeklyPosts} href="/s/popular" />
+        <PostList title="실시간 베스트" posts={realtimePosts} href="/s/best" showRank={true} />
+        <PostList title="주간 인기" posts={weeklyPosts} href="/s/popular" showRank={true} />
       </div>
 
       {/* 카테고리별 섹션 (그리드) */}
