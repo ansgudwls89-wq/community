@@ -99,13 +99,6 @@ export default async function Home() {
           />
         ))}
       </div>
-
-      <div className="fixed bottom-8 right-8 z-50">
-        <a href="/write" className="flex items-center gap-2 bg-blue-600 text-white font-black text-sm px-5 py-3 rounded-full hover:bg-blue-500 transition-all shadow-2xl hover:scale-105 active:scale-95 shadow-blue-500/20">
-          <span>새 글 작성</span>
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4" /></svg>
-        </a>
-      </div>
     </div>
   );
 }

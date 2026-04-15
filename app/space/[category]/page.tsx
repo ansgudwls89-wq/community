@@ -91,9 +91,11 @@ export default async function SpacePage({ params }: { params: Promise<{ category
         <div className="flex gap-1">
           <button className="w-8 h-8 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-lg shadow-blue-500/20 transition-all">1</button>
         </div>
-        <a href="/write" className="bg-zinc-900 dark:bg-white text-white dark:text-black font-black text-sm px-6 py-2.5 rounded-xl hover:bg-zinc-700 dark:hover:bg-zinc-200 transition-all shadow-xl">
-          새 글 작성
-        </a>
+        {(category.toLowerCase() !== 'best' && category.toLowerCase() !== 'popular') && (
+          <a href={`/write?category=${encodeURIComponent(category)}`} className="bg-zinc-900 dark:bg-white text-white dark:text-black font-black text-sm px-6 py-2.5 rounded-xl hover:bg-zinc-700 dark:hover:bg-zinc-200 transition-all shadow-xl">
+            새 글 작성
+          </a>
+        )}
       </div>
     </div>
   );

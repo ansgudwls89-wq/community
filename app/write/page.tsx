@@ -2,7 +2,13 @@ import { supabase } from '@/utils/supabase';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 
-export default function WritePage() {
+export default async function WritePage({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
+  const { category: defaultCategory } = await searchParams;
+
+  // Fetch current categories from database
+  const { data: postsData } = await supabase.from('posts').select('category');
+  const categories = Array.from(new Set(postsData?.map(p => p.category) || []));
+
   async function createPost(formData: FormData) {
     'use server';
 
@@ -37,7 +43,8 @@ export default function WritePage() {
     }
 
     revalidatePath('/');
-    redirect('/');
+    revalidatePath(`/space/${encodeURIComponent(category)}`);
+    redirect(`/space/${encodeURIComponent(category)}`);
   }
 
   return (
@@ -54,13 +61,12 @@ export default function WritePage() {
               <select 
                 name="category"
                 required
-                className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-700 dark:text-zinc-200 outline-none focus:ring-2 focus:ring-blue-600/50 transition-all appearance-none cursor-pointer transition-colors"
+                defaultValue={defaultCategory || (categories.length > 0 ? categories[0] : '')}
+                className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-700 dark:text-zinc-200 outline-none focus:ring-2 focus:ring-blue-600/50 transition-all appearance-none cursor-pointer transition-colors uppercase"
               >
-                <option value="유머">유머</option>
-                <option value="게임">게임</option>
-                <option value="IT">IT</option>
-                <option value="사회">사회</option>
-                <option value="일상">일상</option>
+                {categories.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
               </select>
             </div>
             <div className="space-y-2">
