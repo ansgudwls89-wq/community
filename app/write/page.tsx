@@ -22,6 +22,17 @@ export default async function WritePage({ searchParams }: { searchParams: Promis
       return;
     }
 
+    // 1. 해당 카테고리의 마지막 idx 가져오기
+    const { data: lastPost } = await supabase
+      .from('posts')
+      .select('idx')
+      .eq('category', category)
+      .order('idx', { ascending: false })
+      .limit(1);
+    
+    const nextIdx = (lastPost?.[0]?.idx || 0) + 1;
+
+    // 2. Supabase에 데이터 삽입
     const { error } = await supabase
       .from('posts')
       .insert([
@@ -30,6 +41,7 @@ export default async function WritePage({ searchParams }: { searchParams: Promis
           category, 
           content, 
           author,
+          idx: nextIdx,
           has_image: false,
           comments_count: 0,
           likes: 0,

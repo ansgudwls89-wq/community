@@ -31,6 +31,7 @@ export default function AdminPage() {
         category: newCategory.trim(), 
         content: '새로운 스페이스의 시작을 축하합니다!',
         author: '시스템',
+        idx: 1,
         views: 0,
         likes: 0,
         comments_count: 0

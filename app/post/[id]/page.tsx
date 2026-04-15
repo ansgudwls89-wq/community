@@ -41,7 +41,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
               {post.category}
             </span>
             <span className="text-zinc-300 dark:text-zinc-700 font-bold">/</span>
-            <span className="text-zinc-400 dark:text-zinc-600 font-bold tracking-tighter">POST #{post.id}</span>
+            <span className="text-zinc-400 dark:text-zinc-600 font-bold tracking-tighter transition-colors">POST #{post.idx || post.id}</span>
           </div>
           
           <h1 className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white mb-4 tracking-tight leading-tight transition-colors">

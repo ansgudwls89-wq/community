@@ -55,14 +55,17 @@ export default async function Home() {
         <table className="w-full border-collapse">
           <tbody className="text-[12px]">
             {(!posts || posts.length === 0) ? (
-              <tr><td colSpan={2} className="py-8 text-center text-zinc-400 dark:text-zinc-500 italic text-[11px]">게시글이 없습니다.</td></tr>
+              <tr><td colSpan={3} className="py-8 text-center text-zinc-400 dark:text-zinc-500 italic text-[11px]">게시글이 없습니다.</td></tr>
             ) : (
               posts.map((post) => (
                 <tr key={post.id} className="border-b border-zinc-100 dark:border-zinc-800 last:border-0 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all group cursor-pointer text-zinc-600 dark:text-zinc-300">
+                  <td className="py-1.5 px-3 text-center text-zinc-400 dark:text-zinc-600 text-[10px] font-mono w-10">
+                    {post.idx || post.id}
+                  </td>
                   <td className="py-1.5 px-3 truncate font-medium">
                     <a href={`/post/${post.id}`} className="flex items-center gap-2 overflow-hidden">
                       <span className="truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">{post.title}</span>
-                      <span className="text-[10px] font-black text-blue-600/60 dark:text-blue-400/60 flex-shrink-0">[{post.comments_count || 0}]</span>
+                      <span className="text-[10px] font-black text-blue-600/60 dark:text-blue-500/60 flex-shrink-0">[{post.comments_count || 0}]</span>
                     </a>
                   </td>
                   {showView && (
