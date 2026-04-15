@@ -4,6 +4,7 @@ import AdBanner from "@/components/AdBanner";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import ThemeToggle from "@/components/ThemeToggle";
 import SpaceDropdown from "@/components/SpaceDropdown";
+import SearchBar from "@/components/SearchBar";
 import { supabase } from "@/utils/supabase";
 
 export const metadata: Metadata = {
@@ -36,14 +37,7 @@ export default async function RootLayout({
               {/* 중앙 검색 영역 */}
               <div className="flex-1 max-w-3xl flex items-center gap-2">
                 <SpaceDropdown initialCategories={categories} />
-                <div className="flex-1 relative">
-                  <input 
-                    type="text" 
-                    placeholder="관심 있는 스페이스를 검색해 보세요"
-                    className="w-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-blue-600/50 outline-none transition-all placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
-                  />
-                  <span className="absolute right-3 top-2.5 text-zinc-400 dark:text-zinc-500 cursor-pointer hover:text-zinc-900 dark:hover:text-white transition-colors">🔍</span>
-                </div>
+                <SearchBar />
               </div>
 
               <div className="flex items-center gap-2">
