@@ -2,6 +2,7 @@ import { supabase as supabaseAdmin } from '@/utils/supabase';
 import { notFound } from 'next/navigation';
 import VoteButtons from '@/components/VoteButtons';
 import CommentSection from '@/components/CommentSection';
+import ViewCounter from '@/components/ViewCounter';
 import { createClient } from '@/utils/supabase/server';
 
 export const dynamic = 'force-dynamic';
@@ -9,16 +10,6 @@ export const revalidate = 0;
 
 export default async function PostDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-
-  const { error: rpcError } = await supabaseAdmin.rpc('increment_views', { post_id: id });
-  
-  if (rpcError) {
-    console.error('RPC Error (Views):', rpcError.message);
-    const { data: currentData } = await supabaseAdmin.from('posts').select('views').eq('id', id).single();
-    if (currentData) {
-      await supabaseAdmin.from('posts').update({ views: (currentData.views || 0) + 1 }).eq('id', id);
-    }
-  }
 
   const { data: post, error } = await supabaseAdmin
     .from('posts')
@@ -50,6 +41,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
 
   return (
     <div className="w-full space-y-4">
+      <ViewCounter postId={Number(id)} />
       <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-2xl transition-colors">
         <header className="p-5 sm:p-6 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/30 transition-colors">
           <div className="flex items-center gap-2 mb-3 text-[10px]">
