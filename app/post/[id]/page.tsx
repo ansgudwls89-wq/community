@@ -1,8 +1,7 @@
 import { supabase } from '@/utils/supabase';
 import { notFound } from 'next/navigation';
 import VoteButtons from '@/components/VoteButtons';
-import CommentForm from '@/components/CommentForm';
-import CommentList from '@/components/CommentList';
+import CommentSection from '@/components/CommentSection';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -81,9 +80,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
           <VoteButtons postId={post.id} initialLikes={post.likes || 0} initialDislikes={post.dislikes || 0} />
         </article>
 
-        <CommentForm postId={post.id} />
-        
-        <CommentList postId={post.id} />
+        <CommentSection postId={post.id} />
 
         <footer className="p-5 border-t border-zinc-200 dark:border-zinc-800 flex justify-between bg-zinc-50 dark:bg-zinc-950 items-center transition-colors">
           <a href="/" className="text-[10px] font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all uppercase tracking-widest px-4 py-2 border border-zinc-200 dark:border-zinc-900 rounded-lg hover:bg-white dark:hover:bg-zinc-900 transition-colors">
