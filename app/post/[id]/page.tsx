@@ -66,9 +66,10 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
         </header>
 
         <article className="p-6 sm:p-8 min-h-[300px] bg-white dark:bg-zinc-950 transition-colors">
-          <div className="prose dark:prose-invert !max-w-none w-full text-zinc-700 dark:text-zinc-300 text-sm sm:text-base leading-relaxed whitespace-pre-wrap transition-colors">
-            {post.content || '본문 내용이 없습니다.'}
-          </div>
+          <div 
+            className="prose dark:prose-invert !max-w-none w-full text-zinc-700 dark:text-zinc-300 text-sm sm:text-base leading-relaxed transition-colors"
+            dangerouslySetInnerHTML={{ __html: post.content || '<p>본문 내용이 없습니다.</p>' }}
+          />
           
           <div className="mt-16 mb-8 flex justify-center gap-4">
             <button className="flex items-center gap-2 px-6 py-2 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl hover:bg-blue-600/10 hover:border-blue-500 transition-all group active:scale-95 shadow-lg">
