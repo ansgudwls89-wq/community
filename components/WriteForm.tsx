@@ -60,7 +60,8 @@ export default function WriteForm({ categories, defaultCategory }: WriteFormProp
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               required
-              className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-700 dark:text-zinc-200 outline-none focus:ring-2 focus:ring-blue-600/50 transition-all appearance-none cursor-pointer transition-colors uppercase"
+              disabled={!!defaultCategory}
+              className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-700 dark:text-zinc-200 outline-none focus:ring-2 focus:ring-blue-600/50 transition-all appearance-none cursor-pointer transition-colors uppercase disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {categories.map(cat => (
                 <option key={cat} value={cat}>{cat}</option>

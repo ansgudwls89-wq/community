@@ -43,7 +43,13 @@ export default async function Home() {
   const PostList = ({ title, posts, showView = true, href }: { title: string, posts: any[] | null, showView?: boolean, href?: string }) => (
     <div className="flex-1 min-w-0">
       <div className="flex items-center justify-between pb-1.5 mb-2 border-b border-zinc-200 dark:border-zinc-800 transition-colors">
-        <h2 className="text-[12px] font-black text-zinc-700 dark:text-zinc-200 px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded border border-zinc-200 dark:border-zinc-700 transition-colors">{title}</h2>
+        {href ? (
+          <a href={href} className="group">
+            <h2 className="text-[12px] font-black text-zinc-700 dark:text-zinc-200 px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded border border-zinc-200 dark:border-zinc-700 transition-all group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 uppercase cursor-pointer">{title}</h2>
+          </a>
+        ) : (
+          <h2 className="text-[12px] font-black text-zinc-700 dark:text-zinc-200 px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded border border-zinc-200 dark:border-zinc-700 transition-colors uppercase">{title}</h2>
+        )}
         {href ? (
           <a href={href} className="text-zinc-400 dark:text-zinc-600 hover:text-blue-500 dark:hover:text-blue-400 text-[10px] font-bold transition-all">더보기</a>
         ) : (
