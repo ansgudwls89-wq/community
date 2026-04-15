@@ -3,6 +3,7 @@ import "./globals.css";
 import AdBanner from "@/components/AdBanner";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import ThemeToggle from "@/components/ThemeToggle";
+import SpaceDropdown from "@/components/SpaceDropdown";
 import { supabase } from "@/utils/supabase";
 
 export const metadata: Metadata = {
@@ -34,28 +35,7 @@ export default async function RootLayout({
 
               {/* 중앙 검색 영역 */}
               <div className="flex-1 max-w-3xl flex items-center gap-2">
-                <div className="relative group">
-                  <div className="bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-2.5 text-xs font-black text-zinc-500 dark:text-zinc-400 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all flex items-center gap-2 min-w-[100px] justify-between">
-                    <span>전체 스페이스</span>
-                    <span className="text-[8px] text-zinc-400 dark:text-zinc-600 group-hover:rotate-180 transition-transform duration-200">▼</span>
-                  </div>
-                  <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-2xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 transform origin-top scale-95 group-hover:scale-100 max-h-[70vh] overflow-y-auto">
-                    <div className="px-4 py-2 text-[10px] font-black text-zinc-400 uppercase tracking-widest border-b border-zinc-100 dark:border-zinc-800 mb-1">Main</div>
-                    <a href="/space/best" className="block px-4 py-2 text-xs font-bold text-zinc-600 dark:text-zinc-400 hover:bg-blue-600 hover:text-white transition-colors">실시간 베스트</a>
-                    <a href="/space/popular" className="block px-4 py-2 text-xs font-bold text-zinc-600 dark:text-zinc-400 hover:bg-blue-600 hover:text-white transition-colors">주간 인기</a>
-                    
-                    <div className="px-4 py-2 text-[10px] font-black text-zinc-400 uppercase tracking-widest border-b border-zinc-100 dark:border-zinc-800 my-1">Spaces</div>
-                    {categories.map(cat => (
-                      <a 
-                        key={cat} 
-                        href={`/space/${encodeURIComponent(cat)}`} 
-                        className="block px-4 py-2 text-xs font-bold text-zinc-600 dark:text-zinc-400 hover:bg-blue-600 hover:text-white transition-colors uppercase"
-                      >
-                        {cat}
-                      </a>
-                    ))}
-                  </div>
-                </div>
+                <SpaceDropdown initialCategories={categories} />
                 <div className="flex-1 relative">
                   <input 
                     type="text" 
