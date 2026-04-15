@@ -7,8 +7,9 @@ export async function createCommentAction(data: {
   postId: number;
   content: string;
   author: string;
+  parentId?: number | null;
 }) {
-  const { postId, content, author } = data;
+  const { postId, content, author, parentId } = data;
 
   if (!postId || !content) {
     throw new Error('내용을 입력해 주세요.');
@@ -20,7 +21,8 @@ export async function createCommentAction(data: {
       { 
         post_id: postId, 
         content, 
-        author: author || '익명'
+        author: author || '익명',
+        parent_id: parentId || null
       }
     ])
     .select()
