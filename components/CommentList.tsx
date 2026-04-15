@@ -25,22 +25,36 @@ export default function CommentList({ postId }: CommentListProps) {
   useEffect(() => {
     fetchComments();
 
+    // Subscribe to ALL changes for this post's comments to be more robust
     const channel = supabase
       .channel(`post_comments_${postId}`)
       .on(
         'postgres_changes',
         {
-          event: 'INSERT',
+          event: '*', // Listen to INSERT, UPDATE, DELETE
           schema: 'public',
           table: 'comments',
           filter: `post_id=eq.${postId}`,
         },
         (payload) => {
-          const newComment = payload.new as Comment;
-          setComments((prev) => [...prev, newComment]);
+          if (payload.eventType === 'INSERT') {
+            const newComment = payload.new as Comment;
+            setComments((prev) => {
+              // 중복 방지 (이미 목록에 있으면 추가 안함)
+              if (prev.some(c => c.id === newComment.id)) return prev;
+              return [...prev, newComment];
+            });
+          } else if (payload.eventType === 'DELETE') {
+            setComments((prev) => prev.filter(c => c.id !== payload.old.id));
+          } else if (payload.eventType === 'UPDATE') {
+            const updatedComment = payload.new as Comment;
+            setComments((prev) => prev.map(c => c.id === updatedComment.id ? updatedComment : c));
+          }
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log(`Realtime subscription status for post ${postId}:`, status);
+      });
 
     return () => {
       supabase.removeChannel(channel);
@@ -61,7 +75,7 @@ export default function CommentList({ postId }: CommentListProps) {
     setIsLoading(false);
   }
 
-  // 중첩 구조 생성 함수
+  // 중첩 구조 생성 함수 (무한 깊이 지원)
   const buildTree = (allComments: Comment[]) => {
     const map = new Map<number, Comment & { children: Comment[] }>();
     const roots: (Comment & { children: Comment[] })[] = [];
@@ -77,7 +91,7 @@ export default function CommentList({ postId }: CommentListProps) {
         if (parent) {
           parent.children.push(node);
         } else {
-          roots.push(node); // 부모를 찾을 수 없는 경우(삭제 등) 루트로 취급
+          roots.push(node);
         }
       } else {
         roots.push(node);
@@ -93,11 +107,11 @@ export default function CommentList({ postId }: CommentListProps) {
     return <div className="p-10 text-center text-zinc-400 animate-pulse">댓글을 불러오는 중...</div>;
   }
 
-  const CommentItem = ({ comment, isReply = false }: { comment: Comment & { children: Comment[] }, isReply?: boolean }) => (
-    <div className={`group ${isReply ? 'ml-4 sm:ml-8 border-l-2 border-zinc-100 dark:border-zinc-800 pl-4 mt-4' : 'border-b border-zinc-50 dark:border-zinc-900 pb-6 last:border-0'}`}>
+  const CommentItem = ({ comment, depth = 0 }: { comment: Comment & { children: Comment[] }, depth?: number }) => (
+    <div className={`group ${depth > 0 ? 'ml-4 sm:ml-8 border-l-2 border-zinc-100 dark:border-zinc-800 pl-4 mt-4' : 'border-b border-zinc-50 dark:border-zinc-900 pb-6 last:border-0'}`}>
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
-          <span className={`text-sm font-black ${isReply ? 'text-zinc-600 dark:text-zinc-400' : 'text-zinc-800 dark:text-zinc-200'}`}>
+          <span className={`text-sm font-black ${depth > 0 ? 'text-zinc-600 dark:text-zinc-400' : 'text-zinc-800 dark:text-zinc-200'}`}>
             {comment.author}
           </span>
           <span className="text-[10px] text-zinc-400 dark:text-zinc-600 font-bold">
@@ -109,14 +123,12 @@ export default function CommentList({ postId }: CommentListProps) {
             })}
           </span>
         </div>
-        {!isReply && (
-          <button 
-            onClick={() => setReplyToId(replyToId === comment.id ? null : comment.id)}
-            className="text-[10px] font-black text-blue-600 dark:text-blue-500 hover:underline uppercase tracking-tighter"
-          >
-            {replyToId === comment.id ? 'Cancel' : 'Reply'}
-          </button>
-        )}
+        <button 
+          onClick={() => setReplyToId(replyToId === comment.id ? null : comment.id)}
+          className="text-[10px] font-black text-blue-600 dark:text-blue-500 hover:underline uppercase tracking-tighter"
+        >
+          {replyToId === comment.id ? 'Cancel' : 'Reply'}
+        </button>
       </div>
       <p className="text-sm text-zinc-600 dark:text-zinc-400 whitespace-pre-wrap leading-relaxed">
         {comment.content}
@@ -133,7 +145,7 @@ export default function CommentList({ postId }: CommentListProps) {
       )}
 
       {comment.children.map(child => (
-        <CommentItem key={child.id} comment={child as any} isReply={true} />
+        <CommentItem key={child.id} comment={child as any} depth={depth + 1} />
       ))}
     </div>
   );
