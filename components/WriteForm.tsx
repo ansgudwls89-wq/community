@@ -45,6 +45,8 @@ export default function WriteForm({ categories, defaultCategory, initialNickname
         author
       });
     } catch (error: any) {
+      // NEXT_REDIRECT 에러는 정상적인 리다이렉트 과정이므로 무시합니다.
+      if (error.message === 'NEXT_REDIRECT') return;
       alert(`글 작성 중 오류가 발생했습니다: ${error.message}`);
     } finally {
       setIsSubmitting(false);
