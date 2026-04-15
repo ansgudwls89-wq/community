@@ -69,8 +69,8 @@ export default function TipTapEditor({ content, onChange }: TipTapEditorProps) {
         return false;
       },
       handlePaste: (view, event) => {
-        if (event.clipboardData && event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0]) {
-          const file = event.dataTransfer.files[0];
+        if (event.clipboardData && event.clipboardData.files && event.clipboardData.files[0]) {
+          const file = event.clipboardData.files[0];
           if (file.type.startsWith('image/')) {
             uploadImage(file).then(url => {
               if (url) {
