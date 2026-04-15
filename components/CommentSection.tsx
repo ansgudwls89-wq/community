@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { supabase } from '@/utils/supabase';
 import CommentForm from './CommentForm';
 
@@ -38,30 +38,35 @@ export default function CommentSection({ postId }: CommentSectionProps) {
   useEffect(() => {
     fetchComments();
 
-    // Subscribe to ALL changes for this post's comments
+    // Subscribe to ALL changes in comments table without server-side filter for maximum reliability
     const channel = supabase
-      .channel(`realtime_comments_section_${postId}`)
+      .channel(`realtime_comments_all`)
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
           table: 'comments',
-          filter: `post_id=eq.${postId}`,
         },
         (payload) => {
-          console.log('Comment Realtime Event:', payload);
+          console.log('Global Realtime Event:', payload);
+          
           if (payload.eventType === 'INSERT') {
             const newComment = payload.new as Comment;
-            setComments((prev) => {
-              if (prev.some(c => c.id === newComment.id)) return prev;
-              return [...prev, newComment];
-            });
+            // Filter by postId client-side
+            if (Number(newComment.post_id) === Number(postId)) {
+              setComments((prev) => {
+                if (prev.some(c => c.id === newComment.id)) return prev;
+                return [...prev, newComment];
+              });
+            }
           } else if (payload.eventType === 'DELETE') {
             setComments((prev) => prev.filter(c => c.id !== payload.old.id));
           } else if (payload.eventType === 'UPDATE') {
             const updatedComment = payload.new as Comment;
-            setComments((prev) => prev.map(c => c.id === updatedComment.id ? updatedComment : c));
+            if (Number(updatedComment.post_id) === Number(postId)) {
+              setComments((prev) => prev.map(c => c.id === updatedComment.id ? updatedComment : c));
+            }
           }
         }
       )
@@ -72,40 +77,37 @@ export default function CommentSection({ postId }: CommentSectionProps) {
     };
   }, [postId, fetchComments]);
 
-  // Handle immediate update after current user posts
-  const handleCommentSuccess = () => {
-    fetchComments(); // Re-fetch to ensure we have the latest with all IDs correctly
+  // Handle successful comment submission
+  const handleCommentSuccess = (newComment: Comment) => {
+    setComments((prev) => {
+      if (prev.some(c => c.id === newComment.id)) return prev;
+      return [...prev, newComment];
+    });
     setReplyToId(null);
   };
 
-  const buildTree = (allComments: Comment[]) => {
-    const map = new Map<number, Comment & { children: Comment[] }>();
-    const roots: (Comment & { children: Comment[] })[] = [];
+  // Build nested tree structure
+  const commentTree = useMemo(() => {
+    const map = new Map<number, Comment & { children: any[] }>();
+    const roots: any[] = [];
 
-    allComments.forEach(comment => {
+    comments.forEach(comment => {
       map.set(comment.id, { ...comment, children: [] });
     });
 
-    allComments.forEach(comment => {
+    comments.forEach(comment => {
       const node = map.get(comment.id)!;
-      if (comment.parent_id) {
-        const parent = map.get(comment.parent_id);
-        if (parent) {
-          parent.children.push(node);
-        } else {
-          roots.push(node);
-        }
+      if (comment.parent_id && map.has(comment.parent_id)) {
+        map.get(comment.parent_id)!.children.push(node);
       } else {
         roots.push(node);
       }
     });
 
     return roots;
-  };
+  }, [comments]);
 
-  const commentTree = buildTree(comments);
-
-  const CommentItem = ({ comment, depth = 0 }: { comment: Comment & { children: Comment[] }, depth?: number }) => (
+  const CommentItem = ({ comment, depth = 0 }: { comment: any, depth?: number }) => (
     <div className={`group ${depth > 0 ? 'ml-4 sm:ml-8 border-l-2 border-zinc-100 dark:border-zinc-800 pl-4 mt-4' : 'border-b border-zinc-50 dark:border-zinc-900 pb-6 last:border-0'}`}>
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
@@ -133,25 +135,26 @@ export default function CommentSection({ postId }: CommentSectionProps) {
       </p>
 
       {replyToId === comment.id && (
-        <CommentForm 
-          postId={postId} 
-          parentId={comment.id} 
-          onSuccess={handleCommentSuccess}
-          placeholder={`${comment.author}님께 답글 남기기...`}
-          autoFocus
-        />
+        <div className="mt-4 border-l-2 border-blue-500 pl-4">
+          <CommentForm 
+            postId={postId} 
+            parentId={comment.id} 
+            onSuccess={handleCommentSuccess}
+            placeholder={`${comment.author}님께 답글 남기기...`}
+            autoFocus
+          />
+        </div>
       )}
 
-      {comment.children.map(child => (
-        <CommentItem key={child.id} comment={child as any} depth={depth + 1} />
+      {comment.children.map((child: any) => (
+        <CommentItem key={child.id} comment={child} depth={depth + 1} />
       ))}
     </div>
   );
 
   return (
-    <div className="space-y-0">
-      <CommentForm postId={postId} onSuccess={handleCommentSuccess} />
-      
+    <div className="w-full">
+      {/* 댓글 리스트 영역 */}
       <section className="border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 sm:p-8 transition-colors">
         <h2 className="text-xs font-black text-zinc-900 dark:text-white uppercase tracking-widest mb-8 flex items-center gap-2 transition-colors">
           <span className="w-1.5 h-1.5 bg-zinc-400 dark:bg-zinc-600 rounded-full"></span>
@@ -170,6 +173,9 @@ export default function CommentSection({ postId }: CommentSectionProps) {
           </div>
         )}
       </section>
+
+      {/* 메인 댓글 입력창 (하단 배치 및 이전 UI 복구) */}
+      <CommentForm postId={postId} onSuccess={handleCommentSuccess} />
     </div>
   );
 }

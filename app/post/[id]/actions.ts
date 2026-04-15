@@ -33,7 +33,8 @@ export async function createCommentAction(data: {
     throw new Error(error.message);
   }
 
+  // 캐시 무효화
   revalidatePath(`/post/${postId}`);
   
-  return newComment;
+  return newComment; // 생성된 댓글 데이터 반환
 }

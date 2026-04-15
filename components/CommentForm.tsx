@@ -3,10 +3,19 @@
 import { useState } from 'react';
 import { createCommentAction } from '@/app/post/[id]/actions';
 
+interface Comment {
+  id: number;
+  post_id: number;
+  author: string;
+  content: string;
+  created_at: string;
+  parent_id: number | null;
+}
+
 interface CommentFormProps {
   postId: number;
   parentId?: number | null;
-  onSuccess?: () => void;
+  onSuccess?: (newComment: Comment) => void;
   placeholder?: string;
   autoFocus?: boolean;
 }
@@ -22,15 +31,19 @@ export default function CommentForm({ postId, parentId = null, onSuccess, placeh
 
     setIsSubmitting(true);
     try {
-      await createCommentAction({
+      const newComment = await createCommentAction({
         postId,
         content: content.trim(),
         author: author.trim() || '익명',
         parentId
       });
+      
       setContent('');
       setAuthor('');
-      if (onSuccess) onSuccess();
+      
+      if (onSuccess && newComment) {
+        onSuccess(newComment as any);
+      }
     } catch (error: any) {
       alert(`댓글 작성 중 오류가 발생했습니다: ${error.message}`);
     } finally {
@@ -73,7 +86,7 @@ export default function CommentForm({ postId, parentId = null, onSuccess, placeh
 
   if (parentId) {
     return (
-      <div className="mt-4 ml-4 sm:ml-8 animate-in fade-in slide-in-from-top-2 duration-200">
+      <div className="mt-4 animate-in fade-in slide-in-from-top-2 duration-200">
         {formContent}
       </div>
     );
