@@ -21,44 +21,51 @@ export default async function Home() {
     .order('created_at', { ascending: false })
     .limit(10);
 
-  // 주간 인기 (조회수순) - 실제 운영 시에는 최근 7일 필터링이 필요할 수 있음
+  // 주간 인기 (조회수순)
   const { data: weeklyPosts } = await supabase
     .from('posts')
     .select('*')
     .order('views', { ascending: false })
     .limit(10);
 
-  const PostList = ({ title, posts, badgeColor }: { title: string, posts: any[] | null, badgeColor: string }) => (
+  // 모든 게시글을 가져와 카테고리별로 그룹화 (최신순 5개씩)
+  const { data: allPosts } = await supabase
+    .from('posts')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  const categories = Array.from(new Set(allPosts?.map(p => p.category) || []));
+  const postsByCategory = categories.reduce((acc, cat) => {
+    acc[cat] = allPosts?.filter(p => p.category === cat).slice(0, 5) || [];
+    return acc;
+  }, {} as Record<string, any[]>);
+
+  const PostList = ({ title, posts, showView = true }: { title: string, posts: any[] | null, showView?: boolean }) => (
     <div className="flex-1 min-w-0">
-      <div className="flex items-center justify-between pb-2 mb-4 border-b border-zinc-800">
-        <h2 className="text-sm font-black text-white px-2 py-1 bg-zinc-900 rounded-md border border-zinc-800">{title}</h2>
-        <button className="text-zinc-500 hover:text-zinc-300 text-[11px] font-bold transition-all">더보기 +</button>
+      <div className="flex items-center justify-between pb-1.5 mb-2 border-b border-zinc-800/50">
+        <h2 className="text-[12px] font-black text-zinc-300 px-2 py-0.5 bg-zinc-900/50 rounded border border-zinc-800">{title}</h2>
+        <button className="text-zinc-600 hover:text-zinc-400 text-[10px] font-bold transition-all">더보기</button>
       </div>
 
-      <div className="bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl">
+      <div className="bg-zinc-950/50 border border-zinc-800/50 rounded-xl overflow-hidden shadow-sm">
         <table className="w-full border-collapse table-fixed">
-          <thead>
-            <tr className="bg-zinc-900/50 border-b border-zinc-800 text-[10px] font-black text-zinc-500 uppercase tracking-widest">
-              <th className="py-2.5 px-3 text-left">Subject</th>
-              <th className="py-2.5 px-3 text-center w-[60px]">Views</th>
-            </tr>
-          </thead>
           <tbody className="text-[12px]">
             {(!posts || posts.length === 0) ? (
-              <tr><td colSpan={2} className="py-12 text-center text-zinc-500 italic">게시글이 없습니다.</td></tr>
+              <tr><td colSpan={2} className="py-8 text-center text-zinc-600 italic text-[11px]">게시글이 없습니다.</td></tr>
             ) : (
               posts.map((post) => (
-                <tr key={post.id} className="border-b border-zinc-900/50 hover:bg-zinc-900/40 transition-all group cursor-pointer text-zinc-300">
-                  <td className="py-2.5 px-3 truncate font-medium">
-                    <a href={`/post/${post.id}`} className="flex items-center gap-2 group-hover:translate-x-1 transition-transform overflow-hidden">
-                      <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${badgeColor}`}></span>
+                <tr key={post.id} className="border-b border-zinc-900/30 last:border-0 hover:bg-zinc-900/40 transition-all group cursor-pointer text-zinc-400">
+                  <td className="py-1.5 px-3 truncate font-medium">
+                    <a href={`/post/${post.id}`} className="flex items-center gap-2 overflow-hidden">
                       <span className="truncate group-hover:text-blue-400 transition-colors">{post.title}</span>
-                      <span className="text-[10px] font-black text-blue-500/80">[{post.comments_count || 0}]</span>
+                      <span className="text-[10px] font-black text-blue-500/60">[{post.comments_count || 0}]</span>
                     </a>
                   </td>
-                  <td className="py-2.5 px-3 text-center text-zinc-500 text-[10px] font-bold">
-                    {post.views || 0}
-                  </td>
+                  {showView && (
+                    <td className="py-1.5 px-3 text-right text-zinc-600 text-[10px] font-bold w-[50px]">
+                      {post.views || 0}
+                    </td>
+                  )}
                 </tr>
               ))
             )}
@@ -69,15 +76,29 @@ export default async function Home() {
   );
 
   return (
-    <div className="space-y-8 w-full">
-      <div className="flex flex-col lg:flex-row gap-8">
-        <PostList title="실시간 베스트" posts={realtimePosts} badgeColor="bg-blue-500" />
-        <PostList title="주간 인기" posts={weeklyPosts} badgeColor="bg-orange-500" />
+    <div className="space-y-10 w-full pb-20">
+      {/* 상단 메인 리스트 */}
+      <div className="flex flex-col lg:flex-row gap-6">
+        <PostList title="실시간 베스트" posts={realtimePosts} />
+        <PostList title="주간 인기" posts={weeklyPosts} />
       </div>
 
-      <div className="flex items-center justify-end pt-4">
-        <a href="/write" className="bg-white text-black font-black text-sm px-6 py-2.5 rounded-xl hover:bg-zinc-200 transition-all shadow-xl">
-          새 글 작성
+      {/* 카테고리별 섹션 (그리드) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10 border-t border-zinc-900 pt-10">
+        {categories.map(category => (
+          <PostList 
+            key={category} 
+            title={category.toUpperCase()} 
+            posts={postsByCategory[category]} 
+            showView={false}
+          />
+        ))}
+      </div>
+
+      <div className="fixed bottom-8 right-8 z-50">
+        <a href="/write" className="flex items-center gap-2 bg-blue-600 text-white font-black text-sm px-5 py-3 rounded-full hover:bg-blue-500 transition-all shadow-2xl hover:scale-105 active:scale-95">
+          <span>새 글 작성</span>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4" /></svg>
         </a>
       </div>
     </div>
