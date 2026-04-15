@@ -25,12 +25,10 @@ interface CommentFormProps {
 
 export default function CommentForm({ postId, parentId = null, onSuccess, placeholder = "댓글을 입력하세요", autoFocus = false, initialNickname = "" }: CommentFormProps) {
   const [content, setContent] = useState('');
-  const [author, setAuthor] = useState(initialNickname || '');
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // If no initialNickname, user is likely not logged in (passed from parent)
-  // But let's check it more explicitly in the UI
   const isLoggedIn = !!initialNickname;
 
   async function handleSubmit(e: React.FormEvent) {
@@ -47,13 +45,12 @@ export default function CommentForm({ postId, parentId = null, onSuccess, placeh
       const newComment = await createCommentAction({
         postId,
         content: content.trim(),
-        author: author.trim() || '익명',
+        author: isAnonymous ? '익명' : initialNickname, // Force initialNickname if not anonymous
         parentId,
         isAnonymous
       });
       
       setContent('');
-      if (!initialNickname) setAuthor('');
       
       if (onSuccess && newComment) {
         onSuccess(newComment as any);
@@ -79,16 +76,14 @@ export default function CommentForm({ postId, parentId = null, onSuccess, placeh
 
   const formContent = (
     <form onSubmit={handleSubmit} className="space-y-3">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <input 
-            type="text"
-            placeholder="닉네임 (익명)"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-            disabled={isAnonymous}
-            className="w-32 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-700 dark:text-zinc-300 outline-none focus:ring-1 focus:ring-blue-500 transition-all placeholder:text-zinc-400 dark:placeholder:text-zinc-600 shadow-sm disabled:opacity-50"
-          />
+      <div className="flex flex-wrap items-center justify-between gap-3 px-1">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">작성자</span>
+            <span className={`text-xs font-black transition-colors ${isAnonymous ? 'text-zinc-400 dark:text-zinc-600 italic line-through' : 'text-zinc-700 dark:text-zinc-300'}`}>
+              {initialNickname}
+            </span>
+          </div>
           <label className="flex items-center gap-2 cursor-pointer group">
             <input 
               type="checkbox" 
