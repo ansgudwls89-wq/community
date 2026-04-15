@@ -15,10 +15,10 @@
   --accent-blue: #2563eb;
 }
 
-[data-theme='dark'] {
+.dark {
   --background: #09090b; /* Zinc 950 */
   --foreground: #f4f4f5; /* Zinc 100 */
-  --card-bg: #09090b;
+  --card-bg: #18181b; /* Zinc 900 */
   --border-color: #27272a; /* Zinc 800 */
   --accent-blue: #3b82f6;
 }
@@ -42,13 +42,13 @@ body {
   background: #cbd5e1;
   border-radius: 4px;
 }
-[data-theme='dark'] ::-webkit-scrollbar-thumb {
+.dark ::-webkit-scrollbar-thumb {
   background: #27272a;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
-[data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
+.dark ::-webkit-scrollbar-thumb:hover {
   background: #3f3f46;
 }
 

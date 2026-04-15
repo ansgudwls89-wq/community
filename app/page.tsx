@@ -42,27 +42,27 @@ export default async function Home() {
 
   const PostList = ({ title, posts, showView = true }: { title: string, posts: any[] | null, showView?: boolean }) => (
     <div className="flex-1 min-w-0">
-      <div className="flex items-center justify-between pb-1.5 mb-2 border-b border-zinc-200 dark:border-zinc-800/50 transition-colors">
-        <h2 className="text-[12px] font-black text-zinc-700 dark:text-zinc-300 px-2 py-0.5 bg-zinc-100 dark:bg-zinc-900/50 rounded border border-zinc-200 dark:border-zinc-800 transition-colors">{title}</h2>
-        <button className="text-zinc-400 dark:text-zinc-600 hover:text-blue-500 dark:hover:text-zinc-400 text-[10px] font-bold transition-all">더보기</button>
+      <div className="flex items-center justify-between pb-1.5 mb-2 border-b border-zinc-200 dark:border-zinc-800 transition-colors">
+        <h2 className="text-[12px] font-black text-zinc-700 dark:text-zinc-200 px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded border border-zinc-200 dark:border-zinc-700 transition-colors">{title}</h2>
+        <button className="text-zinc-400 dark:text-zinc-600 hover:text-blue-500 dark:hover:text-blue-400 text-[10px] font-bold transition-all">더보기</button>
       </div>
 
-      <div className="bg-white dark:bg-zinc-950/50 border border-zinc-200 dark:border-zinc-800/50 rounded-xl overflow-hidden shadow-sm transition-colors">
+      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm transition-colors">
         <table className="w-full border-collapse table-fixed">
           <tbody className="text-[12px]">
             {(!posts || posts.length === 0) ? (
-              <tr><td colSpan={2} className="py-8 text-center text-zinc-400 dark:text-zinc-600 italic text-[11px]">게시글이 없습니다.</td></tr>
+              <tr><td colSpan={2} className="py-8 text-center text-zinc-400 dark:text-zinc-500 italic text-[11px]">게시글이 없습니다.</td></tr>
             ) : (
               posts.map((post) => (
-                <tr key={post.id} className="border-b border-zinc-100 dark:border-zinc-900/30 last:border-0 hover:bg-zinc-50 dark:hover:bg-zinc-900/40 transition-all group cursor-pointer text-zinc-600 dark:text-zinc-400">
+                <tr key={post.id} className="border-b border-zinc-100 dark:border-zinc-800 last:border-0 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all group cursor-pointer text-zinc-600 dark:text-zinc-300">
                   <td className="py-1.5 px-3 truncate font-medium transition-colors">
                     <a href={`/post/${post.id}`} className="flex items-center gap-2 overflow-hidden">
                       <span className="truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{post.title}</span>
-                      <span className="text-[10px] font-black text-blue-600/60 dark:text-blue-500/60">[{post.comments_count || 0}]</span>
+                      <span className="text-[10px] font-black text-blue-600/60 dark:text-blue-400/60">[{post.comments_count || 0}]</span>
                     </a>
                   </td>
                   {showView && (
-                    <td className="py-1.5 px-3 text-right text-zinc-400 dark:text-zinc-600 text-[10px] font-bold w-[50px] transition-colors">
+                    <td className="py-1.5 px-3 text-right text-zinc-400 dark:text-zinc-500 text-[10px] font-bold w-[50px] transition-colors">
                       {post.views || 0}
                     </td>
                   )}
@@ -84,7 +84,7 @@ export default async function Home() {
       </div>
 
       {/* 카테고리별 섹션 (그리드) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10 border-t border-zinc-100 dark:border-zinc-900 pt-10 transition-colors">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10 border-t border-zinc-100 dark:border-zinc-800 pt-10 transition-colors">
         {categories.map(category => (
           <PostList 
             key={category} 
