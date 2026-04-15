@@ -7,12 +7,16 @@
   --color-ad-bg: #0f172a;
 }
 
+/* Tailwind v4 dark mode strategy using the 'dark' class */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #09090b;
   --card-bg: #f8fafc;
   --border-color: #e2e8f0;
   --accent-blue: #2563eb;
+  color-scheme: light;
 }
 
 .dark {
@@ -21,6 +25,7 @@
   --card-bg: #18181b; /* Zinc 900 */
   --border-color: #27272a; /* Zinc 800 */
   --accent-blue: #3b82f6;
+  color-scheme: dark;
 }
 
 body {
@@ -28,7 +33,7 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* 스크롤바 커스텀 */
