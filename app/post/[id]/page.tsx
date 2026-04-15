@@ -60,7 +60,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
               {post.category}
             </a>
             <span className="text-zinc-300 dark:text-zinc-700 font-bold">/</span>
-            <span className="text-zinc-400 dark:text-zinc-600 font-bold tracking-tighter transition-colors">POST #{post.idx || post.id}</span>
+            <span className="text-zinc-400 dark:text-zinc-600 font-bold tracking-tighter transition-colors">포스트 #{post.idx || post.id}</span>
           </div>
           
           <h1 className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white mb-4 tracking-tight leading-tight transition-colors">
@@ -98,9 +98,9 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
 
         <footer className="p-5 border-t border-zinc-200 dark:border-zinc-800 flex justify-between bg-zinc-50 dark:bg-zinc-950 items-center transition-colors">
           <a href="/" className="text-[10px] font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all uppercase tracking-widest px-4 py-2 border border-zinc-200 dark:border-zinc-900 rounded-lg hover:bg-white dark:hover:bg-zinc-900 transition-colors">
-            ← Back to Board
+            ← 목록으로
           </a>
-          <button className="text-[10px] font-bold text-zinc-400 dark:text-zinc-700 hover:text-red-500 uppercase transition-colors px-4 py-2">Report</button>
+          <button className="text-[10px] font-bold text-zinc-400 dark:text-zinc-700 hover:text-red-500 uppercase transition-colors px-4 py-2">신고하기</button>
         </footer>
       </div>
     </div>

@@ -12,7 +12,7 @@ import { createClient } from "@/utils/supabase/server";
 
 export const metadata: Metadata = {
   title: "NOL2 Style Community",
-  description: "Next.js 14 App Router Theme-aware Community",
+  description: "테마 기능을 지원하는 커뮤니티 플랫폼",
 };
 
 export default async function RootLayout({
@@ -87,7 +87,7 @@ export default async function RootLayout({
           <div className="max-w-[1440px] mx-auto pt-24 px-4 flex gap-4 w-full flex-1">
             <aside className="hidden lg:block w-[180px] flex-shrink-0">
               <div className="sticky top-24">
-                <AdBanner label="Left Ad" />
+                <AdBanner label="왼쪽 광고" />
               </div>
             </aside>
 
@@ -97,7 +97,7 @@ export default async function RootLayout({
 
             <aside className="hidden xl:block w-[300px] flex-shrink-0">
               <div className="sticky top-24">
-                <AdBanner label="Right Ad" />
+                <AdBanner label="오른쪽 광고" />
               </div>
             </aside>
           </div>
@@ -105,7 +105,7 @@ export default async function RootLayout({
           <footer className="bg-zinc-50 dark:bg-zinc-950 border-t border-zinc-200 dark:border-zinc-900 py-12 mt-12 w-full transition-colors">
             <div className="max-w-[1400px] mx-auto px-4 text-center">
               <div className="text-2xl font-black text-zinc-300 dark:text-zinc-800 mb-4 tracking-tighter transition-colors">NOL2.</div>
-              <p className="text-xs text-zinc-400 dark:text-zinc-600 font-medium transition-colors">&copy; 2026 NOL2 Community Platform. All rights reserved.</p>
+              <p className="text-xs text-zinc-400 dark:text-zinc-600 font-medium transition-colors">&copy; 2026 NOL2 커뮤니티 플랫폼. All rights reserved.</p>
             </div>
           </footer>
         </ThemeProvider>

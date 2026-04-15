@@ -39,7 +39,7 @@ export default function MobileMenu({ user }: MobileMenuProps) {
           ></div>
           <div className="absolute top-16 right-4 w-56 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl z-[70] py-2 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
             <div className="px-4 py-2 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
-              <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Menu</span>
+              <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">메뉴</span>
               <ThemeToggle />
             </div>
             

@@ -147,12 +147,12 @@ export default function TipTapEditor({ content, onChange }: TipTapEditorProps) {
 
   if (!editor) return null;
 
-  const MenuButton = ({ onClick, isActive, label, icon }: { onClick: () => void, isActive?: boolean, label?: string, icon?: string }) => (
+  const MenuButton = ({ onClick, isActive, label, icon, title }: { onClick: () => void, isActive?: boolean, label?: string, icon?: string, title?: string }) => (
     <button
       type="button"
       onClick={onClick}
       className={`p-2 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-all flex items-center justify-center min-w-[32px] h-[32px] ${isActive ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-black' : 'text-zinc-500 dark:text-zinc-400'}`}
-      title={label}
+      title={title || label}
     >
       {icon ? <span className="text-sm">{icon}</span> : <span className="text-[11px] font-bold uppercase">{label}</span>}
     </button>
@@ -162,41 +162,41 @@ export default function TipTapEditor({ content, onChange }: TipTapEditorProps) {
     <div className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden focus-within:ring-2 focus-within:ring-blue-600/30 transition-all shadow-lg">
       {/* Dynamic Toolbar */}
       <div className="flex flex-wrap items-center gap-1 p-3 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 sticky top-0 z-10 backdrop-blur-sm">
-        <MenuButton label="B" onClick={() => editor.chain().focus().toggleBold().run()} isActive={editor.isActive('bold')} />
-        <MenuButton label="I" onClick={() => editor.chain().focus().toggleItalic().run()} isActive={editor.isActive('italic')} />
-        <MenuButton label="U" onClick={() => editor.chain().focus().toggleUnderline().run()} isActive={editor.isActive('underline')} />
-        <MenuButton label="S" onClick={() => editor.chain().focus().toggleStrike().run()} isActive={editor.isActive('strike')} />
+        <MenuButton label="B" title="굵게" onClick={() => editor.chain().focus().toggleBold().run()} isActive={editor.isActive('bold')} />
+        <MenuButton label="I" title="기울임" onClick={() => editor.chain().focus().toggleItalic().run()} isActive={editor.isActive('italic')} />
+        <MenuButton label="U" title="밑줄" onClick={() => editor.chain().focus().toggleUnderline().run()} isActive={editor.isActive('underline')} />
+        <MenuButton label="S" title="취소선" onClick={() => editor.chain().focus().toggleStrike().run()} isActive={editor.isActive('strike')} />
         
         <div className="w-px h-4 bg-zinc-300 dark:bg-zinc-700 mx-1"></div>
         
-        <MenuButton label="H1" onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} isActive={editor.isActive('heading', { level: 1 })} />
-        <MenuButton label="H2" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} isActive={editor.isActive('heading', { level: 2 })} />
-        <MenuButton label="H3" onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} isActive={editor.isActive('heading', { level: 3 })} />
+        <MenuButton label="H1" title="제목 1" onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} isActive={editor.isActive('heading', { level: 1 })} />
+        <MenuButton label="H2" title="제목 2" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} isActive={editor.isActive('heading', { level: 2 })} />
+        <MenuButton label="H3" title="제목 3" onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} isActive={editor.isActive('heading', { level: 3 })} />
         
         <div className="w-px h-4 bg-zinc-300 dark:bg-zinc-700 mx-1"></div>
         
-        <MenuButton icon="UL" label="Bullet" onClick={() => editor.chain().focus().toggleBulletList().run()} isActive={editor.isActive('bulletList')} />
-        <MenuButton icon="OL" label="Ordered" onClick={() => editor.chain().focus().toggleOrderedList().run()} isActive={editor.isActive('orderedList')} />
-        <MenuButton icon="TL" label="Task" onClick={() => editor.chain().focus().toggleTaskList().run()} isActive={editor.isActive('taskList')} />
+        <MenuButton icon="UL" title="글머리 기호" onClick={() => editor.chain().focus().toggleBulletList().run()} isActive={editor.isActive('bulletList')} />
+        <MenuButton icon="OL" title="번호 매기기" onClick={() => editor.chain().focus().toggleOrderedList().run()} isActive={editor.isActive('orderedList')} />
+        <MenuButton icon="TL" title="할 일 목록" onClick={() => editor.chain().focus().toggleTaskList().run()} isActive={editor.isActive('taskList')} />
         
         <div className="w-px h-4 bg-zinc-300 dark:bg-zinc-700 mx-1"></div>
         
-        <MenuButton icon="←" onClick={() => editor.chain().focus().setTextAlign('left').run()} isActive={editor.isActive({ textAlign: 'left' })} />
-        <MenuButton icon="↔" onClick={() => editor.chain().focus().setTextAlign('center').run()} isActive={editor.isActive({ textAlign: 'center' })} />
-        <MenuButton icon="→" onClick={() => editor.chain().focus().setTextAlign('right').run()} isActive={editor.isActive({ textAlign: 'right' })} />
+        <MenuButton icon="←" title="왼쪽 정렬" onClick={() => editor.chain().focus().setTextAlign('left').run()} isActive={editor.isActive({ textAlign: 'left' })} />
+        <MenuButton icon="↔" title="가운데 정렬" onClick={() => editor.chain().focus().setTextAlign('center').run()} isActive={editor.isActive({ textAlign: 'center' })} />
+        <MenuButton icon="→" title="오른쪽 정렬" onClick={() => editor.chain().focus().setTextAlign('right').run()} isActive={editor.isActive({ textAlign: 'right' })} />
         
         <div className="w-px h-4 bg-zinc-300 dark:bg-zinc-700 mx-1"></div>
         
-        <MenuButton label="“”" onClick={() => editor.chain().focus().toggleBlockquote().run()} isActive={editor.isActive('blockquote')} />
-        <MenuButton label="—" onClick={() => editor.chain().focus().setHorizontalRule().run()} />
-        <MenuButton label="🔗" onClick={() => {
+        <MenuButton label="“”" title="인용구" onClick={() => editor.chain().focus().toggleBlockquote().run()} isActive={editor.isActive('blockquote')} />
+        <MenuButton label="—" title="구분선" onClick={() => editor.chain().focus().setHorizontalRule().run()} />
+        <MenuButton label="🔗" title="링크" onClick={() => {
           const url = window.prompt('URL을 입력하세요');
           if (url) editor.chain().focus().setLink({ href: url }).run();
         }} isActive={editor.isActive('link')} />
         
         <div className="w-px h-4 bg-zinc-300 dark:bg-zinc-700 mx-1"></div>
         
-        <MenuButton label="🖼️" onClick={() => {
+        <MenuButton label="🖼️" title="이미지 업로드" onClick={() => {
           const input = document.createElement('input');
           input.type = 'file';
           input.accept = 'image/*';
@@ -210,17 +210,17 @@ export default function TipTapEditor({ content, onChange }: TipTapEditorProps) {
           input.click();
         }} />
         
-        <MenuButton label="📹" onClick={() => {
+        <MenuButton label="📹" title="YouTube 영상" onClick={() => {
           const url = window.prompt('YouTube URL을 입력하세요');
           if (url) editor.chain().focus().setYoutubeVideo({ src: url }).run();
         }} />
 
-        <MenuButton label="田" onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()} />
+        <MenuButton label="田" title="표 삽입" onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()} />
         
         <div className="flex-1"></div>
         
-        <MenuButton icon="↶" onClick={() => editor.chain().focus().undo().run()} />
-        <MenuButton icon="↷" onClick={() => editor.chain().focus().redo().run()} />
+        <MenuButton icon="↶" title="실행 취소" onClick={() => editor.chain().focus().undo().run()} />
+        <MenuButton icon="↷" title="다시 실행" onClick={() => editor.chain().focus().redo().run()} />
       </div>
 
       {/* Editor Content Area */}

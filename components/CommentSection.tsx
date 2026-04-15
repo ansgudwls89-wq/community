@@ -122,7 +122,7 @@ export default function CommentSection({ postId, initialNickname }: CommentSecti
           onClick={() => setReplyToId(replyToId === comment.id ? null : comment.id)}
           className="text-[10px] font-black text-blue-600 dark:text-blue-500 hover:underline uppercase tracking-tighter"
         >
-          {replyToId === comment.id ? 'Cancel' : 'Reply'}
+          {replyToId === comment.id ? '취소' : '답글'}
         </button>
       </div>
       <p className="text-sm text-zinc-600 dark:text-zinc-400 whitespace-pre-wrap leading-relaxed">
@@ -155,7 +155,7 @@ export default function CommentSection({ postId, initialNickname }: CommentSecti
       <section className="border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 sm:p-8 transition-colors">
         <h2 className="text-xs font-black text-zinc-900 dark:text-white uppercase tracking-widest mb-8 flex items-center gap-2 transition-colors">
           <span className="w-1.5 h-1.5 bg-zinc-400 dark:bg-zinc-600 rounded-full"></span>
-          Comments ({comments.length})
+          댓글 ({comments.length})
         </h2>
 
         {isLoading ? (

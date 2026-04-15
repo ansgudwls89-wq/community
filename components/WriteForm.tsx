@@ -56,7 +56,7 @@ export default function WriteForm({ categories, defaultCategory, initialNickname
       <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <label className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest px-1 transition-colors">Select Space</label>
+            <label className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest px-1 transition-colors">스페이스 선택</label>
             <select 
               value={category}
               onChange={(e) => setCategory(e.target.value)}
@@ -70,7 +70,7 @@ export default function WriteForm({ categories, defaultCategory, initialNickname
             </select>
           </div>
           <div className="space-y-2">
-            <label className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest px-1 transition-colors">Author</label>
+            <label className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest px-1 transition-colors">작성자</label>
             <input 
               type="text"
               value={author}
@@ -82,7 +82,7 @@ export default function WriteForm({ categories, defaultCategory, initialNickname
         </div>
 
         <div className="space-y-2">
-          <label className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest px-1 transition-colors">Title</label>
+          <label className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest px-1 transition-colors">제목</label>
           <input 
             type="text"
             value={title}
@@ -94,7 +94,7 @@ export default function WriteForm({ categories, defaultCategory, initialNickname
         </div>
 
         <div className="space-y-2">
-          <label className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest px-1 transition-colors">Content</label>
+          <label className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest px-1 transition-colors">내용</label>
           <TipTapEditor content={content} onChange={setContent} />
         </div>
 

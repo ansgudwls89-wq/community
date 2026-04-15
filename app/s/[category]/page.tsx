@@ -18,7 +18,7 @@ export default async function SpacePage({ params }: { params: Promise<{ category
     title = '주간 인기';
   } else {
     query = query.eq('category', category).order('created_at', { ascending: false });
-    title = `${category} SPACE`;
+    title = `${category} 스페이스`;
   }
 
   const { data: posts, error } = await query;
@@ -41,7 +41,7 @@ export default async function SpacePage({ params }: { params: Promise<{ category
             {title}
           </h1>
           <span className="text-xs font-bold text-zinc-400 dark:text-zinc-600 px-2 py-0.5 bg-zinc-100 dark:bg-zinc-900 rounded border border-zinc-200 dark:border-zinc-800 uppercase">
-            {posts?.length || 0} Posts
+            {posts?.length || 0}개의 글
           </span>
         </div>
         <a href="/" className="text-xs font-bold text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all">
@@ -53,11 +53,11 @@ export default async function SpacePage({ params }: { params: Promise<{ category
         <table className="w-full border-collapse">
           <thead>
             <tr className="bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800 text-[11px] font-black text-zinc-500 dark:text-zinc-500 uppercase tracking-widest transition-colors text-center">
-              <th className="py-3 px-4 w-[60px] hidden sm:table-cell">No</th>
-              <th className="py-3 px-4 text-left">Subject</th>
-              <th className="py-3 px-4 w-[100px]">Author</th>
-              <th className="py-3 px-4 w-[120px] hidden md:table-cell">Date</th>
-              <th className="py-3 px-4 w-[70px] hidden sm:table-cell">Views</th>
+              <th className="py-3 px-4 w-[60px] hidden sm:table-cell">번호</th>
+              <th className="py-3 px-4 text-left">제목</th>
+              <th className="py-3 px-4 w-[100px]">작성자</th>
+              <th className="py-3 px-4 w-[120px] hidden md:table-cell">작성일</th>
+              <th className="py-3 px-4 w-[70px] hidden sm:table-cell">조회수</th>
             </tr>
           </thead>
           <tbody className="text-[13px]">
@@ -65,7 +65,7 @@ export default async function SpacePage({ params }: { params: Promise<{ category
               <tr><td colSpan={5} className="py-20 text-center text-zinc-400 dark:text-zinc-600 italic">게시글이 없습니다. 첫 글의 주인공이 되어보세요!</td></tr>
             ) : (
               posts.map((post) => (
-                <tr key={post.id} className="border-b border-zinc-100 dark:border-zinc-900 last:border-0 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all group cursor-pointer text-zinc-600 dark:text-zinc-400">
+                <tr key={post.id} className="border-b border-zinc-100 dark:border-zinc-900 last:border-0 hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-all group cursor-pointer text-zinc-600 dark:text-zinc-400">
                   <td className="py-3 px-4 text-center text-zinc-400 dark:text-zinc-600 text-[10px] font-mono hidden sm:table-cell">{post.idx || post.id}</td>
                   <td className="py-3 px-4 truncate font-medium">
                     <a href={`/post/${post.id}`} className="flex items-center gap-2 group-hover:translate-x-1 transition-transform overflow-hidden">

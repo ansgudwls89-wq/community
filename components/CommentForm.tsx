@@ -97,7 +97,7 @@ export default function CommentForm({ postId, parentId = null, onSuccess, placeh
     <section className="border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/10 p-6 sm:p-8 transition-colors">
       <h2 className="text-xs font-black text-zinc-900 dark:text-white uppercase tracking-widest mb-6 flex items-center gap-2 transition-colors">
         <span className="w-1.5 h-1.5 bg-blue-600 dark:bg-blue-500 rounded-full"></span>
-        Add Comment
+        댓글 쓰기
       </h2>
       {formContent}
     </section>

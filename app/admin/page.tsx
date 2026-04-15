@@ -73,7 +73,7 @@ export default function AdminPage() {
     <div className="w-full max-w-4xl mx-auto space-y-8 pb-20">
       <div className="flex items-center justify-between pb-4 border-b border-zinc-200 dark:border-zinc-800 transition-colors">
         <h1 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tighter transition-colors">
-          ADMIN <span className="text-blue-600 dark:text-blue-500 ml-1">PANEL</span>
+          관리자 <span className="text-blue-600 dark:text-blue-500 ml-1">패널</span>
         </h1>
         <div className="flex gap-4 items-center">
           <div className="flex bg-zinc-100 dark:bg-zinc-900 p-1 rounded-xl border border-zinc-200 dark:border-zinc-800">
@@ -81,13 +81,13 @@ export default function AdminPage() {
               onClick={() => setActiveTab('spaces')}
               className={`px-4 py-1.5 text-xs font-black rounded-lg transition-all ${activeTab === 'spaces' ? 'bg-white dark:bg-zinc-800 text-blue-600 shadow-sm' : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'}`}
             >
-              Spaces
+              스페이스 관리
             </button>
             <button 
               onClick={() => setActiveTab('users')}
               className={`px-4 py-1.5 text-xs font-black rounded-lg transition-all ${activeTab === 'users' ? 'bg-white dark:bg-zinc-800 text-blue-600 shadow-sm' : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'}`}
             >
-              Users
+              회원 관리
             </button>
           </div>
           <a href="/" className="text-xs font-bold text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all">
@@ -102,7 +102,7 @@ export default function AdminPage() {
           <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-xl transition-colors">
             <h2 className="text-sm font-black text-zinc-900 dark:text-white uppercase tracking-widest mb-4 flex items-center gap-2 transition-colors">
               <span className="w-1.5 h-1.5 bg-blue-600 dark:bg-blue-500 rounded-full"></span>
-              Create New Space
+              새 스페이스 생성
             </h2>
             <div className="flex gap-3">
               <input 
@@ -125,7 +125,7 @@ export default function AdminPage() {
           <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-xl transition-colors">
             <div className="p-6 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/30 transition-colors">
               <h2 className="text-sm font-black text-zinc-900 dark:text-white uppercase tracking-widest transition-colors">
-                Manage Spaces ({categories.length})
+                스페이스 목록 ({categories.length})
               </h2>
             </div>
             
@@ -168,7 +168,7 @@ export default function AdminPage() {
         <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-xl transition-colors">
           <div className="p-6 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/30 transition-colors flex justify-between items-center">
             <h2 className="text-sm font-black text-zinc-900 dark:text-white uppercase tracking-widest transition-colors">
-              Manage Users ({users.length})
+              회원 목록 ({users.length})
             </h2>
             <button 
               onClick={fetchData}
@@ -182,9 +182,9 @@ export default function AdminPage() {
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-100 dark:border-zinc-800 text-[10px] font-black text-zinc-400 uppercase tracking-widest text-center">
-                  <th className="py-3 px-4">User ID (Email)</th>
-                  <th className="py-3 px-4">Nickname</th>
-                  <th className="py-3 px-4">Joined At</th>
+                  <th className="py-3 px-4">아이디 (이메일)</th>
+                  <th className="py-3 px-4">닉네임</th>
+                  <th className="py-3 px-4">가입일</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-100 dark:divide-zinc-900 transition-colors">
