@@ -40,11 +40,15 @@ export default async function Home() {
     return acc;
   }, {} as Record<string, any[]>);
 
-  const PostList = ({ title, posts, showView = true }: { title: string, posts: any[] | null, showView?: boolean }) => (
+  const PostList = ({ title, posts, showView = true, href }: { title: string, posts: any[] | null, showView?: boolean, href?: string }) => (
     <div className="flex-1 min-w-0">
       <div className="flex items-center justify-between pb-1.5 mb-2 border-b border-zinc-200 dark:border-zinc-800 transition-colors">
         <h2 className="text-[12px] font-black text-zinc-700 dark:text-zinc-200 px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded border border-zinc-200 dark:border-zinc-700 transition-colors">{title}</h2>
-        <button className="text-zinc-400 dark:text-zinc-600 hover:text-blue-500 dark:hover:text-blue-400 text-[10px] font-bold transition-all">더보기</button>
+        {href ? (
+          <a href={href} className="text-zinc-400 dark:text-zinc-600 hover:text-blue-500 dark:hover:text-blue-400 text-[10px] font-bold transition-all">더보기</a>
+        ) : (
+          <button className="text-zinc-400 dark:text-zinc-600 hover:text-blue-500 dark:hover:text-blue-400 text-[10px] font-bold transition-all cursor-default">더보기</button>
+        )}
       </div>
 
       <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm transition-colors">
@@ -79,8 +83,8 @@ export default async function Home() {
     <div className="space-y-10 w-full pb-20">
       {/* 상단 메인 리스트 */}
       <div className="flex flex-col lg:flex-row gap-6">
-        <PostList title="실시간 베스트" posts={realtimePosts} />
-        <PostList title="주간 인기" posts={weeklyPosts} />
+        <PostList title="실시간 베스트" posts={realtimePosts} href="/space/best" />
+        <PostList title="주간 인기" posts={weeklyPosts} href="/space/popular" />
       </div>
 
       {/* 카테고리별 섹션 (그리드) */}
@@ -91,6 +95,7 @@ export default async function Home() {
             title={category.toUpperCase()} 
             posts={postsByCategory[category]} 
             showView={false}
+            href={`/space/${encodeURIComponent(category)}`}
           />
         ))}
       </div>
