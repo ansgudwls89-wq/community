@@ -41,12 +41,18 @@ export default function AdminPage() {
   }
 
   async function handleAddCategory() {
+    const slugRegex = /^[a-zA-Z0-9-]+$/;
     if (!newCategory.trim()) return;
+    
+    if (!slugRegex.test(newCategory)) {
+      alert('스페이스 이름은 영문, 숫자, 하이픈(-)만 가능합니다.');
+      return;
+    }
     
     const { error } = await supabase.from('posts').insert([
       { 
         title: `${newCategory} 스페이스가 생성되었습니다.`, 
-        category: newCategory.trim(), 
+        category: newCategory.trim().toLowerCase(), 
         content: '새로운 스페이스의 시작을 축하합니다!',
         author: '시스템',
         idx: 1,
@@ -129,7 +135,7 @@ export default function AdminPage() {
                 type="text" 
                 value={newCategory}
                 onChange={(e) => setNewCategory(e.target.value)}
-                placeholder="새 스페이스 이름 입력 (예: 애니메이션)"
+                placeholder="영문 스페이스 이름 (예: humor, game)"
                 className="flex-1 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-900 dark:text-zinc-100 outline-none focus:ring-2 focus:ring-blue-600/50 transition-all placeholder:text-zinc-400 dark:placeholder:text-zinc-600 transition-colors"
               />
               <button 
@@ -139,6 +145,9 @@ export default function AdminPage() {
                 스페이스 생성
               </button>
             </div>
+            <p className="mt-3 text-[11px] text-zinc-400 dark:text-zinc-500 italic">
+              * 주소(URL)로 사용되므로 영문 소문자와 숫자, 하이픈(-)만 입력 가능합니다.
+            </p>
           </div>
 
           {/* 스페이스 관리 섹션 */}
