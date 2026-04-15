@@ -8,7 +8,7 @@ import SearchBar from "@/components/SearchBar";
 import { supabase } from "@/utils/supabase";
 
 export const metadata: Metadata = {
-  title: "Arca Style Community",
+  title: "NOL2 Style Community",
   description: "Next.js 14 App Router Theme-aware Community",
 };
 
@@ -30,7 +30,7 @@ export default async function RootLayout({
             <div className="max-w-[1400px] mx-auto h-full px-4 flex items-center justify-between gap-4">
               <div className="flex-shrink-0">
                 <a href="/" className="text-2xl font-black text-zinc-900 dark:text-white tracking-tighter hover:text-blue-500 transition-colors">
-                  ARCA.
+                  NOL2.
                 </a>
               </div>
 
@@ -68,8 +68,8 @@ export default async function RootLayout({
 
           <footer className="bg-zinc-50 dark:bg-zinc-950 border-t border-zinc-200 dark:border-zinc-900 py-12 mt-12 w-full transition-colors">
             <div className="max-w-[1400px] mx-auto px-4 text-center">
-              <div className="text-2xl font-black text-zinc-300 dark:text-zinc-800 mb-4 tracking-tighter transition-colors">ARCA.</div>
-              <p className="text-xs text-zinc-400 dark:text-zinc-600 font-medium transition-colors">&copy; 2026 Arca Community Platform. All rights reserved.</p>
+              <div className="text-2xl font-black text-zinc-300 dark:text-zinc-800 mb-4 tracking-tighter transition-colors">NOL2.</div>
+              <p className="text-xs text-zinc-400 dark:text-zinc-600 font-medium transition-colors">&copy; 2026 NOL2 Community Platform. All rights reserved.</p>
             </div>
           </footer>
         </ThemeProvider>
