@@ -58,9 +58,12 @@ export default async function SearchResultsPage({ searchParams }: { searchParams
                 <tr key={post.id} className="border-b border-zinc-100 dark:border-zinc-900 last:border-0 hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-all group cursor-pointer text-zinc-600 dark:text-zinc-400">
                   <td className="py-3 px-4 text-center text-zinc-400 dark:text-zinc-600 text-[10px] font-mono">{post.idx || post.id}</td>
                   <td className="py-3 px-4 text-center">
-                    <span className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 border border-zinc-200 dark:border-zinc-800 px-2 py-0.5 rounded uppercase transition-colors">
+                    <a 
+                      href={`/s/${encodeURIComponent(post.category)}`}
+                      className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 border border-zinc-200 dark:border-zinc-800 px-2 py-0.5 rounded uppercase hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                    >
                       {post.category}
-                    </span>
+                    </a>
                   </td>
                   <td className="py-3 px-4 truncate font-medium">
                     <a href={`/post/${post.id}`} className="flex items-center gap-2 group-hover:translate-x-1 transition-transform overflow-hidden">

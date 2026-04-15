@@ -23,8 +23,8 @@ export default function SpaceDropdown({ initialCategories }: { initialCategories
         {/* 상단 고정 섹션 */}
         <div className="px-2 pb-2 border-b border-zinc-100 dark:border-zinc-800">
           <div className="px-3 py-2 text-[10px] font-black text-zinc-400 uppercase tracking-widest">Main</div>
-          <a href="/space/best" className="block px-3 py-2 text-xs font-bold text-zinc-600 dark:text-zinc-400 hover:bg-blue-600 hover:text-white rounded-lg transition-colors">실시간 베스트</a>
-          <a href="/space/popular" className="block px-3 py-2 text-xs font-bold text-zinc-600 dark:text-zinc-400 hover:bg-blue-600 hover:text-white rounded-lg transition-colors">주간 인기</a>
+          <a href="/s/best" className="block px-3 py-2 text-xs font-bold text-zinc-600 dark:text-zinc-400 hover:bg-blue-600 hover:text-white rounded-lg transition-colors">실시간 베스트</a>
+          <a href="/s/popular" className="block px-3 py-2 text-xs font-bold text-zinc-600 dark:text-zinc-400 hover:bg-blue-600 hover:text-white rounded-lg transition-colors">주간 인기</a>
         </div>
 
         {/* 스페이스 검색창 */}
@@ -51,7 +51,7 @@ export default function SpaceDropdown({ initialCategories }: { initialCategories
               filteredCategories.map(cat => (
                 <a 
                   key={cat} 
-                  href={`/space/${encodeURIComponent(cat)}`} 
+                  href={`/s/${encodeURIComponent(cat)}`} 
                   className="block px-3 py-2 text-xs font-bold text-zinc-600 dark:text-zinc-400 hover:bg-blue-600 hover:text-white rounded-lg transition-colors uppercase truncate"
                 >
                   {cat}

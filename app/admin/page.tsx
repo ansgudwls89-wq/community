@@ -111,7 +111,12 @@ export default function AdminPage() {
                     {cat[0]}
                   </div>
                   <div>
-                    <h3 className="font-black text-zinc-900 dark:text-zinc-100 uppercase transition-colors">{cat}</h3>
+                    <a 
+                      href={`/s/${encodeURIComponent(cat)}`}
+                      className="font-black text-zinc-900 dark:text-zinc-100 uppercase transition-colors hover:text-blue-600 dark:hover:text-blue-400"
+                    >
+                      {cat}
+                    </a>
                     <p className="text-[11px] text-zinc-400 dark:text-zinc-500 font-bold transition-colors">ID: {encodeURIComponent(cat)}</p>
                   </div>
                 </div>

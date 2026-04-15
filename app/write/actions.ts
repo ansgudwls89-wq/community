@@ -50,7 +50,7 @@ export async function createPostAction(data: {
   }
 
   revalidatePath('/');
-  revalidatePath(`/space/${encodeURIComponent(category)}`);
+  revalidatePath(`/s/${encodeURIComponent(category)}`);
   
   return newPost;
 }

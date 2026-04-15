@@ -37,9 +37,12 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
       <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-2xl transition-colors">
         <header className="p-5 sm:p-6 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/30 transition-colors">
           <div className="flex items-center gap-2 mb-3 text-[10px]">
-            <span className="font-black text-blue-600 dark:text-blue-500 bg-blue-100 dark:bg-blue-500/10 px-2 py-0.5 rounded uppercase tracking-wider transition-colors">
+            <a 
+              href={`/s/${encodeURIComponent(post.category)}`}
+              className="font-black text-blue-600 dark:text-blue-500 bg-blue-100 dark:bg-blue-500/10 px-2 py-0.5 rounded uppercase tracking-wider hover:bg-blue-200 dark:hover:bg-blue-500/20 transition-all"
+            >
               {post.category}
-            </span>
+            </a>
             <span className="text-zinc-300 dark:text-zinc-700 font-bold">/</span>
             <span className="text-zinc-400 dark:text-zinc-600 font-bold tracking-tighter transition-colors">POST #{post.idx || post.id}</span>
           </div>

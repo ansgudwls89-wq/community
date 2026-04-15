@@ -86,8 +86,8 @@ export default async function Home() {
     <div className="space-y-10 w-full pb-20">
       {/* 상단 메인 리스트 */}
       <div className="flex flex-col lg:flex-row gap-6">
-        <PostList title="실시간 베스트" posts={realtimePosts} href="/space/best" />
-        <PostList title="주간 인기" posts={weeklyPosts} href="/space/popular" />
+        <PostList title="실시간 베스트" posts={realtimePosts} href="/s/best" />
+        <PostList title="주간 인기" posts={weeklyPosts} href="/s/popular" />
       </div>
 
       {/* 카테고리별 섹션 (그리드) */}
@@ -98,7 +98,7 @@ export default async function Home() {
             title={category} 
             posts={postsByCategory[category]} 
             showView={false}
-            href={`/space/${encodeURIComponent(category)}`}
+            href={`/s/${encodeURIComponent(category)}`}
           />
         ))}
       </div>
