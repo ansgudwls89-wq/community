@@ -72,25 +72,13 @@ export default function WriteForm({ categories, defaultCategory, initialNickname
   return (
     <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-2xl transition-colors">
       <header className="p-6 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/30 text-center sm:text-left transition-colors">
-        <h1 className="text-xl font-black text-zinc-900 dark:text-white uppercase tracking-tight transition-colors">새 글 작성</h1>
+        <h1 className="text-xl font-black text-zinc-900 dark:text-white uppercase tracking-tight transition-colors">
+          <span className="text-blue-600 dark:text-blue-500 mr-2">[{category}]</span>
+          새 글 작성
+        </h1>
       </header>
 
       <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6">
-        <div className="space-y-2">
-          <label className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest px-1 transition-colors">스페이스 선택</label>
-          <select 
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            required
-            disabled={!!defaultCategory}
-            className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-700 dark:text-zinc-200 outline-none focus:ring-2 focus:ring-blue-600/50 transition-all appearance-none cursor-pointer transition-colors uppercase disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            {categories.map(cat => (
-              <option key={cat} value={cat}>{cat}</option>
-            ))}
-          </select>
-        </div>
-
         <div className="space-y-2">
           <label className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest px-1 transition-colors">제목</label>
           <input 
@@ -99,7 +87,7 @@ export default function WriteForm({ categories, defaultCategory, initialNickname
             onChange={(e) => setTitle(e.target.value)}
             required
             placeholder="제목을 입력해 주세요"
-            className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-base text-zinc-900 dark:text-white font-bold outline-none focus:ring-2 focus:ring-blue-600/50 transition-all placeholder:text-zinc-300 dark:placeholder:text-zinc-700 transition-colors"
+            className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-base text-zinc-900 dark:text-white font-bold outline-none focus:ring-2 focus:ring-blue-600/50 transition-all placeholder:text-zinc-400 dark:placeholder:text-zinc-600 transition-colors"
           />
         </div>
 
