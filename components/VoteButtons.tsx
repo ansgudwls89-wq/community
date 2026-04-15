@@ -1,6 +1,6 @@
 'use client';
 
-import { supabase } from '@/utils/supabase';
+import { createClient } from '@/utils/supabase/client';
 import { useState, useEffect } from 'react';
 
 interface VoteButtonsProps {
@@ -10,18 +10,19 @@ interface VoteButtonsProps {
 }
 
 export default function VoteButtons({ postId, initialLikes, initialDislikes }: VoteButtonsProps) {
+  const supabase = createClient();
   const [likes, setLikes] = useState(initialLikes);
   const [dislikes, setDislikes] = useState(initialDislikes);
   const [isVoting, setIsVoting] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setUserId(session?.user?.id || null);
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUserId(user?.id || null);
     };
-    getSession();
-  }, []);
+    getUser();
+  }, [supabase.auth]);
 
   const handleVote = async (type: 'like' | 'dislike') => {
     if (isVoting) return;
@@ -33,25 +34,31 @@ export default function VoteButtons({ postId, initialLikes, initialDislikes }: V
 
     setIsVoting(true);
     
-    // Use the new RPC that checks post_votes table
-    const { data, error } = await supabase.rpc('toggle_post_vote_v2', {
-      target_post_id: postId,
-      target_user_id: userId,
-      target_vote_type: type
-    });
+    try {
+      console.log(`Voting ${type} for post ${postId} as user ${userId}`);
+      
+      const { data, error } = await supabase.rpc('toggle_post_vote_v2', {
+        target_post_id: postId,
+        target_user_id: userId,
+        target_vote_type: type
+      });
 
-    if (error) {
-      console.error('Error voting:', error.message);
-      alert('투표 중 오류가 발생했습니다.');
-    } else if (data && !data.success) {
-      alert(data.message || '이미 투표하셨습니다.');
-    } else {
-      if (type === 'like') setLikes(prev => prev + 1);
-      else setDislikes(prev => prev + 1);
-      alert(type === 'like' ? '추천되었습니다.' : '비추천되었습니다.');
+      if (error) {
+        console.error('RPC Error:', error);
+        alert(`투표 중 오류가 발생했습니다: ${error.message}`);
+      } else if (data && !data.success) {
+        alert(data.message || '이미 투표하셨습니다.');
+      } else {
+        if (type === 'like') setLikes(prev => prev + 1);
+        else setDislikes(prev => prev + 1);
+        alert(type === 'like' ? '추천되었습니다.' : '비추천되었습니다.');
+      }
+    } catch (err) {
+      console.error('Unexpected error during voting:', err);
+      alert('투표 처리 중 예상치 못한 오류가 발생했습니다.');
+    } finally {
+      setIsVoting(false);
     }
-    
-    setIsVoting(false);
   };
 
   return (
