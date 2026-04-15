@@ -11,6 +11,8 @@ interface Comment {
   content: string;
   created_at: string;
   parent_id: number | null;
+  is_anonymous: boolean;
+  ip_address: string | null;
 }
 
 interface CommentSectionProps {
@@ -102,12 +104,24 @@ export default function CommentSection({ postId, initialNickname }: CommentSecti
     return roots;
   }, [comments]);
 
+  const maskIp = (ip: string | null) => {
+    if (!ip) return '';
+    const parts = ip.split('.');
+    if (parts.length === 4) {
+      return `${parts[0]}.${parts[1]}.***.***`;
+    }
+    return ip.slice(0, 8) + '...'; // For IPv6
+  };
+
   const CommentItem = ({ comment, depth = 0 }: { comment: any, depth?: number }) => (
     <div className={`group ${depth > 0 ? 'ml-4 sm:ml-8 border-l-2 border-zinc-100 dark:border-zinc-800 pl-4 mt-4' : 'border-b border-zinc-50 dark:border-zinc-900 pb-6 last:border-0'}`}>
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <span className={`text-sm font-black ${depth > 0 ? 'text-zinc-600 dark:text-zinc-400' : 'text-zinc-800 dark:text-zinc-200'}`}>
-            {comment.author}
+            {comment.is_anonymous ? '익명' : comment.author}
+          </span>
+          <span className="text-[9px] text-zinc-400 dark:text-zinc-600 font-mono">
+            ({maskIp(comment.ip_address)})
           </span>
           <span className="text-[10px] text-zinc-400 dark:text-zinc-600 font-bold">
             {new Date(comment.created_at).toLocaleString('ko-KR', {
@@ -135,7 +149,7 @@ export default function CommentSection({ postId, initialNickname }: CommentSecti
             postId={postId} 
             parentId={comment.id} 
             onSuccess={handleCommentSuccess}
-            placeholder={`${comment.author}님께 답글 남기기...`}
+            placeholder={`${comment.is_anonymous ? '익명' : comment.author}님께 답글 남기기...`}
             autoFocus
             initialNickname={initialNickname}
           />

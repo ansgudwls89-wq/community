@@ -10,6 +10,8 @@ interface Comment {
   content: string;
   created_at: string;
   parent_id: number | null;
+  is_anonymous: boolean;
+  ip_address: string | null;
 }
 
 interface CommentFormProps {
@@ -24,11 +26,21 @@ interface CommentFormProps {
 export default function CommentForm({ postId, parentId = null, onSuccess, placeholder = "댓글을 입력하세요", autoFocus = false, initialNickname = "" }: CommentFormProps) {
   const [content, setContent] = useState('');
   const [author, setAuthor] = useState(initialNickname || '');
+  const [isAnonymous, setIsAnonymous] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // If no initialNickname, user is likely not logged in (passed from parent)
+  // But let's check it more explicitly in the UI
+  const isLoggedIn = !!initialNickname;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (isSubmitting || !content.trim()) return;
+
+    if (!isLoggedIn) {
+      alert('로그인이 필요한 서비스입니다.');
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -36,7 +48,8 @@ export default function CommentForm({ postId, parentId = null, onSuccess, placeh
         postId,
         content: content.trim(),
         author: author.trim() || '익명',
-        parentId
+        parentId,
+        isAnonymous
       });
       
       setContent('');
@@ -52,16 +65,40 @@ export default function CommentForm({ postId, parentId = null, onSuccess, placeh
     }
   }
 
+  if (!isLoggedIn && !parentId) {
+    return (
+      <section className="border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/10 p-6 sm:p-8 text-center transition-colors">
+        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+          <a href="/login" className="text-blue-600 dark:text-blue-500 font-bold hover:underline">로그인</a> 후 댓글을 작성할 수 있습니다.
+        </p>
+      </section>
+    );
+  }
+
+  if (!isLoggedIn && parentId) return null; // Don't show reply form if not logged in
+
   const formContent = (
     <form onSubmit={handleSubmit} className="space-y-3">
-      <div className="flex gap-3">
-        <input 
-          type="text"
-          placeholder="닉네임 (익명)"
-          value={author}
-          onChange={(e) => setAuthor(e.target.value)}
-          className="w-32 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-700 dark:text-zinc-300 outline-none focus:ring-1 focus:ring-blue-500 transition-all placeholder:text-zinc-400 dark:placeholder:text-zinc-600 shadow-sm"
-        />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <input 
+            type="text"
+            placeholder="닉네임 (익명)"
+            value={author}
+            onChange={(e) => setAuthor(e.target.value)}
+            disabled={isAnonymous}
+            className="w-32 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-700 dark:text-zinc-300 outline-none focus:ring-1 focus:ring-blue-500 transition-all placeholder:text-zinc-400 dark:placeholder:text-zinc-600 shadow-sm disabled:opacity-50"
+          />
+          <label className="flex items-center gap-2 cursor-pointer group">
+            <input 
+              type="checkbox" 
+              checked={isAnonymous}
+              onChange={(e) => setIsAnonymous(e.target.checked)}
+              className="w-3.5 h-3.5 rounded border-zinc-300 dark:border-zinc-700 text-blue-600 focus:ring-blue-500"
+            />
+            <span className="text-[11px] font-bold text-zinc-500 group-hover:text-zinc-700 dark:group-hover:text-zinc-300 transition-colors">익명으로 작성</span>
+          </label>
+        </div>
       </div>
       <div className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 focus-within:border-blue-500/50 transition-all shadow-sm">
         <textarea 

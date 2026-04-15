@@ -20,6 +20,10 @@ export async function createPostAction(data: {
   const supabaseClient = await createClient();
   const { data: { user } } = await supabaseClient.auth.getUser();
 
+  if (!user) {
+    throw new Error('로그인이 필요한 서비스입니다.');
+  }
+
   // 1. 해당 카테고리의 마지막 idx 가져오기
   const { data: lastPost } = await supabase
     .from('posts')
@@ -54,20 +58,18 @@ export async function createPostAction(data: {
     throw new Error(error.message);
   }
 
-  // 3. 에너지 지급 (로그인한 경우에만)
-  if (user) {
-    const { data: profile } = await supabase
+  // 3. 에너지 지급
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('energy')
+    .eq('id', user.id)
+    .single();
+  
+  if (profile) {
+    await supabase
       .from('profiles')
-      .select('energy')
-      .eq('id', user.id)
-      .single();
-    
-    if (profile) {
-      await supabase
-        .from('profiles')
-        .update({ energy: (profile.energy || 0) + 10 }) // 글 작성 시 에너지 10 지급
-        .eq('id', user.id);
-    }
+      .update({ energy: (profile.energy || 0) + 10 })
+      .eq('id', user.id);
   }
 
   revalidatePath('/');

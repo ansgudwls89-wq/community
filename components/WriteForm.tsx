@@ -19,9 +19,17 @@ export default function WriteForm({ categories, defaultCategory, initialNickname
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const isLoggedIn = !!initialNickname;
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (isSubmitting) return;
+
+    if (!isLoggedIn) {
+      alert('로그인이 필요한 서비스입니다.');
+      router.push('/login');
+      return;
+    }
 
     if (!title || !category || !content) {
       alert('제목, 카테고리, 내용을 모두 입력해 주세요.');
@@ -41,6 +49,22 @@ export default function WriteForm({ categories, defaultCategory, initialNickname
     } finally {
       setIsSubmitting(false);
     }
+  }
+
+  if (!isLoggedIn) {
+    return (
+      <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-10 text-center shadow-2xl transition-colors">
+        <div className="text-4xl mb-4">🔒</div>
+        <h1 className="text-xl font-black text-zinc-900 dark:text-white mb-4 uppercase tracking-tight">로그인 필요</h1>
+        <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-8">게시글을 작성하려면 로그인이 필요합니다.</p>
+        <button 
+          onClick={() => router.push('/login')}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-black text-sm px-10 py-3 rounded-xl transition-all shadow-xl shadow-blue-900/20 active:scale-95"
+        >
+          로그인하러 가기
+        </button>
+      </div>
+    );
   }
 
   return (
