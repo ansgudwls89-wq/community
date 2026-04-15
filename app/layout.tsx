@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import ThemeToggle from "@/components/ThemeToggle";
 import SpaceDropdown from "@/components/SpaceDropdown";
 import SearchBar from "@/components/SearchBar";
+import MobileMenu from "@/components/MobileMenu";
 import { supabase } from "@/utils/supabase";
 
 export const metadata: Metadata = {
@@ -41,9 +42,14 @@ export default async function RootLayout({
               </div>
 
               <div className="flex items-center gap-1 sm:gap-2">
-                <ThemeToggle />
-                <button className="hidden md:block text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all text-sm font-bold px-2 py-2">로그인</button>
-                <button className="bg-blue-600 hover:bg-blue-700 text-white text-[10px] sm:text-sm font-bold px-3 sm:px-4 py-2 rounded-xl shadow-lg shadow-blue-900/20 transition-all whitespace-nowrap">회원가입</button>
+                {/* Desktop Buttons */}
+                <div className="hidden md:flex items-center gap-2">
+                  <ThemeToggle />
+                  <button className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all text-sm font-bold px-3 py-2">로그인</button>
+                  <button className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-4 py-2 rounded-xl shadow-lg shadow-blue-900/20 transition-all whitespace-nowrap">회원가입</button>
+                </div>
+                {/* Mobile Menu Button */}
+                <MobileMenu />
               </div>
             </div>
           </header>
