@@ -154,6 +154,9 @@ export default function CommentSection({ postId }: CommentSectionProps) {
 
   return (
     <div className="w-full">
+      {/* 메인 댓글 입력창 (상단으로 이동) */}
+      <CommentForm postId={postId} onSuccess={handleCommentSuccess} />
+
       {/* 댓글 리스트 영역 */}
       <section className="border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 sm:p-8 transition-colors">
         <h2 className="text-xs font-black text-zinc-900 dark:text-white uppercase tracking-widest mb-8 flex items-center gap-2 transition-colors">
@@ -173,9 +176,6 @@ export default function CommentSection({ postId }: CommentSectionProps) {
           </div>
         )}
       </section>
-
-      {/* 메인 댓글 입력창 (하단 배치 및 이전 UI 복구) */}
-      <CommentForm postId={postId} onSuccess={handleCommentSuccess} />
     </div>
   );
 }
