@@ -8,20 +8,26 @@ import { createClient } from '@/utils/supabase/server';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export default async function PostDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default async function PostDetailPage({ 
+  params 
+}: { 
+  params: Promise<{ category: string, idx: string }> 
+}) {
+  const { category: encodedCategory, idx } = await params;
+  const category = decodeURIComponent(encodedCategory);
 
   const { data: post, error } = await supabaseAdmin
     .from('posts')
     .select('*')
-    .eq('id', id)
+    .eq('category', category)
+    .eq('idx', parseInt(idx))
     .single();
 
   if (error || !post) {
     return (
       <div className="w-full p-10 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-zinc-500 dark:text-zinc-400 text-center transition-colors">
         <h2 className="text-xl font-bold mb-4 text-zinc-900 dark:text-white">게시글을 찾을 수 없습니다.</h2>
-        <a href="/" className="text-blue-600 dark:text-blue-400 hover:underline">← 목록으로 돌아가기</a>
+        <a href={`/s/${encodedCategory}`} className="text-blue-600 dark:text-blue-400 hover:underline">← 목록으로 돌아가기</a>
       </div>
     );
   }
@@ -41,7 +47,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
 
   return (
     <div className="w-full space-y-4">
-      <ViewCounter postId={Number(id)} />
+      <ViewCounter postId={Number(post.id)} />
       <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-2xl transition-colors">
         <header className="p-5 sm:p-6 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/30 transition-colors">
           <div className="flex items-center gap-2 mb-3 text-[10px]">
@@ -89,7 +95,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
         <CommentSection postId={post.id} initialNickname={nickname} />
 
         <footer className="p-5 border-t border-zinc-200 dark:border-zinc-800 flex justify-between bg-zinc-50 dark:bg-zinc-950 items-center transition-colors">
-          <a href="/" className="text-[10px] font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all uppercase tracking-widest px-4 py-2 border border-zinc-200 dark:border-zinc-900 rounded-lg hover:bg-white dark:hover:bg-zinc-900 transition-colors">
+          <a href={`/s/${encodeURIComponent(post.category)}`} className="text-[10px] font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all uppercase tracking-widest px-4 py-2 border border-zinc-200 dark:border-zinc-900 rounded-lg hover:bg-white dark:hover:bg-zinc-900 transition-colors">
             ← 목록으로
           </a>
           <button className="text-[10px] font-bold text-zinc-400 dark:text-zinc-700 hover:text-red-500 uppercase transition-colors px-4 py-2">신고하기</button>

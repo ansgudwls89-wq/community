@@ -68,7 +68,7 @@ export default async function SpacePage({ params }: { params: Promise<{ category
                 <tr key={post.id} className="border-b border-zinc-100 dark:border-zinc-900 last:border-0 hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-all group cursor-pointer text-zinc-600 dark:text-zinc-400">
                   <td className="py-3 px-4 text-center text-zinc-400 dark:text-zinc-600 text-[10px] font-mono hidden sm:table-cell">{post.idx || post.id}</td>
                   <td className="py-3 px-4 truncate font-medium">
-                    <a href={`/post/${post.id}`} className="flex items-center gap-2 group-hover:translate-x-1 transition-transform overflow-hidden">
+                    <a href={`/s/${encodeURIComponent(post.category)}/${post.idx}`} className="flex items-center gap-2 group-hover:translate-x-1 transition-transform overflow-hidden">
                       <span className="truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">{post.title}</span>
                       <span className="text-[11px] font-black text-blue-600/80 dark:text-blue-500/80 flex-shrink-0">[{post.comments_count || 0}]</span>
                     </a>
@@ -92,7 +92,7 @@ export default async function SpacePage({ params }: { params: Promise<{ category
           <button className="w-8 h-8 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-lg shadow-blue-500/20 transition-all">1</button>
         </div>
         {(category.toLowerCase() !== 'best' && category.toLowerCase() !== 'popular') && (
-          <a href={`/write?category=${encodeURIComponent(category)}`} className="bg-zinc-900 dark:bg-white text-white dark:text-black font-black text-sm px-6 py-2.5 rounded-xl hover:bg-zinc-700 dark:hover:bg-zinc-200 transition-all shadow-xl">
+          <a href={`/s/${encodeURIComponent(category)}/write`} className="bg-zinc-900 dark:bg-white text-white dark:text-black font-black text-sm px-6 py-2.5 rounded-xl hover:bg-zinc-700 dark:hover:bg-zinc-200 transition-all shadow-xl">
             새 글 작성
           </a>
         )}

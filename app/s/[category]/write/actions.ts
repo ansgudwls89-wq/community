@@ -3,6 +3,7 @@
 import { supabase } from '@/utils/supabase';
 import { createClient } from '@/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 
 export async function createPostAction(data: {
   title: string;
@@ -72,5 +73,5 @@ export async function createPostAction(data: {
   revalidatePath('/');
   revalidatePath(`/s/${encodeURIComponent(category)}`);
   
-  return newPost;
+  redirect(`/s/${encodeURIComponent(category)}/${newPost.idx}`);
 }

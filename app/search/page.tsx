@@ -66,7 +66,7 @@ export default async function SearchResultsPage({ searchParams }: { searchParams
                     </a>
                   </td>
                   <td className="py-3 px-4 truncate font-medium">
-                    <a href={`/post/${post.id}`} className="flex items-center gap-2 group-hover:translate-x-1 transition-transform overflow-hidden">
+                    <a href={`/s/${encodeURIComponent(post.category)}/${post.idx}`} className="flex items-center gap-2 group-hover:translate-x-1 transition-transform overflow-hidden">
                       <span className="truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">{post.title}</span>
                       <span className="text-[11px] font-black text-blue-600/80 dark:text-blue-500/80 flex-shrink-0">[{post.comments_count || 0}]</span>
                     </a>

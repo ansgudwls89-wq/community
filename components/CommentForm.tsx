@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { createCommentAction } from '@/app/post/[id]/actions';
+import { createCommentAction } from '@/app/s/[category]/[idx]/actions';
 
 interface Comment {
   id: number;

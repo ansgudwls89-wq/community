@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import TipTapEditor from './TipTapEditor';
-import { createPostAction } from '@/app/write/actions';
+import { createPostAction } from '@/app/s/[category]/write/actions';
 
 interface WriteFormProps {
   categories: string[];
@@ -30,16 +30,12 @@ export default function WriteForm({ categories, defaultCategory, initialNickname
 
     setIsSubmitting(true);
     try {
-      const newPost = await createPostAction({
+      await createPostAction({
         title,
         category,
         content,
         author
       });
-
-      if (newPost) {
-        router.push(`/post/${newPost.id}`);
-      }
     } catch (error: any) {
       alert(`글 작성 중 오류가 발생했습니다: ${error.message}`);
     } finally {

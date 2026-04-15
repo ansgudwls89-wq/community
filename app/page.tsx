@@ -73,7 +73,7 @@ export default async function Home() {
                     )}
                   </td>
                   <td className="py-1.5 px-3 truncate font-medium">
-                    <a href={`/post/${post.id}`} className="flex items-center gap-2 overflow-hidden">
+                    <a href={`/s/${encodeURIComponent(post.category)}/${post.idx}`} className="flex items-center gap-2 overflow-hidden">
                       <span className="truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">{post.title}</span>
                       <span className="text-[10px] font-black text-blue-600/60 dark:text-blue-500/60 flex-shrink-0">[{post.comments_count || 0}]</span>
                     </a>

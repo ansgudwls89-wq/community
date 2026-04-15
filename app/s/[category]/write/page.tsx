@@ -4,8 +4,13 @@ import { createClient } from '@/utils/supabase/server';
 
 export const dynamic = 'force-dynamic';
 
-export default async function WritePage({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
-  const { category: defaultCategory } = await searchParams;
+export default async function WritePage({ 
+  params 
+}: { 
+  params: Promise<{ category: string }> 
+}) {
+  const { category: encodedCategory } = await params;
+  const category = decodeURIComponent(encodedCategory);
 
   // Fetch current categories from database for the select options
   const { data: postsData } = await supabaseAdmin.from('posts').select('category');
@@ -29,7 +34,7 @@ export default async function WritePage({ searchParams }: { searchParams: Promis
     <div className="w-full max-w-4xl mx-auto">
       <WriteForm 
         categories={categories} 
-        defaultCategory={defaultCategory} 
+        defaultCategory={category} 
         initialNickname={nickname}
       />
     </div>

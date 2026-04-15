@@ -41,8 +41,7 @@ export async function updateSession(request: NextRequest) {
     !request.nextUrl.pathname.startsWith('/auth') &&
     !request.nextUrl.pathname.startsWith('/signup') &&
     request.nextUrl.pathname !== '/' &&
-    !request.nextUrl.pathname.startsWith('/s/') &&
-    !request.nextUrl.pathname.startsWith('/post/')
+    !request.nextUrl.pathname.startsWith('/s/')
   ) {
     // no user, potentially redirect to login page
     // but for now, we allow most pages to be public
