@@ -1,6 +1,8 @@
 import { supabase } from '@/utils/supabase';
 import { notFound } from 'next/navigation';
 import VoteButtons from '@/components/VoteButtons';
+import CommentForm from '@/components/CommentForm';
+import CommentList from '@/components/CommentList';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -79,23 +81,9 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
           <VoteButtons postId={post.id} initialLikes={post.likes || 0} initialDislikes={post.dislikes || 0} />
         </article>
 
-        <section className="border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/10 p-6 sm:p-8 text-center sm:text-left transition-colors">
-          <h2 className="text-xs font-black text-zinc-900 dark:text-white uppercase tracking-widest mb-6 flex items-center gap-2 justify-center sm:justify-start transition-colors">
-            <span className="w-1.5 h-1.5 bg-blue-600 dark:bg-blue-500 rounded-full"></span>
-            Comments
-          </h2>
-          <div className="w-full bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 focus-within:border-blue-500/50 transition-all">
-            <textarea 
-              placeholder="댓글을 입력하세요"
-              className="w-full bg-transparent border-none outline-none text-sm text-zinc-700 dark:text-zinc-300 min-h-[80px] resize-none transition-colors"
-            />
-            <div className="flex justify-end mt-3">
-              <button className="bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-black px-6 py-2 rounded-lg transition-all shadow-xl shadow-blue-900/20">
-                등록
-              </button>
-            </div>
-          </div>
-        </section>
+        <CommentForm postId={post.id} />
+        
+        <CommentList postId={post.id} />
 
         <footer className="p-5 border-t border-zinc-200 dark:border-zinc-800 flex justify-between bg-zinc-50 dark:bg-zinc-950 items-center transition-colors">
           <a href="/" className="text-[10px] font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all uppercase tracking-widest px-4 py-2 border border-zinc-200 dark:border-zinc-900 rounded-lg hover:bg-white dark:hover:bg-zinc-900 transition-colors">
