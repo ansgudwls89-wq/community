@@ -8,8 +8,19 @@
 }
 
 :root {
+  --background: #ffffff;
+  --foreground: #09090b;
+  --card-bg: #f8fafc;
+  --border-color: #e2e8f0;
+  --accent-blue: #2563eb;
+}
+
+[data-theme='dark'] {
   --background: #09090b; /* Zinc 950 */
   --foreground: #f4f4f5; /* Zinc 100 */
+  --card-bg: #09090b;
+  --border-color: #27272a; /* Zinc 800 */
+  --accent-blue: #3b82f6;
 }
 
 body {
@@ -17,6 +28,7 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* 스크롤바 커스텀 */
@@ -24,13 +36,19 @@ body {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #09090b;
+  background: var(--background);
 }
 ::-webkit-scrollbar-thumb {
-  background: #27272a;
+  background: #cbd5e1;
   border-radius: 4px;
 }
+[data-theme='dark'] ::-webkit-scrollbar-thumb {
+  background: #27272a;
+}
 ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+[data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
   background: #3f3f46;
 }
 
