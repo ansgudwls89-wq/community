@@ -76,31 +76,19 @@ export default function WriteForm({ categories, defaultCategory, initialNickname
       </header>
 
       <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest px-1 transition-colors">스페이스 선택</label>
-            <select 
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              required
-              disabled={!!defaultCategory}
-              className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-700 dark:text-zinc-200 outline-none focus:ring-2 focus:ring-blue-600/50 transition-all appearance-none cursor-pointer transition-colors uppercase disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {categories.map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-            </select>
-          </div>
-          <div className="space-y-2">
-            <label className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest px-1 transition-colors">작성자</label>
-            <input 
-              type="text"
-              value={author}
-              onChange={(e) => setAuthor(e.target.value)}
-              placeholder="익명"
-              className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-700 dark:text-zinc-200 outline-none focus:ring-2 focus:ring-blue-600/50 transition-all placeholder:text-zinc-300 dark:placeholder:text-zinc-700 transition-colors"
-            />
-          </div>
+        <div className="space-y-2">
+          <label className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest px-1 transition-colors">스페이스 선택</label>
+          <select 
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            required
+            disabled={!!defaultCategory}
+            className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-700 dark:text-zinc-200 outline-none focus:ring-2 focus:ring-blue-600/50 transition-all appearance-none cursor-pointer transition-colors uppercase disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {categories.map(cat => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
         </div>
 
         <div className="space-y-2">
