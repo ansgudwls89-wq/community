@@ -1,5 +1,6 @@
 import { supabase } from '@/utils/supabase';
 import { notFound } from 'next/navigation';
+import VoteButtons from '@/components/VoteButtons';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -62,8 +63,9 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
                 <span className="text-blue-600 dark:text-blue-500 animate-pulse transition-colors">●</span> 조회 
                 <span className="text-zinc-900 dark:text-zinc-100 font-black transition-colors">{post.views ?? 0}</span>
               </span>
-              <span>추천 {post.likes ?? 0}</span>
-              <span className="text-blue-600 dark:text-blue-500 transition-colors">댓글 {post.comments_count ?? 0}</span>
+              <span className="text-blue-600 dark:text-blue-500 transition-colors">추천 {post.likes ?? 0}</span>
+              <span className="text-red-600 dark:text-red-500 transition-colors">비추천 {post.dislikes ?? 0}</span>
+              <span className="text-zinc-600 dark:text-zinc-400 transition-colors">댓글 {post.comments_count ?? 0}</span>
             </div>
           </div>
         </header>
@@ -74,16 +76,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
             dangerouslySetInnerHTML={{ __html: post.content || '<p>본문 내용이 없습니다.</p>' }}
           />
           
-          <div className="mt-16 mb-8 flex justify-center gap-4">
-            <button className="flex items-center gap-2 px-6 py-2 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl hover:bg-blue-600/10 hover:border-blue-500 transition-all group active:scale-95 shadow-lg">
-              <span className="text-lg">👍</span>
-              <span className="text-[11px] font-black text-zinc-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">추천 {post.likes || 0}</span>
-            </button>
-            <button className="flex items-center gap-2 px-6 py-2 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl hover:bg-red-600/10 hover:border-red-500 transition-all group active:scale-95 shadow-lg">
-              <span className="text-lg">👎</span>
-              <span className="text-[11px] font-black text-zinc-500 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">비추천 0</span>
-            </button>
-          </div>
+          <VoteButtons postId={post.id} initialLikes={post.likes || 0} initialDislikes={post.dislikes || 0} />
         </article>
 
         <section className="border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/10 p-6 sm:p-8 text-center sm:text-left transition-colors">
