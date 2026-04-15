@@ -1,6 +1,7 @@
 'use server';
 
 import { supabase } from '@/utils/supabase';
+import { createClient } from '@/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 
 export async function createPostAction(data: {
@@ -14,6 +15,9 @@ export async function createPostAction(data: {
   if (!title || !category || !content) {
     throw new Error('필수 입력 항목이 누락되었습니다.');
   }
+
+  const supabaseClient = await createClient();
+  const { data: { user } } = await supabaseClient.auth.getUser();
 
   // 1. 해당 카테고리의 마지막 idx 가져오기
   const { data: lastPost } = await supabase
@@ -35,7 +39,7 @@ export async function createPostAction(data: {
         content, 
         author: author || '익명',
         idx: nextIdx,
-        has_image: content.includes('<img'), // 간이 이미지 포함 여부 체크
+        has_image: content.includes('<img'),
         comments_count: 0,
         likes: 0,
         views: 0
@@ -47,6 +51,22 @@ export async function createPostAction(data: {
   if (error) {
     console.error('글 작성 중 에러 발생:', error.message);
     throw new Error(error.message);
+  }
+
+  // 3. 에너지 지급 (로그인한 경우에만)
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('energy')
+      .eq('id', user.id)
+      .single();
+    
+    if (profile) {
+      await supabase
+        .from('profiles')
+        .update({ energy: (profile.energy || 0) + 10 }) // 글 작성 시 에너지 10 지급
+        .eq('id', user.id);
+    }
   }
 
   revalidatePath('/');

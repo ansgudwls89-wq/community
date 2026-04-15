@@ -46,7 +46,10 @@ export default function MobileMenu({ user }: MobileMenuProps) {
             {user ? (
               <>
                 <div className="px-4 py-3 border-b border-zinc-100 dark:border-zinc-800">
-                  <p className="text-xs font-black text-zinc-900 dark:text-white truncate">{user.nickname || user.email}</p>
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-xs font-black text-zinc-900 dark:text-white truncate">{user.nickname || user.email}</p>
+                    <span className="text-blue-600 dark:text-blue-400 text-[10px] font-black bg-blue-50 dark:bg-blue-900/20 px-1.5 py-0.5 rounded-md border border-blue-100 dark:border-blue-800/50">⚡ {user.energy || 0}</span>
+                  </div>
                   <p className="text-[10px] text-zinc-500 truncate">{user.email}</p>
                 </div>
                 <a href="/profile" className="block px-4 py-3 text-sm font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">내 프로필</a>

@@ -1,7 +1,7 @@
 'use client';
 
 import { supabase } from '@/utils/supabase';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface VoteButtonsProps {
   postId: number;
@@ -12,38 +12,46 @@ interface VoteButtonsProps {
 export default function VoteButtons({ postId, initialLikes, initialDislikes }: VoteButtonsProps) {
   const [likes, setLikes] = useState(initialLikes);
   const [dislikes, setDislikes] = useState(initialDislikes);
-  const [isVoting, setIsSubmitting] = useState(false);
+  const [isVoting, setIsVoting] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUserId(session?.user?.id || null);
+    };
+    getSession();
+  }, []);
 
   const handleVote = async (type: 'like' | 'dislike') => {
     if (isVoting) return;
 
-    // 로컬 스토리지에 투표 여부 저장 (간단한 중복 방지)
-    const voteKey = `vote_${postId}`;
-    const alreadyVoted = localStorage.getItem(voteKey);
-    
-    if (alreadyVoted) {
-      alert('이미 투표하셨습니다.');
+    if (!userId) {
+      alert('추천/비추천은 로그인 후 이용 가능합니다.');
       return;
     }
 
-    setIsSubmitting(true);
+    setIsVoting(true);
     
-    const { error } = await supabase.rpc('toggle_post_vote', {
+    // Use the new RPC that checks post_votes table
+    const { data, error } = await supabase.rpc('toggle_post_vote_v2', {
       target_post_id: postId,
-      vote_type: type
+      target_user_id: userId,
+      target_vote_type: type
     });
 
     if (error) {
       console.error('Error voting:', error.message);
       alert('투표 중 오류가 발생했습니다.');
+    } else if (data && !data.success) {
+      alert(data.message || '이미 투표하셨습니다.');
     } else {
       if (type === 'like') setLikes(prev => prev + 1);
       else setDislikes(prev => prev + 1);
-      
-      localStorage.setItem(voteKey, 'true');
+      alert(type === 'like' ? '추천되었습니다.' : '비추천되었습니다.');
     }
     
-    setIsSubmitting(false);
+    setIsVoting(false);
   };
 
   return (
@@ -65,7 +73,7 @@ export default function VoteButtons({ postId, initialLikes, initialDislikes }: V
       >
         <span className="text-lg group-hover:scale-110 transition-transform">👎</span>
         <span className="text-[11px] font-black text-zinc-500 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
-          비추천 {dislikes || 0}
+          비추천 {dislikes}
         </span>
       </button>
     </div>

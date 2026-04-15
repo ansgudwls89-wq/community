@@ -7,6 +7,7 @@ interface UserMenuProps {
   user: {
     email?: string
     nickname?: string
+    energy?: number
   }
 }
 
@@ -19,6 +20,10 @@ export default function UserMenu({ user }: UserMenuProps) {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-2 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-all shadow-sm"
       >
+        <div className="flex items-center gap-1.5 mr-1 pr-2 border-r border-zinc-200 dark:border-zinc-800">
+          <span className="text-blue-600 dark:text-blue-400 text-[10px]">⚡</span>
+          <span className="text-[11px] font-black text-zinc-900 dark:text-zinc-100">{user.energy || 0}</span>
+        </div>
         <div className="w-6 h-6 rounded-lg bg-blue-600 flex items-center justify-center text-[10px] font-black text-white uppercase">
           {(user.nickname || user.email || '?')[0]}
         </div>

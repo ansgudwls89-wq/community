@@ -2,11 +2,13 @@
 
 import { supabase } from '@/utils/supabase';
 import { useEffect, useState } from 'react';
+import { signOut } from '@/app/auth/actions';
 
 interface Profile {
   id: string;
   email: string;
   nickname: string;
+  energy: number;
   updated_at: string;
 }
 
@@ -32,7 +34,7 @@ export default function AdminPage() {
     const { data: profileData } = await supabase
       .from('profiles')
       .select('*')
-      .order('updated_at', { ascending: false });
+      .order('energy', { ascending: false }); // 에너지 많은 순으로 정렬
     setUsers(profileData || []);
     
     setLoading(false);
@@ -66,6 +68,24 @@ export default function AdminPage() {
     const { error } = await supabase.from('posts').delete().eq('category', category);
     if (!error) {
       fetchData();
+    }
+  }
+
+  // 테스트 모드: 유저로 로그인 기능 (실제 구현을 위해서는 서비스 롤 키 또는 테스트 계정 공통 비밀번호 필요)
+  async function handleImpersonate(email: string) {
+    if (!confirm(`${email} 계정으로 접속하시겠습니까? (테스트 모드: 공통 비밀번호 test1234로 시도)`)) return;
+    
+    await signOut(); // 먼저 현재 계정 로그아웃
+    
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password: 'test1234' // 테스트 환경용 공통 비밀번호 가정
+    });
+
+    if (error) {
+      alert(`로그인 실패: ${error.message}\n(테스트 모드용 비밀번호 'test1234'가 설정되어 있어야 합니다)`);
+    } else {
+      window.location.href = '/';
     }
   }
 
@@ -184,14 +204,15 @@ export default function AdminPage() {
                 <tr className="bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-100 dark:border-zinc-800 text-[10px] font-black text-zinc-400 uppercase tracking-widest text-center">
                   <th className="py-3 px-4">아이디 (이메일)</th>
                   <th className="py-3 px-4">닉네임</th>
-                  <th className="py-3 px-4">가입일</th>
+                  <th className="py-3 px-4">에너지</th>
+                  <th className="py-3 px-4">관리</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-100 dark:divide-zinc-900 transition-colors">
                 {loading ? (
-                  <tr><td colSpan={3} className="p-10 text-center text-zinc-400 animate-pulse">데이터를 불러오는 중...</td></tr>
+                  <tr><td colSpan={4} className="p-10 text-center text-zinc-400 animate-pulse">데이터를 불러오는 중...</td></tr>
                 ) : users.length === 0 ? (
-                  <tr><td colSpan={3} className="p-10 text-center text-zinc-400 italic">가입된 회원이 없습니다.</td></tr>
+                  <tr><td colSpan={4} className="p-10 text-center text-zinc-400 italic">가입된 회원이 없습니다.</td></tr>
                 ) : (
                   users.map(user => (
                     <tr key={user.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-900/40 transition-all text-xs">
@@ -199,11 +220,21 @@ export default function AdminPage() {
                         {user.email?.replace('@nol2.com', '')} 
                         <span className="text-[10px] text-zinc-400 dark:text-zinc-600 font-normal ml-1">({user.email})</span>
                       </td>
-                      <td className="py-4 px-4 text-center font-black text-blue-600 dark:text-blue-400">
+                      <td className="py-4 px-4 text-center font-black text-zinc-900 dark:text-zinc-100">
                         {user.nickname}
                       </td>
-                      <td className="py-4 px-4 text-center text-zinc-400 dark:text-zinc-600 font-medium">
-                        {new Date(user.updated_at).toLocaleDateString('ko-KR')}
+                      <td className="py-4 px-4 text-center">
+                        <span className="bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-2 py-1 rounded-lg font-black border border-blue-100 dark:border-blue-800/50">
+                          ⚡ {user.energy || 0}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4 text-center">
+                        <button 
+                          onClick={() => handleImpersonate(user.email)}
+                          className="bg-zinc-900 dark:bg-white text-white dark:text-black text-[10px] font-black px-3 py-1.5 rounded-lg hover:scale-105 active:scale-95 transition-all shadow-md"
+                        >
+                          접속하기
+                        </button>
                       </td>
                     </tr>
                   ))
