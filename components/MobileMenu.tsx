@@ -8,6 +8,7 @@ interface MobileMenuProps {
   user: {
     email?: string
     nickname?: string
+    energy?: number
   } | null
 }
 
