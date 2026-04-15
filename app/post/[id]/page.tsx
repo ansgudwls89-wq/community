@@ -1,7 +1,8 @@
-import { supabase } from '@/utils/supabase';
+import { supabase as supabaseAdmin } from '@/utils/supabase';
 import { notFound } from 'next/navigation';
 import VoteButtons from '@/components/VoteButtons';
 import CommentSection from '@/components/CommentSection';
+import { createClient } from '@/utils/supabase/server';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -9,17 +10,17 @@ export const revalidate = 0;
 export default async function PostDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  const { error: rpcError } = await supabase.rpc('increment_views', { post_id: id });
+  const { error: rpcError } = await supabaseAdmin.rpc('increment_views', { post_id: id });
   
   if (rpcError) {
     console.error('RPC Error (Views):', rpcError.message);
-    const { data: currentData } = await supabase.from('posts').select('views').eq('id', id).single();
+    const { data: currentData } = await supabaseAdmin.from('posts').select('views').eq('id', id).single();
     if (currentData) {
-      await supabase.from('posts').update({ views: (currentData.views || 0) + 1 }).eq('id', id);
+      await supabaseAdmin.from('posts').update({ views: (currentData.views || 0) + 1 }).eq('id', id);
     }
   }
 
-  const { data: post, error } = await supabase
+  const { data: post, error } = await supabaseAdmin
     .from('posts')
     .select('*')
     .eq('id', id)
@@ -32,6 +33,19 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
         <a href="/" className="text-blue-600 dark:text-blue-400 hover:underline">← 목록으로 돌아가기</a>
       </div>
     );
+  }
+
+  // Fetch user profile for nickname
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  let nickname = '';
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('nickname')
+      .eq('id', user.id)
+      .single();
+    nickname = profile?.nickname || '';
   }
 
   return (
@@ -80,7 +94,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
           <VoteButtons postId={post.id} initialLikes={post.likes || 0} initialDislikes={post.dislikes || 0} />
         </article>
 
-        <CommentSection postId={post.id} />
+        <CommentSection postId={post.id} initialNickname={nickname} />
 
         <footer className="p-5 border-t border-zinc-200 dark:border-zinc-800 flex justify-between bg-zinc-50 dark:bg-zinc-950 items-center transition-colors">
           <a href="/" className="text-[10px] font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all uppercase tracking-widest px-4 py-2 border border-zinc-200 dark:border-zinc-900 rounded-lg hover:bg-white dark:hover:bg-zinc-900 transition-colors">

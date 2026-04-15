@@ -15,9 +15,10 @@ interface Comment {
 
 interface CommentSectionProps {
   postId: number;
+  initialNickname?: string;
 }
 
-export default function CommentSection({ postId }: CommentSectionProps) {
+export default function CommentSection({ postId, initialNickname }: CommentSectionProps) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [replyToId, setReplyToId] = useState<number | null>(null);
@@ -38,7 +39,6 @@ export default function CommentSection({ postId }: CommentSectionProps) {
   useEffect(() => {
     fetchComments();
 
-    // Subscribe to ALL changes in comments table without server-side filter for maximum reliability
     const channel = supabase
       .channel(`realtime_comments_all`)
       .on(
@@ -49,11 +49,8 @@ export default function CommentSection({ postId }: CommentSectionProps) {
           table: 'comments',
         },
         (payload) => {
-          console.log('Global Realtime Event:', payload);
-          
           if (payload.eventType === 'INSERT') {
             const newComment = payload.new as Comment;
-            // Filter by postId client-side
             if (Number(newComment.post_id) === Number(postId)) {
               setComments((prev) => {
                 if (prev.some(c => c.id === newComment.id)) return prev;
@@ -77,7 +74,6 @@ export default function CommentSection({ postId }: CommentSectionProps) {
     };
   }, [postId, fetchComments]);
 
-  // Handle successful comment submission
   const handleCommentSuccess = (newComment: Comment) => {
     setComments((prev) => {
       if (prev.some(c => c.id === newComment.id)) return prev;
@@ -86,7 +82,6 @@ export default function CommentSection({ postId }: CommentSectionProps) {
     setReplyToId(null);
   };
 
-  // Build nested tree structure
   const commentTree = useMemo(() => {
     const map = new Map<number, Comment & { children: any[] }>();
     const roots: any[] = [];
@@ -142,6 +137,7 @@ export default function CommentSection({ postId }: CommentSectionProps) {
             onSuccess={handleCommentSuccess}
             placeholder={`${comment.author}님께 답글 남기기...`}
             autoFocus
+            initialNickname={initialNickname}
           />
         </div>
       )}
@@ -154,10 +150,8 @@ export default function CommentSection({ postId }: CommentSectionProps) {
 
   return (
     <div className="w-full">
-      {/* 메인 댓글 입력창 (상단으로 이동) */}
-      <CommentForm postId={postId} onSuccess={handleCommentSuccess} />
+      <CommentForm postId={postId} onSuccess={handleCommentSuccess} initialNickname={initialNickname} />
 
-      {/* 댓글 리스트 영역 */}
       <section className="border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 sm:p-8 transition-colors">
         <h2 className="text-xs font-black text-zinc-900 dark:text-white uppercase tracking-widest mb-8 flex items-center gap-2 transition-colors">
           <span className="w-1.5 h-1.5 bg-zinc-400 dark:bg-zinc-600 rounded-full"></span>

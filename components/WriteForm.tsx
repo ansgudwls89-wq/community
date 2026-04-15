@@ -8,13 +8,14 @@ import { createPostAction } from '@/app/write/actions';
 interface WriteFormProps {
   categories: string[];
   defaultCategory?: string;
+  initialNickname?: string;
 }
 
-export default function WriteForm({ categories, defaultCategory }: WriteFormProps) {
+export default function WriteForm({ categories, defaultCategory, initialNickname }: WriteFormProps) {
   const router = useRouter();
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState(defaultCategory || (categories.length > 0 ? categories[0] : ''));
-  const [author, setAuthor] = useState('');
+  const [author, setAuthor] = useState(initialNickname || '');
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 

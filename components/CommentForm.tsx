@@ -18,11 +18,12 @@ interface CommentFormProps {
   onSuccess?: (newComment: Comment) => void;
   placeholder?: string;
   autoFocus?: boolean;
+  initialNickname?: string;
 }
 
-export default function CommentForm({ postId, parentId = null, onSuccess, placeholder = "댓글을 입력하세요", autoFocus = false }: CommentFormProps) {
+export default function CommentForm({ postId, parentId = null, onSuccess, placeholder = "댓글을 입력하세요", autoFocus = false, initialNickname = "" }: CommentFormProps) {
   const [content, setContent] = useState('');
-  const [author, setAuthor] = useState('');
+  const [author, setAuthor] = useState(initialNickname || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -39,7 +40,7 @@ export default function CommentForm({ postId, parentId = null, onSuccess, placeh
       });
       
       setContent('');
-      setAuthor('');
+      if (!initialNickname) setAuthor('');
       
       if (onSuccess && newComment) {
         onSuccess(newComment as any);
