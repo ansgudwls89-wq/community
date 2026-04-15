@@ -7,8 +7,8 @@ export default async function Home() {
 
   if (isEnvMissing) {
     return (
-      <div className="p-10 bg-zinc-900 border border-zinc-800 rounded-2xl text-zinc-400">
-        <h2 className="text-xl font-bold mb-4 text-white">⚙️ 설정 필요</h2>
+      <div className="p-10 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-zinc-500 dark:text-zinc-400 transition-colors">
+        <h2 className="text-xl font-bold mb-4 text-zinc-900 dark:text-white">⚙️ 설정 필요</h2>
         <p>환경 변수를 설정해 주세요.</p>
       </div>
     );
