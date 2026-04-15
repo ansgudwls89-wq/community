@@ -27,23 +27,23 @@ export default async function RootLayout({
         <ThemeProvider>
           {/* 상단 고정 헤더 */}
           <header className="fixed top-0 w-full h-16 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-200 dark:border-zinc-800 z-50 transition-colors">
-            <div className="max-w-[1400px] mx-auto h-full px-4 flex items-center justify-between gap-4">
+            <div className="max-w-[1400px] mx-auto h-full px-2 sm:px-4 flex items-center justify-between gap-2 sm:gap-4">
               <div className="flex-shrink-0">
-                <a href="/" className="text-2xl font-black text-zinc-900 dark:text-white tracking-tighter hover:text-blue-500 transition-colors">
+                <a href="/" className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white tracking-tighter hover:text-blue-500 transition-colors">
                   NOL2.
                 </a>
               </div>
 
               {/* 중앙 검색 영역 */}
-              <div className="flex-1 max-w-3xl flex items-center gap-2">
+              <div className="flex-1 max-w-3xl flex items-center gap-1 sm:gap-2 min-w-0">
                 <SpaceDropdown initialCategories={categories} />
                 <SearchBar />
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 sm:gap-2">
                 <ThemeToggle />
-                <button className="hidden sm:block text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all text-sm font-bold px-3 py-2">로그인</button>
-                <button className="bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold px-4 py-2 rounded-xl shadow-lg shadow-blue-900/20 transition-all">회원가입</button>
+                <button className="hidden md:block text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all text-sm font-bold px-2 py-2">로그인</button>
+                <button className="bg-blue-600 hover:bg-blue-700 text-white text-[10px] sm:text-sm font-bold px-3 sm:px-4 py-2 rounded-xl shadow-lg shadow-blue-900/20 transition-all whitespace-nowrap">회원가입</button>
               </div>
             </div>
           </header>

@@ -52,21 +52,21 @@ export default async function Home() {
       </div>
 
       <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm transition-colors">
-        <table className="w-full border-collapse table-fixed">
+        <table className="w-full border-collapse">
           <tbody className="text-[12px]">
             {(!posts || posts.length === 0) ? (
               <tr><td colSpan={2} className="py-8 text-center text-zinc-400 dark:text-zinc-500 italic text-[11px]">게시글이 없습니다.</td></tr>
             ) : (
               posts.map((post) => (
                 <tr key={post.id} className="border-b border-zinc-100 dark:border-zinc-800 last:border-0 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all group cursor-pointer text-zinc-600 dark:text-zinc-300">
-                  <td className="py-1.5 px-3 truncate font-medium transition-colors">
+                  <td className="py-1.5 px-3 truncate font-medium">
                     <a href={`/post/${post.id}`} className="flex items-center gap-2 overflow-hidden">
-                      <span className="truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{post.title}</span>
-                      <span className="text-[10px] font-black text-blue-600/60 dark:text-blue-400/60">[{post.comments_count || 0}]</span>
+                      <span className="truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">{post.title}</span>
+                      <span className="text-[10px] font-black text-blue-600/60 dark:text-blue-400/60 flex-shrink-0">[{post.comments_count || 0}]</span>
                     </a>
                   </td>
                   {showView && (
-                    <td className="py-1.5 px-3 text-right text-zinc-400 dark:text-zinc-500 text-[10px] font-bold w-[50px] transition-colors">
+                    <td className="py-1.5 px-3 text-right text-zinc-400 dark:text-zinc-600 text-[10px] font-bold w-12 transition-colors">
                       {post.views || 0}
                     </td>
                   )}
@@ -92,7 +92,7 @@ export default async function Home() {
         {categories.map(category => (
           <PostList 
             key={category} 
-            title={category.toUpperCase()} 
+            title={category} 
             posts={postsByCategory[category]} 
             showView={false}
             href={`/space/${encodeURIComponent(category)}`}

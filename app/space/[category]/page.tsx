@@ -50,14 +50,14 @@ export default async function SpacePage({ params }: { params: Promise<{ category
       </div>
 
       <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-2xl transition-colors">
-        <table className="w-full border-collapse table-fixed">
+        <table className="w-full border-collapse">
           <thead>
             <tr className="bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800 text-[11px] font-black text-zinc-500 dark:text-zinc-500 uppercase tracking-widest transition-colors text-center">
-              <th className="py-3 px-4 w-[60px]">No</th>
+              <th className="py-3 px-4 w-[60px] hidden sm:table-cell">No</th>
               <th className="py-3 px-4 text-left">Subject</th>
               <th className="py-3 px-4 w-[100px]">Author</th>
-              <th className="py-3 px-4 w-[120px]">Date</th>
-              <th className="py-3 px-4 w-[70px]">Views</th>
+              <th className="py-3 px-4 w-[120px] hidden md:table-cell">Date</th>
+              <th className="py-3 px-4 w-[70px] hidden sm:table-cell">Views</th>
             </tr>
           </thead>
           <tbody className="text-[13px]">
@@ -65,19 +65,19 @@ export default async function SpacePage({ params }: { params: Promise<{ category
               <tr><td colSpan={5} className="py-20 text-center text-zinc-400 dark:text-zinc-600 italic">게시글이 없습니다. 첫 글의 주인공이 되어보세요!</td></tr>
             ) : (
               posts.map((post) => (
-                <tr key={post.id} className="border-b border-zinc-100 dark:border-zinc-900 last:border-0 hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-all group cursor-pointer text-zinc-600 dark:text-zinc-400">
-                  <td className="py-3 px-4 text-center text-zinc-400 dark:text-zinc-600 text-[10px] font-mono">{post.id}</td>
+                <tr key={post.id} className="border-b border-zinc-100 dark:border-zinc-900 last:border-0 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all group cursor-pointer text-zinc-600 dark:text-zinc-400">
+                  <td className="py-3 px-4 text-center text-zinc-400 dark:text-zinc-600 text-[10px] font-mono hidden sm:table-cell">{post.id}</td>
                   <td className="py-3 px-4 truncate font-medium">
                     <a href={`/post/${post.id}`} className="flex items-center gap-2 group-hover:translate-x-1 transition-transform overflow-hidden">
-                      <span className="truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{post.title}</span>
-                      <span className="text-[11px] font-black text-blue-600/80 dark:text-blue-500/80">[{post.comments_count || 0}]</span>
+                      <span className="truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">{post.title}</span>
+                      <span className="text-[11px] font-black text-blue-600/80 dark:text-blue-500/80 flex-shrink-0">[{post.comments_count || 0}]</span>
                     </a>
                   </td>
                   <td className="py-3 px-4 text-center text-[12px] truncate">{post.author || '익명'}</td>
-                  <td className="py-3 px-4 text-center text-[11px] text-zinc-400 dark:text-zinc-500">
+                  <td className="py-3 px-4 text-center text-[11px] text-zinc-400 dark:text-zinc-500 hidden md:table-cell">
                     {new Date(post.created_at).toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
                   </td>
-                  <td className="py-3 px-4 text-center text-zinc-500 dark:text-zinc-500 text-[11px] font-bold">
+                  <td className="py-3 px-4 text-center text-zinc-500 dark:text-zinc-500 text-[11px] font-bold hidden sm:table-cell">
                     {post.views || 0}
                   </td>
                 </tr>

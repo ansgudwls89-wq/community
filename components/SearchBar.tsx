@@ -19,7 +19,7 @@ export default function SearchBar() {
         type="text" 
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="글 제목 또는 내용을 검색해 보세요"
+        placeholder="글 검색..."
         className="w-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-blue-600/50 outline-none transition-all placeholder:text-zinc-400 dark:placeholder:text-zinc-600 transition-colors"
       />
       <button 
