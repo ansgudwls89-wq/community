@@ -25,30 +25,35 @@ export default function CommentList({ postId }: CommentListProps) {
   useEffect(() => {
     fetchComments();
 
-    // Subscribe to ALL changes for this post's comments to be more robust
+    // Subscribe to all changes in the 'comments' table and filter client-side for maximum reliability
     const channel = supabase
-      .channel(`post_comments_${postId}`)
+      .channel(`realtime_comments_${postId}`)
       .on(
         'postgres_changes',
         {
           event: '*', // Listen to INSERT, UPDATE, DELETE
           schema: 'public',
           table: 'comments',
-          filter: `post_id=eq.${postId}`,
         },
         (payload) => {
+          console.log('Realtime payload received:', payload);
+          
           if (payload.eventType === 'INSERT') {
             const newComment = payload.new as Comment;
-            setComments((prev) => {
-              // 중복 방지 (이미 목록에 있으면 추가 안함)
-              if (prev.some(c => c.id === newComment.id)) return prev;
-              return [...prev, newComment];
-            });
+            // Only add if it belongs to this post
+            if (Number(newComment.post_id) === Number(postId)) {
+              setComments((prev) => {
+                if (prev.some(c => c.id === newComment.id)) return prev;
+                return [...prev, newComment];
+              });
+            }
           } else if (payload.eventType === 'DELETE') {
             setComments((prev) => prev.filter(c => c.id !== payload.old.id));
           } else if (payload.eventType === 'UPDATE') {
             const updatedComment = payload.new as Comment;
-            setComments((prev) => prev.map(c => c.id === updatedComment.id ? updatedComment : c));
+            if (Number(updatedComment.post_id) === Number(postId)) {
+              setComments((prev) => prev.map(c => c.id === updatedComment.id ? updatedComment : c));
+            }
           }
         }
       )
