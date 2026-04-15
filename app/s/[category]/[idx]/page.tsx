@@ -1,4 +1,3 @@
-import { supabase as supabaseAdmin } from '@/utils/supabase';
 import { notFound } from 'next/navigation';
 import VoteButtons from '@/components/VoteButtons';
 import CommentSection from '@/components/CommentSection';
@@ -16,7 +15,11 @@ export default async function PostDetailPage({
   const { category: encodedCategory, idx } = await params;
   const category = decodeURIComponent(encodedCategory);
 
-  const { data: post, error } = await supabaseAdmin
+  const supabase = await createClient();
+
+  // increment_views logic removed from here as it's now in ViewCounter client component
+
+  const { data: post, error } = await supabase
     .from('posts')
     .select('*')
     .eq('category', category)
@@ -33,7 +36,6 @@ export default async function PostDetailPage({
   }
 
   // Fetch user profile for nickname
-  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   let nickname = '';
   if (user) {

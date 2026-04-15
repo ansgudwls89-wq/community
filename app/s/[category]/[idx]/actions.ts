@@ -1,6 +1,5 @@
 'use server';
 
-import { supabase } from '@/utils/supabase';
 import { createClient } from '@/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
@@ -18,16 +17,21 @@ export async function createCommentAction(data: {
     throw new Error('내용을 입력해 주세요.');
   }
 
-  const supabaseClient = await createClient();
-  const { data: { user } } = await supabaseClient.auth.getUser();
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
     throw new Error('로그인이 필요한 서비스입니다.');
   }
 
-  // Get IP address
-  const headerList = await headers();
-  const ip = headerList.get('x-forwarded-for')?.split(',')[0] || '127.0.0.1';
+  // Get IP address safely
+  let ip = '127.0.0.1';
+  try {
+    const headerList = await headers();
+    ip = headerList.get('x-forwarded-for')?.split(',')[0] || headerList.get('x-real-ip') || '127.0.0.1';
+  } catch (e) {
+    console.error('Failed to get headers:', e);
+  }
 
   const { data: newComment, error } = await supabase
     .from('comments')
@@ -49,7 +53,8 @@ export async function createCommentAction(data: {
     throw new Error(error.message);
   }
 
-  revalidatePath(`/s/[category]/[idx]`, 'page');
+  // Revalidate the entire site to update counts, or specific paths if needed
+  revalidatePath('/', 'layout');
   
   return newComment;
 }

@@ -1,6 +1,5 @@
 'use server';
 
-import { supabase } from '@/utils/supabase';
 import { createClient } from '@/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
@@ -17,8 +16,8 @@ export async function createPostAction(data: {
     throw new Error('필수 입력 항목이 누락되었습니다.');
   }
 
-  const supabaseClient = await createClient();
-  const { data: { user } } = await supabaseClient.auth.getUser();
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
     throw new Error('로그인이 필요한 서비스입니다.');
@@ -72,8 +71,7 @@ export async function createPostAction(data: {
       .eq('id', user.id);
   }
 
-  revalidatePath('/');
-  revalidatePath(`/s/${encodeURIComponent(category)}`);
+  revalidatePath('/', 'layout');
   
   redirect(`/s/${encodeURIComponent(category)}/${newPost.idx}`);
 }
