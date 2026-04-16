@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { deletePostAction } from '@/app/s/[category]/write/actions';
+import ReportButton from '@/components/ReportButton';
 
 interface PostActionsProps {
   postId: number;
@@ -16,11 +17,7 @@ export default function PostActions({ postId, category, idx, author, currentNick
   const isAuthor = !!currentNickname && currentNickname === author;
 
   if (!isAuthor) {
-    return (
-      <button className="text-[10px] font-bold text-zinc-400 dark:text-zinc-700 hover:text-red-500 uppercase transition-colors px-4 py-2">
-        신고하기
-      </button>
-    );
+    return <ReportButton targetType="post" targetId={postId} />;
   }
 
   async function handleDelete() {
