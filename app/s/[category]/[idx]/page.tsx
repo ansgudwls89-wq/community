@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
 import DOMPurify from 'isomorphic-dompurify';
-import { createClient } from '@/utils/supabase/server';
+import { supabase } from '@/utils/supabase';
 
 export const metadata: Metadata = {
   title: 'NOL2 커뮤니티',
@@ -17,7 +17,6 @@ export default async function PostDetailPage({
   const { category: encodedCategory, idx } = await params;
   const category = decodeURIComponent(encodedCategory);
 
-  const supabase = await createClient();
   const { data: post, error } = await supabase
     .from('posts')
     .select('*')
@@ -41,19 +40,19 @@ export default async function PostDetailPage({
           <div className="flex items-center gap-2 mb-3 text-[10px]">
             <a
               href={`/s/${encodeURIComponent(post.category)}`}
-              className="font-black text-blue-600 dark:text-blue-500 bg-blue-100 dark:bg-blue-500/10 px-2 py-0.5 rounded uppercase tracking-wider hover:bg-blue-200 dark:hover:bg-blue-500/20 transition-all"
+              className="font-black text-blue-600 dark:text-blue-500 bg-blue-100 dark:bg-blue-500/10 px-2 py-0.5 rounded uppercase tracking-wider"
             >
               {post.category}
             </a>
             <span className="text-zinc-300 dark:text-zinc-700 font-bold">/</span>
-            <span className="text-zinc-400 dark:text-zinc-600 font-bold tracking-tighter transition-colors">포스트 #{post.idx || post.id}</span>
+            <span className="text-zinc-400 dark:text-zinc-600 font-bold tracking-tighter">포스트 #{post.idx || post.id}</span>
           </div>
 
-          <h1 className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white mb-4 tracking-tight leading-tight transition-colors">
+          <h1 className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white mb-4 tracking-tight leading-tight">
             {post.title}
           </h1>
 
-          <div className="flex flex-wrap items-center justify-between gap-4 text-[11px] text-zinc-500 transition-colors">
+          <div className="flex flex-wrap items-center justify-between gap-4 text-[11px] text-zinc-500">
             <div className="flex items-center gap-3">
               <span className="font-black text-zinc-700 dark:text-zinc-200">{post.author || '익명'}</span>
               <span className="text-zinc-200 dark:text-zinc-800">|</span>
@@ -68,15 +67,15 @@ export default async function PostDetailPage({
           </div>
         </header>
 
-        <article className="p-6 sm:p-8 min-h-[300px] bg-white dark:bg-zinc-950 transition-colors">
+        <article className="p-6 sm:p-8 min-h-[300px] bg-white dark:bg-zinc-950">
           <div
-            className="prose dark:prose-invert !max-w-none w-full text-zinc-700 dark:text-zinc-300 text-sm sm:text-base leading-relaxed transition-colors"
+            className="prose dark:prose-invert !max-w-none w-full text-zinc-700 dark:text-zinc-300 text-sm sm:text-base leading-relaxed"
             dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content || '<p>본문 내용이 없습니다.</p>', { ADD_TAGS: ['iframe'], ADD_ATTR: ['allowfullscreen', 'frameborder'] }) }}
           />
         </article>
 
-        <footer className="p-5 border-t border-zinc-200 dark:border-zinc-800 flex flex-wrap justify-between gap-2 bg-zinc-50 dark:bg-zinc-950 items-center transition-colors">
-          <a href={`/s/${encodeURIComponent(post.category)}`} className="text-[10px] font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all uppercase tracking-widest px-4 py-2 border border-zinc-200 dark:border-zinc-900 rounded-lg hover:bg-white dark:hover:bg-zinc-900 transition-colors">
+        <footer className="p-5 border-t border-zinc-200 dark:border-zinc-800 flex flex-wrap justify-between gap-2 bg-zinc-50 dark:bg-zinc-950 items-center">
+          <a href={`/s/${encodeURIComponent(post.category)}`} className="text-[10px] font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-white uppercase tracking-widest px-4 py-2 border border-zinc-200 dark:border-zinc-900 rounded-lg hover:bg-white dark:hover:bg-zinc-900 transition-colors">
             ← 목록으로
           </a>
         </footer>
