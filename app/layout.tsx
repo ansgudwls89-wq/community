@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import AdBanner from "@/components/AdBanner";
+import RecentlyViewed from "@/components/RecentlyViewed";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import ThemeToggle from "@/components/ThemeToggle";
 import SpaceDropdown from "@/components/SpaceDropdown";
@@ -127,6 +128,9 @@ export default async function RootLayout({
             <aside className="hidden xl:block w-[300px] flex-shrink-0">
               <div className="sticky top-24">
                 <AdBanner label="오른쪽 광고" />
+                <div className="mt-4">
+                  <RecentlyViewed />
+                </div>
               </div>
             </aside>
           </div>

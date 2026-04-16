@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import PostActions from './PostActions';
 import ShareButton from '@/components/ShareButton';
 import BookmarkButton from '@/components/BookmarkButton';
+import ViewRecorder from '@/components/ViewRecorder';
 import VoteButtons from '@/components/VoteButtons';
 import CommentSection from '@/components/CommentSection';
 import ViewCounter from '@/components/ViewCounter';
@@ -95,6 +96,7 @@ export default async function PostDetailPage({
   return (
     <div className="w-full space-y-4">
       <ViewCounter postId={Number(post.id)} />
+      <ViewRecorder id={post.id} idx={post.idx} title={post.title} category={post.category} />
       <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-2xl transition-colors">
         <header className="p-5 sm:p-6 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/30 transition-colors">
           <div className="flex items-center gap-2 mb-3 text-[10px]">
