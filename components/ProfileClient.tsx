@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition, useRef } from 'react';
-import { updateNicknameAction, updateAvatarAction } from '@/app/profile/actions';
+import { updateNicknameAction, updateAvatarAction, updatePasswordAction } from '@/app/profile/actions';
 
 interface Post {
   id: number;
@@ -50,6 +50,22 @@ export default function ProfileClient({ profile, posts, comments }: ProfileClien
   const [avatarError, setAvatarError] = useState('');
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const avatarInputRef = useRef<HTMLInputElement>(null);
+
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [currentPw, setCurrentPw] = useState('');
+  const [newPw, setNewPw] = useState('');
+  const [pwError, setPwError] = useState('');
+  const [pwSuccess, setPwSuccess] = useState(false);
+  const [isSavingPw, setIsSavingPw] = useState(false);
+
+  async function handlePasswordChange() {
+    setPwError(''); setPwSuccess(false);
+    setIsSavingPw(true);
+    const result = await updatePasswordAction(currentPw, newPw);
+    setIsSavingPw(false);
+    if (result.error) { setPwError(result.error); }
+    else { setPwSuccess(true); setCurrentPw(''); setNewPw(''); setTimeout(() => { setPwSuccess(false); setShowPasswordForm(false); }, 2000); }
+  }
 
   async function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -206,6 +222,27 @@ export default function ProfileClient({ profile, posts, comments }: ProfileClien
               </span>
             </div>
           </div>
+        </div>
+
+        {/* 비밀번호 변경 */}
+        <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+          {!showPasswordForm ? (
+            <button onClick={() => setShowPasswordForm(true)} className="text-[10px] font-black text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 rounded-lg transition-all">
+              비밀번호 변경
+            </button>
+          ) : (
+            <div className="space-y-2 max-w-xs">
+              <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2">비밀번호 변경</p>
+              <input type="password" value={currentPw} onChange={e => setCurrentPw(e.target.value)} placeholder="현재 비밀번호" className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-600/50 transition-all" />
+              <input type="password" value={newPw} onChange={e => setNewPw(e.target.value)} placeholder="새 비밀번호 (6자 이상)" className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-600/50 transition-all" />
+              {pwError && <p className="text-xs text-red-500 font-bold">{pwError}</p>}
+              {pwSuccess && <p className="text-xs text-green-500 font-bold">비밀번호가 변경되었습니다!</p>}
+              <div className="flex gap-2">
+                <button onClick={handlePasswordChange} disabled={isSavingPw} className="text-xs font-black text-white bg-blue-600 hover:bg-blue-700 px-4 py-1.5 rounded-lg transition-all disabled:opacity-50">{isSavingPw ? '변경 중...' : '변경'}</button>
+                <button onClick={() => { setShowPasswordForm(false); setPwError(''); setCurrentPw(''); setNewPw(''); }} className="text-xs font-bold text-zinc-400 hover:text-zinc-700 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 transition-all">취소</button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* 통계 */}

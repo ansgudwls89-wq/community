@@ -3,6 +3,26 @@
 import { createClient } from '@/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 
+export async function updatePasswordAction(currentPassword: string, newPassword: string) {
+  if (!newPassword || newPassword.length < 6) return { error: '새 비밀번호는 6자 이상이어야 합니다.' };
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user || !user.email) return { error: '로그인이 필요합니다.' };
+
+  // 현재 비밀번호 확인
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email: user.email,
+    password: currentPassword,
+  });
+  if (signInError) return { error: '현재 비밀번호가 올바르지 않습니다.' };
+
+  const { error } = await supabase.auth.updateUser({ password: newPassword });
+  if (error) return { error: `비밀번호 변경 실패: ${error.message}` };
+
+  return { success: true };
+}
+
 export async function updateAvatarAction(formData: FormData) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
