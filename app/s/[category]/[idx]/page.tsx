@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
+import DOMPurify from 'isomorphic-dompurify';
 import PostActions from './PostActions';
 import ShareButton from '@/components/ShareButton';
 import BookmarkButton from '@/components/BookmarkButton';
@@ -139,7 +140,7 @@ export default async function PostDetailPage({
         <article className="p-6 sm:p-8 min-h-[300px] bg-white dark:bg-zinc-950 transition-colors">
           <div 
             className="prose dark:prose-invert !max-w-none w-full text-zinc-700 dark:text-zinc-300 text-sm sm:text-base leading-relaxed transition-colors"
-            dangerouslySetInnerHTML={{ __html: post.content || '<p>본문 내용이 없습니다.</p>' }}
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content || '<p>본문 내용이 없습니다.</p>', { ADD_TAGS: ['iframe'], ADD_ATTR: ['allowfullscreen', 'frameborder'] }) }}
           />
           
           <VoteButtons postId={post.id} initialLikes={post.likes || 0} initialDislikes={post.dislikes || 0} />

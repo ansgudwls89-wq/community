@@ -2,6 +2,7 @@
 
 import { createClient } from '@/utils/supabase/client';
 import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 
 interface VoteButtonsProps {
   postId: number;
@@ -41,7 +42,7 @@ export default function VoteButtons({ postId, initialLikes, initialDislikes }: V
     if (isVoting) return;
 
     if (!userId) {
-      alert('추천/비추천은 로그인 후 이용 가능합니다.');
+      toast.error('추천/비추천은 로그인 후 이용 가능합니다.');
       return;
     }
 
@@ -55,41 +56,29 @@ export default function VoteButtons({ postId, initialLikes, initialDislikes }: V
       });
 
       if (error) {
-        console.error('RPC Error:', error);
-        alert(`투표 중 오류가 발생했습니다: ${error.message}`);
+        toast.error(`투표 중 오류가 발생했습니다: ${error.message}`);
       } else if (data && data.success) {
         const action = data.action;
-        
         if (action === 'added') {
-          if (type === 'like') {
-            setLikes(prev => prev + 1);
-            setUserVote('like');
-          } else {
-            setDislikes(prev => prev + 1);
-            setUserVote('dislike');
-          }
-          alert(type === 'like' ? '추천되었습니다.' : '비추천되었습니다.');
+          if (type === 'like') { setLikes(prev => prev + 1); setUserVote('like'); }
+          else { setDislikes(prev => prev + 1); setUserVote('dislike'); }
+          toast.success(type === 'like' ? '추천했습니다.' : '비추천했습니다.');
         } else if (action === 'cancelled') {
           if (type === 'like') setLikes(prev => Math.max(0, prev - 1));
           else setDislikes(prev => Math.max(0, prev - 1));
           setUserVote(null);
-          alert('투표가 취소되었습니다.');
+          toast('투표가 취소되었습니다.');
         } else if (action === 'changed') {
           if (type === 'like') {
-            setLikes(prev => prev + 1);
-            setDislikes(prev => Math.max(0, prev - 1));
-            setUserVote('like');
+            setLikes(prev => prev + 1); setDislikes(prev => Math.max(0, prev - 1)); setUserVote('like');
           } else {
-            setDislikes(prev => prev + 1);
-            setLikes(prev => Math.max(0, prev - 1));
-            setUserVote('dislike');
+            setDislikes(prev => prev + 1); setLikes(prev => Math.max(0, prev - 1)); setUserVote('dislike');
           }
-          alert(type === 'like' ? '추천으로 변경되었습니다.' : '비추천으로 변경되었습니다.');
+          toast.success(type === 'like' ? '추천으로 변경되었습니다.' : '비추천으로 변경되었습니다.');
         }
       }
     } catch (err) {
-      console.error('Unexpected error:', err);
-      alert('투표 처리 중 오류가 발생했습니다.');
+      toast.error('투표 처리 중 오류가 발생했습니다.');
     } finally {
       setIsVoting(false);
     }

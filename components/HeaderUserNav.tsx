@@ -13,7 +13,7 @@ export default async function HeaderUserNav() {
   if (user) {
     const { data } = await supabase
       .from('profiles')
-      .select('nickname, avatar_url, energy')
+      .select('nickname, avatar_url, energy, is_admin')
       .eq('id', user.id)
       .single();
     profile = data;
@@ -43,6 +43,7 @@ export default async function HeaderUserNav() {
     energy: profile?.energy,
     avatarUrl: profile?.avatar_url,
     newCommentCount,
+    isAdmin: profile?.is_admin ?? false,
   } : null;
 
   return (

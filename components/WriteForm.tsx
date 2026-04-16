@@ -82,7 +82,7 @@ export default function WriteForm({ categories, defaultCategory, initialNickname
 
     setIsSubmitting(true);
     try {
-      await createPostAction({ title, category, content, author });
+      await createPostAction({ title, category, content });
       clearDraft();
     } catch (error: any) {
       if (error.message === 'NEXT_REDIRECT') return;

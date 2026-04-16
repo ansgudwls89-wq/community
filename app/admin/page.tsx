@@ -102,16 +102,6 @@ export default function AdminPage() {
     });
   }
 
-  async function handleImpersonate(email: string) {
-    if (!confirm(`${email} 계정으로 접속하시겠습니까? (테스트 모드: 공통 비밀번호 test1234로 시도)`)) return;
-    await signOut();
-    const { error } = await supabase.auth.signInWithPassword({ email, password: 'test1234' });
-    if (error) {
-      alert(`로그인 실패: ${error.message}\n(테스트 모드용 비밀번호 'test1234'가 설정되어 있어야 합니다)`);
-    } else {
-      window.location.href = '/';
-    }
-  }
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8 pb-20">
@@ -301,13 +291,8 @@ export default function AdminPage() {
                           ⚡ {user.energy || 0}
                         </span>
                       </td>
-                      <td className="py-4 px-4 text-center">
-                        <button
-                          onClick={() => handleImpersonate(user.email)}
-                          className="bg-zinc-900 dark:bg-white text-white dark:text-black text-[10px] font-black px-3 py-1.5 rounded-lg hover:scale-105 active:scale-95 transition-all shadow-md"
-                        >
-                          접속하기
-                        </button>
+                      <td className="py-4 px-4 text-center text-[11px] text-zinc-400 dark:text-zinc-600">
+                        {new Date(user.updated_at).toLocaleDateString('ko-KR')}
                       </td>
                     </tr>
                   ))

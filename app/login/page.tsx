@@ -47,7 +47,7 @@ export default async function LoginPage({
           <div className="space-y-2">
             <div className="flex justify-between items-center px-1">
               <label className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">Password</label>
-              <a href="#" className="text-[10px] font-bold text-blue-600 dark:text-blue-500 hover:underline">비밀번호 찾기</a>
+              <a href="/forgot-password" className="text-[10px] font-bold text-blue-600 dark:text-blue-500 hover:underline">비밀번호 찾기</a>
             </div>
             <input 
               name="password"

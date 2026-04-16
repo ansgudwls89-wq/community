@@ -13,6 +13,7 @@ interface MobileMenuProps {
     energy?: number
     avatarUrl?: string | null
     newCommentCount?: number
+    isAdmin?: boolean
   } | null
 }
 
@@ -100,9 +101,11 @@ export default function MobileMenu({ user }: MobileMenuProps) {
                   <span className="bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">새 댓글 {user.newCommentCount}</span>
                 )}
               </a>
-              <a href="/admin" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-5 py-3 text-sm font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors cursor-pointer">
-                관리자 패널
-              </a>
+              {user.isAdmin && (
+                <a href="/admin" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-5 py-3 text-sm font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors cursor-pointer">
+                  관리자 패널
+                </a>
+              )}
               <form action={signOut}>
                 <button
                   type="submit"

@@ -1,7 +1,9 @@
 import { supabase } from '@/utils/supabase';
-
+import { connection } from 'next/server';
 
 export default async function Home() {
+  await connection();
+
   const isEnvMissing = !process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (isEnvMissing) {
@@ -13,44 +15,36 @@ export default async function Home() {
     );
   }
 
-  // 실시간 베스트 (최신순)
-  const { data: realtimePosts } = await supabase
-    .from('posts')
-    .select('*')
-    .order('created_at', { ascending: false })
-    .limit(10);
+  const cols = 'id, idx, category, title, views, likes, comments_count, has_image, thumbnail_url, created_at, author';
 
-  // 주간 인기 (최근 7일 내 조회수순)
+  // 실시간 베스트, 주간 인기, spaces 병렬 조회
   const weeklyFrom = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-  const { data: weeklyPosts } = await supabase
-    .from('posts')
-    .select('*')
-    .gte('created_at', weeklyFrom)
-    .order('views', { ascending: false })
-    .limit(10);
-
-  // spaces 테이블에서 슬러그+이름 조회
-  const { data: spacesData } = await supabase
-    .from('spaces')
-    .select('slug, name')
-    .order('slug');
+  const [
+    { data: realtimePosts },
+    { data: weeklyPosts },
+    { data: spacesData },
+  ] = await Promise.all([
+    supabase.from('posts').select(cols).order('created_at', { ascending: false }).limit(10),
+    supabase.from('posts').select(cols).gte('created_at', weeklyFrom).order('views', { ascending: false }).limit(10),
+    supabase.from('spaces').select('slug, name').order('slug'),
+  ]);
 
   const spaces = spacesData || [];
 
-  // 카테고리별 최신 5개 병렬 조회
-  const categoryResults = await Promise.all(
-    spaces.map(s =>
-      supabase
+  // 단일 쿼리로 전체 카테고리 최신글 조회 (N+1 → 1)
+  const slugs = spaces.map(s => s.slug);
+  const { data: categoryPosts } = slugs.length > 0
+    ? await supabase
         .from('posts')
-        .select('id, idx, category, title, views, likes, comments_count, has_image, thumbnail_url, created_at, author')
-        .eq('category', s.slug)
+        .select(cols)
+        .in('category', slugs)
         .order('created_at', { ascending: false })
-        .limit(5)
-    )
-  );
+        .limit(slugs.length * 5)
+    : { data: [] };
 
-  const postsByCategory = spaces.reduce((acc, s, i) => {
-    acc[s.slug] = categoryResults[i].data || [];
+  // 카테고리별 그룹핑 (최대 5개)
+  const postsByCategory = spaces.reduce((acc, s) => {
+    acc[s.slug] = (categoryPosts || []).filter(p => p.category === s.slug).slice(0, 5);
     return acc;
   }, {} as Record<string, any[]>);
 

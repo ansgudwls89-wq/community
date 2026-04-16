@@ -1,7 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { supabase } from '@/utils/supabase';
+import { createClient } from '@/utils/supabase/client';
+import { toast } from 'sonner';
+
+const supabase = createClient();
 
 interface ReportButtonProps {
   targetType: 'post' | 'comment';
@@ -18,7 +21,9 @@ export default function ReportButton({ targetType, targetId }: ReportButtonProps
   const [done, setDone] = useState(false);
 
   async function handleSubmit() {
-    if (!reason) { alert('신고 사유를 선택해 주세요.'); return; }
+    if (!reason) { toast.error('신고 사유를 선택해 주세요.'); return; }
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { toast.error('신고는 로그인 후 이용 가능합니다.'); setIsOpen(false); return; }
     setIsSubmitting(true);
     try {
       await supabase.from('reports').insert([{

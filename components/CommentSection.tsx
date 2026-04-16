@@ -1,9 +1,12 @@
 'use client';
 
 import { useEffect, useState, useCallback, useMemo } from 'react';
-import { supabase } from '@/utils/supabase';
+import { createClient } from '@/utils/supabase/client';
+import { toast } from 'sonner';
 import CommentForm from './CommentForm';
 import { updateCommentAction, deleteCommentAction } from '@/app/s/[category]/[idx]/actions';
+
+const supabase = createClient();
 
 interface Comment {
   id: number;
@@ -43,13 +46,14 @@ export default function CommentSection({ postId, initialNickname }: CommentSecti
     fetchComments();
 
     const channel = supabase
-      .channel(`realtime_comments_all`)
+      .channel(`realtime_comments_${postId}`)
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
           table: 'comments',
+          filter: `post_id=eq.${postId}`,
         },
         (payload) => {
           if (payload.eventType === 'INSERT') {
@@ -127,7 +131,7 @@ export default function CommentSection({ postId, initialNickname }: CommentSecti
         await updateCommentAction(comment.id, editContent);
         setIsEditing(false);
       } catch (e: any) {
-        alert(e.message);
+        toast.error(e.message);
       } finally {
         setIsSaving(false);
       }
@@ -138,7 +142,7 @@ export default function CommentSection({ postId, initialNickname }: CommentSecti
       try {
         await deleteCommentAction(comment.id);
       } catch (e: any) {
-        alert(e.message);
+        toast.error(e.message);
       }
     }
 

@@ -70,9 +70,8 @@ export async function createPostAction(data: {
   title: string;
   category: string;
   content: string;
-  author: string;
 }) {
-  const { title, category, content, author } = data;
+  const { title, category, content } = data;
 
   if (!title || !category || !content) {
     throw new Error('필수 입력 항목이 누락되었습니다.');
@@ -84,6 +83,9 @@ export async function createPostAction(data: {
   if (!user) {
     throw new Error('로그인이 필요한 서비스입니다.');
   }
+
+  const { data: profileData } = await supabase.from('profiles').select('nickname').eq('id', user.id).single();
+  const author = profileData?.nickname || '익명';
 
   // 1. 해당 카테고리의 마지막 idx 가져오기
   const { data: lastPost } = await supabase

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import "./globals.css";
+import { Toaster } from "sonner";
 import AdBanner from "@/components/AdBanner";
 import RecentlyViewed from "@/components/RecentlyViewed";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -104,6 +105,7 @@ export default async function RootLayout({
               <p className="text-xs text-zinc-400 dark:text-zinc-600 font-medium transition-colors">&copy; 2026 NOL2 커뮤니티 플랫폼. All rights reserved.</p>
             </div>
           </footer>
+        <Toaster position="bottom-center" richColors />
         </ThemeProvider>
       </body>
     </html>

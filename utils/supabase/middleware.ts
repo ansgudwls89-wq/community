@@ -35,16 +35,19 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (
-    !user &&
-    !request.nextUrl.pathname.startsWith('/login') &&
-    !request.nextUrl.pathname.startsWith('/auth') &&
-    !request.nextUrl.pathname.startsWith('/signup') &&
-    request.nextUrl.pathname !== '/' &&
-    !request.nextUrl.pathname.startsWith('/s/')
-  ) {
-    // no user, potentially redirect to login page
-    // but for now, we allow most pages to be public
+  // /admin 보호: 비로그인 또는 is_admin이 아닌 경우 리다이렉트
+  if (request.nextUrl.pathname.startsWith('/admin')) {
+    if (!user) {
+      return NextResponse.redirect(new URL('/login', request.url))
+    }
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('is_admin')
+      .eq('id', user.id)
+      .single()
+    if (!profile?.is_admin) {
+      return NextResponse.redirect(new URL('/', request.url))
+    }
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're

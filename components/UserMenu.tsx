@@ -9,6 +9,7 @@ interface UserMenuProps {
     nickname?: string
     energy?: number
     newCommentCount?: number
+    isAdmin?: boolean
   }
 }
 
@@ -57,7 +58,9 @@ export default function UserMenu({ user }: UserMenuProps) {
                 </span>
               )}
             </a>
-            <a href="/admin" className="block px-4 py-2 text-xs font-bold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">관리자 패널</a>
+            {user.isAdmin && (
+              <a href="/admin" className="block px-4 py-2 text-xs font-bold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">관리자 패널</a>
+            )}
             <div className="border-t border-zinc-100 dark:border-zinc-800 mt-1 pt-1">
               <button 
                 onClick={() => signOut()}
