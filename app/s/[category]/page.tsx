@@ -126,12 +126,23 @@ export default async function SpacePage({
               posts.map((post) => (
                 <tr key={post.id} className="border-b border-zinc-100 dark:border-zinc-900 last:border-0 hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-all group cursor-pointer text-zinc-600 dark:text-zinc-400">
                   <td className="py-3 px-4 text-center text-zinc-400 dark:text-zinc-600 text-[10px] font-mono hidden sm:table-cell">{post.idx || post.id}</td>
-                  <td className="py-3 px-4 truncate font-medium">
-                    <a href={`/s/${encodeURIComponent(post.category)}/${post.idx}`} className="flex items-center gap-2 group-hover:translate-x-1 transition-transform overflow-hidden">
-                      {post.has_image && <span className="text-[10px] flex-shrink-0" title="이미지 포함">🖼</span>}
-                      <span className="truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">{post.title}</span>
-                      <span className="text-[11px] font-black text-blue-600/80 dark:text-blue-500/80 flex-shrink-0">[{post.comments_count || 0}]</span>
-                    </a>
+                  <td className="py-3 px-4 font-medium max-w-0 w-full">
+                    <div className="relative group/thumb flex items-center gap-2 overflow-hidden">
+                      <a href={`/s/${encodeURIComponent(post.category)}/${post.idx}`} className="flex items-center gap-2 min-w-0 group-hover:translate-x-1 transition-transform overflow-hidden">
+                        {post.has_image && <span className="text-[10px] flex-shrink-0">🖼</span>}
+                        <span className="truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">{post.title}</span>
+                        <span className="text-[11px] font-black text-blue-600/80 dark:text-blue-500/80 flex-shrink-0">[{post.comments_count || 0}]</span>
+                      </a>
+                      {post.thumbnail_url && (
+                        <div className="pointer-events-none absolute left-0 top-full mt-1 z-50 opacity-0 group-hover/thumb:opacity-100 transition-opacity duration-150">
+                          <img
+                            src={post.thumbnail_url}
+                            alt=""
+                            className="w-48 h-32 object-cover rounded-lg shadow-xl border border-zinc-200 dark:border-zinc-700"
+                          />
+                        </div>
+                      )}
+                    </div>
                   </td>
                   <td className="py-3 px-4 text-center text-[12px] truncate">
                     {post.author && post.author !== '익명' ? (
