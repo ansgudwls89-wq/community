@@ -40,7 +40,14 @@ interface ProfileClientProps {
 }
 
 export default function ProfileClient({ profile, posts, comments }: ProfileClientProps) {
-  const [tab, setTab] = useState<'posts' | 'comments'>('posts');
+  const [tab, setTab] = useState<'posts' | 'comments' | 'bookmarks'>('posts');
+  const [bookmarks, setBookmarks] = useState<{postId:number;title:string;category:string;idx:number;savedAt:string}[]>([]);
+
+  useEffect(() => {
+    try {
+      setBookmarks(JSON.parse(localStorage.getItem('nol2_bookmarks') || '[]'));
+    } catch {}
+  }, []);
   const [isEditing, setIsEditing] = useState(false);
   const [nicknameInput, setNicknameInput] = useState(profile.nickname);
   const [nickname, setNickname] = useState(profile.nickname);
@@ -262,18 +269,11 @@ export default function ProfileClient({ profile, posts, comments }: ProfileClien
 
       {/* 탭 */}
       <div className="flex bg-zinc-100 dark:bg-zinc-900 p-1 rounded-xl border border-zinc-200 dark:border-zinc-800 w-fit">
-        <button
-          onClick={() => setTab('posts')}
-          className={`px-5 py-1.5 text-xs font-black rounded-lg transition-all ${tab === 'posts' ? 'bg-white dark:bg-zinc-800 text-blue-600 shadow-sm' : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'}`}
-        >
-          작성한 글 ({posts.length})
-        </button>
-        <button
-          onClick={() => setTab('comments')}
-          className={`px-5 py-1.5 text-xs font-black rounded-lg transition-all ${tab === 'comments' ? 'bg-white dark:bg-zinc-800 text-blue-600 shadow-sm' : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'}`}
-        >
-          작성한 댓글 ({comments.length})
-        </button>
+        {([['posts', `작성한 글 (${posts.length})`], ['comments', `작성한 댓글 (${comments.length})`], ['bookmarks', `저장한 글 (${bookmarks.length})`]] as const).map(([key, label]) => (
+          <button key={key} onClick={() => setTab(key)} className={`px-5 py-1.5 text-xs font-black rounded-lg transition-all ${tab === key ? 'bg-white dark:bg-zinc-800 text-blue-600 shadow-sm' : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'}`}>
+            {label}
+          </button>
+        ))}
       </div>
 
       {/* 작성한 글 목록 */}
@@ -329,6 +329,34 @@ export default function ProfileClient({ profile, posts, comments }: ProfileClien
                 ))}
               </tbody>
             </table>
+          )}
+        </div>
+      )}
+
+      {/* 저장한 글 목록 */}
+      {tab === 'bookmarks' && (
+        <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-xl divide-y divide-zinc-100 dark:divide-zinc-900">
+          {bookmarks.length === 0 ? (
+            <div className="py-16 text-center text-zinc-400 dark:text-zinc-600 italic text-sm">저장한 글이 없습니다.</div>
+          ) : (
+            bookmarks.slice().reverse().map((b) => (
+              <div key={b.postId} className="p-4 hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-all flex items-center justify-between gap-3">
+                <a href={`/s/${encodeURIComponent(b.category)}/${b.idx}`} className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200 hover:text-blue-600 dark:hover:text-blue-400 truncate transition-colors">{b.title}</p>
+                  <p className="text-[10px] font-black text-blue-600 dark:text-blue-500 uppercase mt-0.5">{b.category}</p>
+                </a>
+                <button
+                  onClick={() => {
+                    const updated = bookmarks.filter(bm => bm.postId !== b.postId);
+                    localStorage.setItem('nol2_bookmarks', JSON.stringify(updated));
+                    setBookmarks(updated);
+                  }}
+                  className="text-[10px] font-bold text-zinc-400 hover:text-red-500 px-2 py-1 rounded transition-colors flex-shrink-0"
+                >
+                  삭제
+                </button>
+              </div>
+            ))
           )}
         </div>
       )}

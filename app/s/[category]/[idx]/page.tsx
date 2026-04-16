@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import PostActions from './PostActions';
 import ShareButton from '@/components/ShareButton';
+import BookmarkButton from '@/components/BookmarkButton';
 import VoteButtons from '@/components/VoteButtons';
 import CommentSection from '@/components/CommentSection';
 import ViewCounter from '@/components/ViewCounter';
@@ -146,6 +147,7 @@ export default async function PostDetailPage({
               ← 목록으로
             </a>
             <ShareButton />
+            <BookmarkButton postId={post.id} title={post.title} category={post.category} idx={post.idx} />
           </div>
           <PostActions
             postId={post.id}
