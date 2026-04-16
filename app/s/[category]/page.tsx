@@ -29,19 +29,24 @@ export async function generateMetadata({
   };
 }
 
+type SortKey = 'latest' | 'views' | 'likes';
+
 export default async function SpacePage({
   params,
   searchParams,
 }: {
   params: Promise<{ category: string }>;
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; sort?: string }>;
 }) {
   const { category: encodedCategory } = await params;
-  const { page: pageParam } = await searchParams;
+  const { page: pageParam, sort: sortParam } = await searchParams;
   const category = decodeURIComponent(encodedCategory);
   const currentPage = Math.max(1, parseInt(pageParam || '1', 10));
   const from = (currentPage - 1) * PAGE_SIZE;
   const to = from + PAGE_SIZE - 1;
+
+  const isSpecial = ['best', 'popular'].includes(category.toLowerCase());
+  const sort: SortKey = !isSpecial && ['views', 'likes'].includes(sortParam || '') ? (sortParam as SortKey) : 'latest';
 
   let query = supabase.from('posts').select('*', { count: 'exact' });
   let title = category;
@@ -54,7 +59,10 @@ export default async function SpacePage({
     query = query.gte('created_at', since).order('views', { ascending: false });
     title = '주간 인기';
   } else {
-    query = query.eq('category', category).order('created_at', { ascending: false });
+    query = query.eq('category', category);
+    if (sort === 'views') query = query.order('views', { ascending: false });
+    else if (sort === 'likes') query = query.order('likes', { ascending: false });
+    else query = query.order('created_at', { ascending: false });
     title = `${category} 스페이스`;
   }
 
@@ -81,9 +89,24 @@ export default async function SpacePage({
             {count || 0}개의 글
           </span>
         </div>
-        <a href="/" className="text-xs font-bold text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all">
-          ← 메인으로
-        </a>
+        <div className="flex items-center gap-3">
+          {!isSpecial && (
+            <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-0.5">
+              {([['latest', '최신'], ['views', '조회'], ['likes', '추천']] as [SortKey, string][]).map(([key, label]) => (
+                <a
+                  key={key}
+                  href={`/s/${encodedCategory}?sort=${key}`}
+                  className={`px-2.5 py-1 text-[10px] font-black rounded-md transition-all ${sort === key ? 'bg-white dark:bg-zinc-800 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'}`}
+                >
+                  {label}
+                </a>
+              ))}
+            </div>
+          )}
+          <a href="/" className="text-xs font-bold text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all">
+            ← 메인으로
+          </a>
+        </div>
       </div>
 
       <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-2xl transition-colors">
