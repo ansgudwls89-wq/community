@@ -1,5 +1,5 @@
-import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
+import { connection } from 'next/server';
 import DOMPurify from 'isomorphic-dompurify';
 import PostActions from './PostActions';
 import ShareButton from '@/components/ShareButton';
@@ -8,6 +8,7 @@ import ViewRecorder from '@/components/ViewRecorder';
 import VoteButtons from '@/components/VoteButtons';
 import CommentSection from '@/components/CommentSection';
 import ViewCounter from '@/components/ViewCounter';
+import { supabase as publicSupabase } from '@/utils/supabase';
 import { createClient } from '@/utils/supabase/server';
 
 
@@ -19,8 +20,7 @@ export async function generateMetadata({
   const { category: encodedCategory, idx } = await params;
   const category = decodeURIComponent(encodedCategory);
 
-  const supabase = await createClient();
-  const { data: post } = await supabase
+  const { data: post } = await publicSupabase
     .from('posts')
     .select('title, content, author, created_at')
     .eq('category', category)
@@ -57,6 +57,7 @@ export default async function PostDetailPage({
 }: {
   params: Promise<{ category: string, idx: string }>
 }) {
+  await connection();
   const { category: encodedCategory, idx } = await params;
   const category = decodeURIComponent(encodedCategory);
 
