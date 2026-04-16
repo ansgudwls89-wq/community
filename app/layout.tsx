@@ -10,13 +10,10 @@ import SpaceDropdown from "@/components/SpaceDropdown";
 import SearchBar from "@/components/SearchBar";
 import HeaderUserNav from "@/components/HeaderUserNav";
 import { supabase as supabaseAdmin } from "@/utils/supabase";
-import { cacheLife } from "next/cache";
 
 export type Space = { slug: string; name: string };
 
 async function getSpaces(): Promise<{slug: string, name: string}[]> {
-  'use cache';
-  cacheLife('minutes');
   const { data } = await supabaseAdmin.from('spaces').select('slug, name').order('slug');
   return data || [];
 }
