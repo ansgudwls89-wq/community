@@ -2,11 +2,17 @@
 
 import { useState } from 'react';
 
-export default function SpaceDropdown({ initialCategories }: { initialCategories: string[] }) {
+interface Space {
+  slug: string;
+  name: string;
+}
+
+export default function SpaceDropdown({ initialSpaces }: { initialSpaces: Space[] }) {
   const [searchTerm, setSearchTerm] = useState('');
 
-  const filteredCategories = initialCategories.filter(cat =>
-    cat.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredSpaces = initialSpaces.filter(s =>
+    s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    s.slug.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -19,7 +25,7 @@ export default function SpaceDropdown({ initialCategories }: { initialCategories
 
       {/* 드롭다운 메뉴 */}
       <div className="absolute top-full left-0 mt-2 w-56 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-2xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 transform origin-top scale-95 group-hover:scale-100 max-h-[80vh] flex flex-col">
-        
+
         {/* 상단 고정 섹션 */}
         <div className="px-2 pb-2 border-b border-zinc-100 dark:border-zinc-800">
           <div className="px-3 py-2 text-[10px] font-black text-zinc-400 uppercase tracking-widest">메인</div>
@@ -30,8 +36,8 @@ export default function SpaceDropdown({ initialCategories }: { initialCategories
         {/* 스페이스 검색창 */}
         <div className="p-2">
           <div className="relative">
-            <input 
-              type="text" 
+            <input
+              type="text"
               placeholder="스페이스 검색..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -45,23 +51,23 @@ export default function SpaceDropdown({ initialCategories }: { initialCategories
         <div className="flex-1 overflow-y-auto px-2 min-h-0">
           <div className="px-3 py-2 text-[10px] font-black text-zinc-400 uppercase tracking-widest">스페이스 목록</div>
           <div className="space-y-0.5">
-            {filteredCategories.length === 0 ? (
+            {filteredSpaces.length === 0 ? (
               <div className="px-3 py-4 text-[11px] text-zinc-400 italic text-center">검색 결과가 없습니다.</div>
             ) : (
-              filteredCategories.map(cat => (
-                <a 
-                  key={cat} 
-                  href={`/s/${encodeURIComponent(cat)}`} 
-                  className="block px-3 py-2 text-xs font-bold text-zinc-600 dark:text-zinc-400 hover:bg-blue-600 hover:text-white rounded-lg transition-colors uppercase truncate"
+              filteredSpaces.map(space => (
+                <a
+                  key={space.slug}
+                  href={`/s/${encodeURIComponent(space.slug)}`}
+                  className="block px-3 py-2 text-xs font-bold text-zinc-600 dark:text-zinc-400 hover:bg-blue-600 hover:text-white rounded-lg transition-colors truncate"
                 >
-                  {cat}
+                  {space.name}
                 </a>
               ))
             )}
           </div>
         </div>
 
-        {/* 어드민 링크 (선택 사항) */}
+        {/* 어드민 링크 */}
         <div className="mt-2 px-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
           <a href="/admin" className="block px-3 py-2 text-[10px] font-black text-zinc-400 hover:text-blue-500 transition-colors uppercase tracking-widest text-center">
             관리자 패널

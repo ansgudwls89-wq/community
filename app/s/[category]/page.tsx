@@ -4,6 +4,13 @@ import type { Metadata } from 'next';
 
 const PAGE_SIZE = 20;
 
+async function getSpaceName(slug: string): Promise<string> {
+  const specialMap: Record<string, string> = { best: '실시간 베스트', popular: '주간 인기' };
+  if (specialMap[slug.toLowerCase()]) return specialMap[slug.toLowerCase()];
+  const { data } = await supabase.from('spaces').select('name').eq('slug', slug).single();
+  return data?.name || slug;
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -11,12 +18,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { category: encodedCategory } = await params;
   const category = decodeURIComponent(encodedCategory);
-
-  const titleMap: Record<string, string> = {
-    best: '실시간 베스트',
-    popular: '주간 인기',
-  };
-  const title = titleMap[category.toLowerCase()] ?? `${category.toUpperCase()} 스페이스`;
+  const title = await getSpaceName(category);
 
   return {
     title: `${title} — NOL2`,
@@ -48,21 +50,19 @@ export default async function SpacePage({
   const sort: SortKey = !isSpecial && ['views', 'likes'].includes(sortParam || '') ? (sortParam as SortKey) : 'latest';
 
   let query = supabase.from('posts').select('*', { count: 'exact' });
-  let title = category;
+  const spaceName = await getSpaceName(category);
+  const title = spaceName;
 
   if (category.toLowerCase() === 'best') {
     query = query.order('created_at', { ascending: false });
-    title = '실시간 베스트';
   } else if (category.toLowerCase() === 'popular') {
     const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
     query = query.gte('created_at', since).order('views', { ascending: false });
-    title = '주간 인기';
   } else {
     query = query.eq('category', category);
     if (sort === 'views') query = query.order('views', { ascending: false });
     else if (sort === 'likes') query = query.order('likes', { ascending: false });
     else query = query.order('created_at', { ascending: false });
-    title = `${category} 스페이스`;
   }
 
   const { data: posts, error, count } = await query.range(from, to);

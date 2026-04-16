@@ -29,28 +29,28 @@ export default async function Home() {
     .order('views', { ascending: false })
     .limit(10);
 
-  // 카테고리 목록 조회
-  const { data: categoryRows } = await supabase
-    .from('posts')
-    .select('category')
-    .order('created_at', { ascending: false });
+  // spaces 테이블에서 슬러그+이름 조회
+  const { data: spacesData } = await supabase
+    .from('spaces')
+    .select('slug, name')
+    .order('slug');
 
-  const categories = Array.from(new Set(categoryRows?.map(p => p.category) || []));
+  const spaces = spacesData || [];
 
   // 카테고리별 최신 5개 병렬 조회
   const categoryResults = await Promise.all(
-    categories.map(cat =>
+    spaces.map(s =>
       supabase
         .from('posts')
         .select('id, idx, category, title, views, likes, comments_count, has_image, created_at, author')
-        .eq('category', cat)
+        .eq('category', s.slug)
         .order('created_at', { ascending: false })
         .limit(5)
     )
   );
 
-  const postsByCategory = categories.reduce((acc, cat, i) => {
-    acc[cat] = categoryResults[i].data || [];
+  const postsByCategory = spaces.reduce((acc, s, i) => {
+    acc[s.slug] = categoryResults[i].data || [];
     return acc;
   }, {} as Record<string, any[]>);
 
@@ -117,13 +117,13 @@ export default async function Home() {
 
       {/* 카테고리별 섹션 (그리드) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10 border-t border-zinc-100 dark:border-zinc-800 pt-10 transition-colors">
-        {categories.map(category => (
-          <PostList 
-            key={category} 
-            title={category} 
-            posts={postsByCategory[category]} 
+        {spaces.map(space => (
+          <PostList
+            key={space.slug}
+            title={space.name}
+            posts={postsByCategory[space.slug]}
             showView={false}
-            href={`/s/${encodeURIComponent(category)}`}
+            href={`/s/${encodeURIComponent(space.slug)}`}
           />
         ))}
       </div>

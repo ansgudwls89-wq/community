@@ -11,11 +11,13 @@ import HeaderUserNav from "@/components/HeaderUserNav";
 import { supabase as supabaseAdmin } from "@/utils/supabase";
 import { cacheLife } from "next/cache";
 
-async function getSpaceCategories(): Promise<string[]> {
+export type Space = { slug: string; name: string };
+
+async function getSpaces(): Promise<{slug: string, name: string}[]> {
   'use cache';
   cacheLife('minutes');
-  const { data: posts } = await supabaseAdmin.from('posts').select('category');
-  return Array.from(new Set(posts?.map(p => p.category) || []));
+  const { data } = await supabaseAdmin.from('spaces').select('slug, name').order('slug');
+  return data || [];
 }
 
 export const viewport: Viewport = {
@@ -39,7 +41,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const categories = await getSpaceCategories();
+  const spaces = await getSpaces();
 
   return (
     <html lang="ko" suppressHydrationWarning>
@@ -56,7 +58,7 @@ export default async function RootLayout({
 
               {/* 중앙 검색 영역 */}
               <div className="flex-1 max-w-3xl flex items-center gap-1 sm:gap-2 min-w-0">
-                <SpaceDropdown initialCategories={categories} />
+                <SpaceDropdown initialSpaces={spaces} />
                 <SearchBar />
               </div>
 
