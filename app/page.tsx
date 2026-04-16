@@ -1,6 +1,5 @@
 import { supabase } from '@/utils/supabase';
 
-export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   const isEnvMissing = !process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;

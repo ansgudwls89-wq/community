@@ -3,7 +3,6 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import { supabase } from '@/utils/supabase';
 
-export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: Promise<{ nickname: string }> }): Promise<Metadata> {
   const { nickname } = await params;

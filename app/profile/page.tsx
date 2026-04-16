@@ -2,7 +2,6 @@ import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import ProfileClient from '@/components/ProfileClient';
 
-export const dynamic = 'force-dynamic';
 
 export default async function ProfilePage() {
   const supabase = await createClient();

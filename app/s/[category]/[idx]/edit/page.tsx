@@ -2,7 +2,6 @@ import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/utils/supabase/server';
 import EditForm from './EditForm';
 
-export const dynamic = 'force-dynamic';
 
 export default async function EditPostPage({
   params,

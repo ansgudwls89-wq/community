@@ -1,7 +1,6 @@
 import { supabase } from '@/utils/supabase';
 import type { Metadata } from 'next';
 
-export const dynamic = 'force-dynamic';
 
 const MAX_RESULTS = 50;
 const MIN_QUERY_LENGTH = 2;

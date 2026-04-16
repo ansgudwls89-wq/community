@@ -2,7 +2,6 @@ import { supabase as supabaseAdmin } from '@/utils/supabase';
 import WriteForm from '@/components/WriteForm';
 import { createClient } from '@/utils/supabase/server';
 
-export const dynamic = 'force-dynamic';
 
 export default async function WritePage({ 
   params 
