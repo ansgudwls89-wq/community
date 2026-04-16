@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import TipTapEditor from '@/components/TipTapEditor';
 import { updatePostAction } from '@/app/s/[category]/write/actions';
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
+import { toast } from 'sonner';
 
 interface Post {
   id: number;
@@ -37,8 +39,8 @@ export default function EditForm({ post }: { post: Post }) {
         content,
       });
     } catch (error: any) {
-      if (error.message === 'NEXT_REDIRECT') return;
-      alert(`수정 중 오류가 발생했습니다: ${error.message}`);
+      if (isRedirectError(error)) return;
+      toast.error(`수정 중 오류가 발생했습니다: ${error.message}`);
     } finally {
       setIsSubmitting(false);
     }

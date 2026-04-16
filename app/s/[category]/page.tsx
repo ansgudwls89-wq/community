@@ -212,13 +212,24 @@ export default async function SpacePage({
               )}
             </div>
             {(category.toLowerCase() !== 'best' && category.toLowerCase() !== 'popular') && (
-              <a href={`/s/${encodeURIComponent(category)}/write`} className="bg-zinc-900 dark:bg-white text-white dark:text-black font-black text-sm px-6 py-2.5 rounded-xl hover:bg-zinc-700 dark:hover:bg-zinc-200 transition-all shadow-xl">
+              <a href={`/s/${encodeURIComponent(category)}/write`} className="hidden sm:block bg-zinc-900 dark:bg-white text-white dark:text-black font-black text-sm px-6 py-2.5 rounded-xl hover:bg-zinc-700 dark:hover:bg-zinc-200 transition-all shadow-xl">
                 새 글 작성
               </a>
             )}
           </div>
         );
       })()}
+
+      {/* 모바일 FAB */}
+      {(category.toLowerCase() !== 'best' && category.toLowerCase() !== 'popular') && (
+        <a
+          href={`/s/${encodeURIComponent(category)}/write`}
+          className="sm:hidden fixed bottom-6 right-6 z-40 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-2xl shadow-blue-900/40 flex items-center justify-center text-2xl active:scale-95 transition-all"
+          title="새 글 작성"
+        >
+          ✏️
+        </a>
+      )}
     </div>
   );
 }

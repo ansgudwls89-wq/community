@@ -4,14 +4,17 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import TipTapEditor from './TipTapEditor';
 import { createPostAction } from '@/app/s/[category]/write/actions';
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
+import { toast } from 'sonner';
 
 interface WriteFormProps {
   categories: string[];
   defaultCategory?: string;
   initialNickname?: string;
+  isLoggedIn?: boolean;
 }
 
-export default function WriteForm({ categories, defaultCategory, initialNickname }: WriteFormProps) {
+export default function WriteForm({ categories, defaultCategory, initialNickname, isLoggedIn: isLoggedInProp }: WriteFormProps) {
   const router = useRouter();
   const draftKey = `nol2_draft_${defaultCategory || 'general'}`;
 
@@ -63,7 +66,7 @@ export default function WriteForm({ categories, defaultCategory, initialNickname
     setHasDraft(false);
   }
 
-  const isLoggedIn = !!initialNickname;
+  const isLoggedIn = isLoggedInProp ?? !!initialNickname;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -85,8 +88,8 @@ export default function WriteForm({ categories, defaultCategory, initialNickname
       await createPostAction({ title, category, content });
       clearDraft();
     } catch (error: any) {
-      if (error.message === 'NEXT_REDIRECT') return;
-      alert(`글 작성 중 오류가 발생했습니다: ${error.message}`);
+      if (isRedirectError(error)) return;
+      toast.error(`글 작성 중 오류가 발생했습니다: ${error.message}`);
     } finally {
       setIsSubmitting(false);
     }

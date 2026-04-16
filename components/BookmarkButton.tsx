@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { createClient } from '@/utils/supabase/client';
+import { toast } from 'sonner';
 
 interface BookmarkButtonProps {
   postId: number;
@@ -11,44 +13,66 @@ interface BookmarkButtonProps {
 
 const STORAGE_KEY = 'nol2_bookmarks';
 
-interface Bookmark {
-  postId: number;
-  title: string;
-  category: string;
-  idx: number;
-  savedAt: string;
-}
-
-function getBookmarks(): Bookmark[] {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-  } catch {
-    return [];
-  }
-}
-
 export default function BookmarkButton({ postId, title, category, idx }: BookmarkButtonProps) {
   const [bookmarked, setBookmarked] = useState(false);
   const [animate, setAnimate] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const supabase = createClient();
 
   useEffect(() => {
-    setBookmarked(getBookmarks().some(b => b.postId === postId));
+    async function init() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserId(user.id);
+        const { data } = await supabase
+          .from('bookmarks')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('post_id', postId)
+          .maybeSingle();
+        setBookmarked(!!data);
+      } else {
+        // 비로그인: localStorage fallback
+        try {
+          const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+          setBookmarked(saved.some((b: any) => b.postId === postId));
+        } catch {}
+      }
+    }
+    init();
   }, [postId]);
 
-  function toggle() {
-    const bookmarks = getBookmarks();
-    const exists = bookmarks.some(b => b.postId === postId);
-    if (exists) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(bookmarks.filter(b => b.postId !== postId)));
-      setBookmarked(false);
+  async function toggle() {
+    if (userId) {
+      // 로그인: DB 저장
+      if (bookmarked) {
+        await supabase.from('bookmarks').delete().eq('user_id', userId).eq('post_id', postId);
+        setBookmarked(false);
+        toast('북마크가 해제되었습니다.');
+      } else {
+        await supabase.from('bookmarks').insert({ user_id: userId, post_id: postId });
+        setBookmarked(true);
+        setAnimate(true);
+        setTimeout(() => setAnimate(false), 300);
+        toast.success('북마크에 저장했습니다.');
+      }
     } else {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify([
-        ...bookmarks,
-        { postId, title, category, idx, savedAt: new Date().toISOString() },
-      ]));
-      setBookmarked(true);
-      setAnimate(true);
-      setTimeout(() => setAnimate(false), 300);
+      // 비로그인: localStorage fallback
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        if (bookmarked) {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(saved.filter((b: any) => b.postId !== postId)));
+          setBookmarked(false);
+        } else {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify([
+            ...saved,
+            { postId, title, category, idx, savedAt: new Date().toISOString() },
+          ]));
+          setBookmarked(true);
+          setAnimate(true);
+          setTimeout(() => setAnimate(false), 300);
+        }
+      } catch {}
     }
   }
 

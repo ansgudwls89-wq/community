@@ -20,20 +20,9 @@ export default async function HeaderUserNav() {
 
     if (profile?.nickname) {
       const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-      const { data: myPosts } = await supabase
-        .from('posts')
-        .select('id')
-        .eq('author', profile.nickname);
-      if (myPosts && myPosts.length > 0) {
-        const postIds = myPosts.map(p => p.id);
-        const { count } = await supabase
-          .from('comments')
-          .select('id', { count: 'exact', head: true })
-          .in('post_id', postIds)
-          .neq('author', profile.nickname)
-          .gte('created_at', since);
-        newCommentCount = count || 0;
-      }
+      const { data: countData } = await supabase
+        .rpc('get_new_comment_count', { p_nickname: profile.nickname, p_since: since });
+      newCommentCount = countData || 0;
     }
   }
 
