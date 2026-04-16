@@ -28,8 +28,13 @@ interface TipTapEditorProps {
 
 export default function TipTapEditor({ content, onChange }: TipTapEditorProps) {
   const uploadImage = useCallback(async (file: File) => {
+    if (file.size > 5 * 1024 * 1024) {
+      alert('이미지 크기는 5MB 이하여야 합니다.');
+      return null;
+    }
+
     const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random()}.${fileExt}`;
+    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
     const filePath = `post-images/${fileName}`;
 
     const { error: uploadError } = await supabase.storage
@@ -38,6 +43,7 @@ export default function TipTapEditor({ content, onChange }: TipTapEditorProps) {
 
     if (uploadError) {
       console.error('Error uploading image:', uploadError.message);
+      alert(`이미지 업로드에 실패했습니다: ${uploadError.message}`);
       return null;
     }
 
@@ -108,16 +114,14 @@ export default function TipTapEditor({ content, onChange }: TipTapEditorProps) {
       attributes: {
         class: 'prose dark:prose-invert max-w-none focus:outline-none min-h-[400px] p-6 sm:p-8 text-zinc-700 dark:text-zinc-300 leading-relaxed transition-colors',
       },
-      handleDrop: (view, event, slice, moved) => {
-        if (!moved && event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0]) {
+      handleDrop: (view, event, _slice, moved) => {
+        if (!moved && event.dataTransfer?.files?.[0]) {
           const file = event.dataTransfer.files[0];
           if (file.type.startsWith('image/')) {
             uploadImage(file).then(url => {
               if (url) {
-                const { schema } = view.state;
-                const node = schema.nodes.image.create({ src: url });
-                const transaction = view.state.tr.replaceSelectionWith(node);
-                view.dispatch(transaction);
+                const node = view.state.schema.nodes.image.create({ src: url });
+                view.dispatch(view.state.tr.replaceSelectionWith(node));
               }
             });
             return true;
@@ -126,15 +130,13 @@ export default function TipTapEditor({ content, onChange }: TipTapEditorProps) {
         return false;
       },
       handlePaste: (view, event) => {
-        if (event.clipboardData && event.clipboardData.files && event.clipboardData.files[0]) {
+        if (event.clipboardData?.files?.[0]) {
           const file = event.clipboardData.files[0];
           if (file.type.startsWith('image/')) {
             uploadImage(file).then(url => {
               if (url) {
-                const { schema } = view.state;
-                const node = schema.nodes.image.create({ src: url });
-                const transaction = view.state.tr.replaceSelectionWith(node);
-                view.dispatch(transaction);
+                const node = view.state.schema.nodes.image.create({ src: url });
+                view.dispatch(view.state.tr.replaceSelectionWith(node));
               }
             });
             return true;
