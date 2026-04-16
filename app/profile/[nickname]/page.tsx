@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { supabase } from '@/utils/supabase';
 
 export const dynamic = 'force-dynamic';
@@ -45,7 +46,7 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
         <div className="flex items-center gap-5">
           <div className="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center text-2xl font-black text-white uppercase shadow-lg shadow-blue-500/30 overflow-hidden flex-shrink-0">
             {profile.avatar_url ? (
-              <img src={profile.avatar_url} alt={profile.nickname} className="w-full h-full object-cover" />
+              <Image src={profile.avatar_url} alt={profile.nickname} width={64} height={64} className="w-full h-full object-cover" />
             ) : (
               profile.nickname[0]
             )}

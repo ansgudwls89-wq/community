@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition, useRef } from 'react';
+import Image from 'next/image';
 import { updateNicknameAction, updateAvatarAction, updatePasswordAction } from '@/app/profile/actions';
 
 interface Post {
@@ -142,7 +143,7 @@ export default function ProfileClient({ profile, posts, comments }: ProfileClien
               title="클릭하여 프로필 사진 변경"
             >
               {avatarUrl ? (
-                <img src={avatarUrl} alt="프로필 사진" className="w-full h-full object-cover" />
+                <Image src={avatarUrl} alt="프로필 사진" width={64} height={64} className="w-full h-full object-cover" />
               ) : (
                 nickname[0] || '?'
               )}
