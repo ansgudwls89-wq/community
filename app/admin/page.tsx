@@ -215,56 +215,54 @@ export default function AdminPage() {
                 <div className="p-10 text-center text-zinc-400 italic">생성된 스페이스가 없습니다.</div>
               ) : (
                 spaces.map(space => (
-                  <div key={space.slug} className="p-4 sm:p-6 flex items-center justify-between hover:bg-zinc-50 dark:hover:bg-zinc-900/40 transition-all gap-4">
-                    <div className="flex items-center gap-4 flex-1 min-w-0">
-                      <div className="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center text-lg font-black text-zinc-400 dark:text-zinc-600 border border-zinc-200 dark:border-zinc-800 transition-colors flex-shrink-0 uppercase">
-                        {space.slug[0]}
+                  <div key={space.slug} className="p-4 hover:bg-zinc-50 dark:hover:bg-zinc-900/40 transition-all">
+                    {editingSlug === space.slug ? (
+                      /* 편집 모드: 세로 레이아웃 */
+                      <div className="space-y-2">
+                        <p className="text-[11px] font-bold text-zinc-400">URL: /s/{space.slug}</p>
+                        <input
+                          type="text"
+                          value={editingName}
+                          onChange={e => setEditingName(e.target.value)}
+                          onKeyDown={e => { if (e.key === 'Enter') handleRenameSpace(space.slug); if (e.key === 'Escape') setEditingSlug(null); }}
+                          autoFocus
+                          className="w-full bg-zinc-50 dark:bg-zinc-900 border border-blue-400 rounded-lg px-3 py-2 text-sm font-black outline-none"
+                        />
+                        <div className="flex gap-2">
+                          <button onClick={() => handleRenameSpace(space.slug)} className="flex-1 text-xs font-black text-white bg-blue-600 hover:bg-blue-700 py-2 rounded-lg transition-all">저장</button>
+                          <button onClick={() => setEditingSlug(null)} className="flex-1 text-xs font-bold text-zinc-500 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all">취소</button>
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        {editingSlug === space.slug ? (
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="text"
-                              value={editingName}
-                              onChange={e => setEditingName(e.target.value)}
-                              onKeyDown={e => { if (e.key === 'Enter') handleRenameSpace(space.slug); if (e.key === 'Escape') setEditingSlug(null); }}
-                              autoFocus
-                              className="flex-1 bg-zinc-50 dark:bg-zinc-900 border border-blue-400 rounded-lg px-3 py-1.5 text-sm font-black outline-none"
-                            />
-                            <button onClick={() => handleRenameSpace(space.slug)} className="text-xs font-black text-white bg-blue-600 px-3 py-1.5 rounded-lg">저장</button>
-                            <button onClick={() => setEditingSlug(null)} className="text-xs font-bold text-zinc-400 px-3 py-1.5 rounded-lg border border-zinc-200">취소</button>
+                    ) : (
+                      /* 일반 모드 */
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-9 h-9 rounded-xl bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center font-black text-zinc-400 dark:text-zinc-600 border border-zinc-200 dark:border-zinc-800 flex-shrink-0 uppercase text-sm">
+                            {space.slug[0]}
                           </div>
-                        ) : (
-                          <>
-                            <a
-                              href={`/s/${encodeURIComponent(space.slug)}`}
-                              className="font-black text-zinc-900 dark:text-zinc-100 transition-colors hover:text-blue-600 dark:hover:text-blue-400 block"
-                            >
+                          <div className="min-w-0">
+                            <a href={`/s/${encodeURIComponent(space.slug)}`} className="font-black text-zinc-900 dark:text-zinc-100 hover:text-blue-600 dark:hover:text-blue-400 block truncate">
                               {space.name}
                             </a>
-                            <p className="text-[11px] text-zinc-400 dark:text-zinc-500 font-bold transition-colors">
-                              URL: /s/{space.slug}
-                            </p>
-                          </>
-                        )}
+                            <p className="text-[11px] text-zinc-400 dark:text-zinc-500 font-bold">/s/{space.slug}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <button
+                            onClick={() => { setEditingSlug(space.slug); setEditingName(space.name); }}
+                            className="px-3 py-1.5 text-xs font-black text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 border border-zinc-200 dark:border-zinc-800 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-all"
+                          >
+                            이름 변경
+                          </button>
+                          <button
+                            onClick={() => handleDeleteSpace(space.slug, space.name)}
+                            className="px-3 py-1.5 text-xs font-black text-zinc-400 hover:text-red-500 dark:text-zinc-600 dark:hover:text-red-400 border border-zinc-200 dark:border-zinc-800 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 transition-all"
+                          >
+                            삭제
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      {editingSlug !== space.slug && (
-                        <button
-                          onClick={() => { setEditingSlug(space.slug); setEditingName(space.name); }}
-                          className="px-3 py-2 text-xs font-black text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 border border-zinc-200 dark:border-zinc-800 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-all"
-                        >
-                          이름 변경
-                        </button>
-                      )}
-                      <button
-                        onClick={() => handleDeleteSpace(space.slug, space.name)}
-                        className="px-3 py-2 text-xs font-black text-zinc-400 hover:text-red-500 dark:text-zinc-600 dark:hover:text-red-400 border border-zinc-200 dark:border-zinc-800 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 transition-all"
-                      >
-                        삭제
-                      </button>
-                    </div>
+                    )}
                   </div>
                 ))
               )}
