@@ -4,6 +4,68 @@ import { createClient } from '@/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
+async function getAuthorNickname() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+  const { data: profile } = await supabase.from('profiles').select('nickname').eq('id', user.id).single();
+  return { supabase, user, nickname: profile?.nickname || '' };
+}
+
+export async function updatePostAction(data: {
+  postId: number;
+  category: string;
+  idx: number;
+  title: string;
+  content: string;
+}) {
+  const auth = await getAuthorNickname();
+  if (!auth) throw new Error('로그인이 필요한 서비스입니다.');
+  const { supabase, nickname } = auth;
+
+  const { data: post } = await supabase
+    .from('posts')
+    .select('author')
+    .eq('id', data.postId)
+    .single();
+
+  if (!post || post.author !== nickname) {
+    throw new Error('수정 권한이 없습니다.');
+  }
+
+  const { error } = await supabase
+    .from('posts')
+    .update({ title: data.title, content: data.content, has_image: data.content.includes('<img') })
+    .eq('id', data.postId);
+
+  if (error) throw new Error(error.message);
+
+  revalidatePath('/', 'layout');
+  redirect(`/s/${encodeURIComponent(data.category)}/${data.idx}`);
+}
+
+export async function deletePostAction(postId: number, category: string) {
+  const auth = await getAuthorNickname();
+  if (!auth) throw new Error('로그인이 필요한 서비스입니다.');
+  const { supabase, nickname } = auth;
+
+  const { data: post } = await supabase
+    .from('posts')
+    .select('author')
+    .eq('id', postId)
+    .single();
+
+  if (!post || post.author !== nickname) {
+    throw new Error('삭제 권한이 없습니다.');
+  }
+
+  const { error } = await supabase.from('posts').delete().eq('id', postId);
+  if (error) throw new Error(error.message);
+
+  revalidatePath('/', 'layout');
+  redirect(`/s/${encodeURIComponent(category)}`);
+}
+
 export async function createPostAction(data: {
   title: string;
   category: string;

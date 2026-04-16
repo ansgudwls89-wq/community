@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
+import PostActions from './PostActions';
 import VoteButtons from '@/components/VoteButtons';
 import CommentSection from '@/components/CommentSection';
 import ViewCounter from '@/components/ViewCounter';
@@ -142,7 +143,13 @@ export default async function PostDetailPage({
           <a href={`/s/${encodeURIComponent(post.category)}`} className="text-[10px] font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all uppercase tracking-widest px-4 py-2 border border-zinc-200 dark:border-zinc-900 rounded-lg hover:bg-white dark:hover:bg-zinc-900 transition-colors">
             ← 목록으로
           </a>
-          <button className="text-[10px] font-bold text-zinc-400 dark:text-zinc-700 hover:text-red-500 uppercase transition-colors px-4 py-2">신고하기</button>
+          <PostActions
+            postId={post.id}
+            category={post.category}
+            idx={post.idx}
+            author={post.author}
+            currentNickname={nickname}
+          />
         </footer>
       </div>
     </div>
