@@ -1,13 +1,24 @@
 import { supabase } from '@/utils/supabase';
-import { notFound } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
-export default async function SpacePage({ params }: { params: Promise<{ category: string }> }) {
-  const { category: encodedCategory } = await params;
-  const category = decodeURIComponent(encodedCategory);
+const PAGE_SIZE = 20;
 
-  let query = supabase.from('posts').select('*');
+export default async function SpacePage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ category: string }>;
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const { category: encodedCategory } = await params;
+  const { page: pageParam } = await searchParams;
+  const category = decodeURIComponent(encodedCategory);
+  const currentPage = Math.max(1, parseInt(pageParam || '1', 10));
+  const from = (currentPage - 1) * PAGE_SIZE;
+  const to = from + PAGE_SIZE - 1;
+
+  let query = supabase.from('posts').select('*', { count: 'exact' });
   let title = category;
 
   if (category.toLowerCase() === 'best') {
@@ -21,7 +32,7 @@ export default async function SpacePage({ params }: { params: Promise<{ category
     title = `${category} 스페이스`;
   }
 
-  const { data: posts, error } = await query;
+  const { data: posts, error, count } = await query.range(from, to);
 
   if (error) {
     console.error('Error fetching posts:', error);
@@ -41,7 +52,7 @@ export default async function SpacePage({ params }: { params: Promise<{ category
             {title}
           </h1>
           <span className="text-xs font-bold text-zinc-400 dark:text-zinc-600 px-2 py-0.5 bg-zinc-100 dark:bg-zinc-900 rounded border border-zinc-200 dark:border-zinc-800 uppercase">
-            {posts?.length || 0}개의 글
+            {count || 0}개의 글
           </span>
         </div>
         <a href="/" className="text-xs font-bold text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all">
@@ -87,16 +98,63 @@ export default async function SpacePage({ params }: { params: Promise<{ category
         </table>
       </div>
 
-      <div className="flex items-center justify-between pt-4">
-        <div className="flex gap-1">
-          <button className="w-8 h-8 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-lg shadow-blue-500/20 transition-all">1</button>
-        </div>
-        {(category.toLowerCase() !== 'best' && category.toLowerCase() !== 'popular') && (
-          <a href={`/s/${encodeURIComponent(category)}/write`} className="bg-zinc-900 dark:bg-white text-white dark:text-black font-black text-sm px-6 py-2.5 rounded-xl hover:bg-zinc-700 dark:hover:bg-zinc-200 transition-all shadow-xl">
-            새 글 작성
-          </a>
-        )}
-      </div>
+      {(() => {
+        const totalPages = Math.ceil((count || 0) / PAGE_SIZE);
+        const baseUrl = `/s/${encodeURIComponent(category)}`;
+        const pageUrl = (p: number) => `${baseUrl}?page=${p}`;
+
+        const getPageNumbers = () => {
+          const delta = 2;
+          const pages: (number | '...')[] = [];
+          for (let i = 1; i <= totalPages; i++) {
+            if (i === 1 || i === totalPages || (i >= currentPage - delta && i <= currentPage + delta)) {
+              pages.push(i);
+            } else if (pages[pages.length - 1] !== '...') {
+              pages.push('...');
+            }
+          }
+          return pages;
+        };
+
+        return (
+          <div className="flex items-center justify-between pt-4">
+            <div className="flex gap-1 items-center">
+              {currentPage > 1 && (
+                <a href={pageUrl(currentPage - 1)} className="w-8 h-8 rounded-lg text-xs font-bold bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-all flex items-center justify-center border border-zinc-200 dark:border-zinc-800">
+                  ‹
+                </a>
+              )}
+              {getPageNumbers().map((p, i) =>
+                p === '...' ? (
+                  <span key={`ellipsis-${i}`} className="w-8 h-8 flex items-center justify-center text-xs text-zinc-400">…</span>
+                ) : (
+                  <a
+                    key={p}
+                    href={pageUrl(p)}
+                    className={`w-8 h-8 rounded-lg text-xs font-bold transition-all flex items-center justify-center border ${
+                      p === currentPage
+                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20 border-blue-600'
+                        : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 border-zinc-200 dark:border-zinc-800'
+                    }`}
+                  >
+                    {p}
+                  </a>
+                )
+              )}
+              {currentPage < totalPages && (
+                <a href={pageUrl(currentPage + 1)} className="w-8 h-8 rounded-lg text-xs font-bold bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-all flex items-center justify-center border border-zinc-200 dark:border-zinc-800">
+                  ›
+                </a>
+              )}
+            </div>
+            {(category.toLowerCase() !== 'best' && category.toLowerCase() !== 'popular') && (
+              <a href={`/s/${encodeURIComponent(category)}/write`} className="bg-zinc-900 dark:bg-white text-white dark:text-black font-black text-sm px-6 py-2.5 rounded-xl hover:bg-zinc-700 dark:hover:bg-zinc-200 transition-all shadow-xl">
+                새 글 작성
+              </a>
+            )}
+          </div>
+        );
+      })()}
     </div>
   );
 }
