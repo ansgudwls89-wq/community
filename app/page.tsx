@@ -76,6 +76,7 @@ export default async function Home() {
                   </td>
                   <td className="py-1.5 px-3 truncate font-medium">
                     <a href={`/s/${encodeURIComponent(post.category)}/${post.idx}`} className="flex items-center gap-2 overflow-hidden">
+                      {post.has_image && <span className="text-[10px] flex-shrink-0" title="이미지 포함">🖼</span>}
                       <span className="truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">{post.title}</span>
                       <span className="text-[10px] font-black text-blue-600/60 dark:text-blue-500/60 flex-shrink-0">[{post.comments_count || 0}]</span>
                     </a>
