@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc *)",
+      "Bash(npm run *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(mkdir -p ~/.claude/channels/telegram)",
+      "Read(//c/Users/qqk20/.claude/channels/**)",
+      "Bash(chmod 600 ~/.claude/channels/telegram/.env)",
+      "Bash(mkdir -p /c/Users/qqk20/.claude/channels/telegram/approved)",
+      "Bash(echo -n \"1437434108\")"
+    ]
+  }
+}

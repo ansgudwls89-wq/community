@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd /c/Users/qqk20/my-community && git status --porcelain | grep -q . && git add -A && git commit -m \"Auto-commit: $(date '+%Y-%m-%d %H:%M')\" 2>/dev/null || true",
+            "timeout": 30,
+            "statusMessage": "변경사항 자동 커밋 중..."
+          }
+        ]
+      }
+    ]
+  }
+}
