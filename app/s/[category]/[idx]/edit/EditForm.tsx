@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import TipTapEditor from '@/components/TipTapEditor';
 import { updatePostAction } from '@/app/s/[category]/write/actions';
-import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { toast } from 'sonner';
 
 interface Post {
@@ -31,17 +30,16 @@ export default function EditForm({ post }: { post: Post }) {
 
     setIsSubmitting(true);
     try {
-      await updatePostAction({
+      const { redirectTo } = await updatePostAction({
         postId: post.id,
         category: post.category,
         idx: post.idx,
         title,
         content,
       });
+      router.push(redirectTo);
     } catch (error: any) {
-      if (isRedirectError(error)) return;
       toast.error(`수정 중 오류가 발생했습니다: ${error.message}`);
-    } finally {
       setIsSubmitting(false);
     }
   }

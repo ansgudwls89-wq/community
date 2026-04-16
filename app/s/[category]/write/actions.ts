@@ -18,7 +18,7 @@ export async function updatePostAction(data: {
   idx: number;
   title: string;
   content: string;
-}) {
+}): Promise<{ redirectTo: string }> {
   const auth = await getAuthorNickname();
   if (!auth) throw new Error('로그인이 필요한 서비스입니다.');
   const { supabase, nickname } = auth;
@@ -29,9 +29,7 @@ export async function updatePostAction(data: {
     .eq('id', data.postId)
     .single();
 
-  if (!post || post.author !== nickname) {
-    throw new Error('수정 권한이 없습니다.');
-  }
+  if (!post || post.author !== nickname) throw new Error('수정 권한이 없습니다.');
 
   const { error } = await supabase
     .from('posts')
@@ -40,11 +38,11 @@ export async function updatePostAction(data: {
 
   if (error) throw new Error(error.message);
 
-  revalidatePath('/', 'layout');
-  redirect(`/s/${encodeURIComponent(data.category)}/${data.idx}`);
+  revalidatePath(`/s/${encodeURIComponent(data.category)}/${data.idx}`, 'page');
+  return { redirectTo: `/s/${encodeURIComponent(data.category)}/${data.idx}` };
 }
 
-export async function deletePostAction(postId: number, category: string) {
+export async function deletePostAction(postId: number, category: string): Promise<{ redirectTo: string }> {
   const auth = await getAuthorNickname();
   if (!auth) throw new Error('로그인이 필요한 서비스입니다.');
   const { supabase, nickname } = auth;
@@ -55,22 +53,20 @@ export async function deletePostAction(postId: number, category: string) {
     .eq('id', postId)
     .single();
 
-  if (!post || post.author !== nickname) {
-    throw new Error('삭제 권한이 없습니다.');
-  }
+  if (!post || post.author !== nickname) throw new Error('삭제 권한이 없습니다.');
 
   const { error } = await supabase.from('posts').delete().eq('id', postId);
   if (error) throw new Error(error.message);
 
-  revalidatePath('/', 'layout');
-  redirect(`/s/${encodeURIComponent(category)}`);
+  revalidatePath(`/s/${encodeURIComponent(category)}`, 'page');
+  return { redirectTo: `/s/${encodeURIComponent(category)}` };
 }
 
 export async function createPostAction(data: {
   title: string;
   category: string;
   content: string;
-}) {
+}): Promise<{ redirectTo: string }> {
   const { title, category, content } = data;
 
   if (!title || !category || !content) {
@@ -80,62 +76,42 @@ export async function createPostAction(data: {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) {
-    throw new Error('로그인이 필요한 서비스입니다.');
-  }
+  if (!user) throw new Error('로그인이 필요한 서비스입니다.');
 
-  const { data: profileData } = await supabase.from('profiles').select('nickname').eq('id', user.id).single();
+  // 프로필 + idx를 병렬로 조회
+  const [{ data: profileData }, { data: idxData }] = await Promise.all([
+    supabase.from('profiles').select('nickname, energy').eq('id', user.id).single(),
+    supabase.rpc('get_next_idx', { p_category: category }),
+  ]);
+
   const author = profileData?.nickname || '익명';
+  const nextIdx = idxData ?? 1;
 
-  // 1. 해당 카테고리의 마지막 idx 가져오기
-  const { data: lastPost } = await supabase
-    .from('posts')
-    .select('idx')
-    .eq('category', category)
-    .order('idx', { ascending: false })
-    .limit(1);
-  
-  const nextIdx = (lastPost?.[0]?.idx || 0) + 1;
-
-  // 2. Supabase에 데이터 삽입
   const { data: newPost, error } = await supabase
     .from('posts')
-    .insert([
-      { 
-        title, 
-        category, 
-        content, 
-        author: author || '익명',
-        idx: nextIdx,
-        has_image: content.includes('<img'),
-        comments_count: 0,
-        likes: 0,
-        views: 0
-      }
-    ])
-    .select()
+    .insert([{
+      title,
+      category,
+      content,
+      author,
+      idx: nextIdx,
+      has_image: content.includes('<img'),
+      comments_count: 0,
+      likes: 0,
+      views: 0,
+    }])
+    .select('idx')
     .single();
 
-  if (error) {
-    console.error('글 작성 중 에러 발생:', error.message);
-    throw new Error(error.message);
-  }
+  if (error) throw new Error(error.message);
 
-  // 3. 에너지 지급
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('energy')
+  // 에너지 지급 (비동기, 실패해도 글 작성 성공)
+  supabase.from('profiles')
+    .update({ energy: (profileData?.energy || 0) + 10 })
     .eq('id', user.id)
-    .single();
-  
-  if (profile) {
-    await supabase
-      .from('profiles')
-      .update({ energy: (profile.energy || 0) + 10 })
-      .eq('id', user.id);
-  }
+    .then(() => {});
 
-  revalidatePath('/', 'layout');
-  
-  redirect(`/s/${encodeURIComponent(category)}/${newPost.idx}`);
+  revalidatePath(`/s/${encodeURIComponent(category)}`, 'page');
+
+  return { redirectTo: `/s/${encodeURIComponent(category)}/${newPost.idx}` };
 }

@@ -3,7 +3,6 @@
 import { useRouter } from 'next/navigation';
 import { deletePostAction } from '@/app/s/[category]/write/actions';
 import ReportButton from '@/components/ReportButton';
-import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { toast } from 'sonner';
 
 interface PostActionsProps {
@@ -25,9 +24,9 @@ export default function PostActions({ postId, category, idx, author, currentNick
   async function handleDelete() {
     if (!confirm('정말 이 게시글을 삭제하시겠습니까?')) return;
     try {
-      await deletePostAction(postId, category);
+      const { redirectTo } = await deletePostAction(postId, category);
+      router.push(redirectTo);
     } catch (error: any) {
-      if (isRedirectError(error)) return;
       toast.error(`삭제 중 오류가 발생했습니다: ${error.message}`);
     }
   }

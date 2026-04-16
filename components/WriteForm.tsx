@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import TipTapEditor from './TipTapEditor';
 import { createPostAction } from '@/app/s/[category]/write/actions';
-import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { toast } from 'sonner';
 
 interface WriteFormProps {
@@ -85,12 +84,11 @@ export default function WriteForm({ categories, defaultCategory, initialNickname
 
     setIsSubmitting(true);
     try {
-      await createPostAction({ title, category, content });
+      const { redirectTo } = await createPostAction({ title, category, content });
       clearDraft();
+      router.push(redirectTo);
     } catch (error: any) {
-      if (isRedirectError(error)) return;
       toast.error(`글 작성 중 오류가 발생했습니다: ${error.message}`);
-    } finally {
       setIsSubmitting(false);
     }
   }
