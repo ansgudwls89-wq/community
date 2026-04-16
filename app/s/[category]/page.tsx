@@ -134,7 +134,11 @@ export default async function SpacePage({
                       <span className="text-[11px] font-black text-blue-600/80 dark:text-blue-500/80 flex-shrink-0">[{post.comments_count || 0}]</span>
                     </a>
                   </td>
-                  <td className="py-3 px-4 text-center text-[12px] truncate">{post.author || '익명'}</td>
+                  <td className="py-3 px-4 text-center text-[12px] truncate">
+                    {post.author && post.author !== '익명' ? (
+                      <a href={`/profile/${encodeURIComponent(post.author)}`} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{post.author}</a>
+                    ) : '익명'}
+                  </td>
                   <td className="py-3 px-4 text-center text-[11px] text-zinc-400 dark:text-zinc-500 hidden md:table-cell">
                     {new Date(post.created_at).toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
                   </td>
@@ -151,7 +155,7 @@ export default async function SpacePage({
       {(() => {
         const totalPages = Math.ceil((count || 0) / PAGE_SIZE);
         const baseUrl = `/s/${encodeURIComponent(category)}`;
-        const pageUrl = (p: number) => `${baseUrl}?page=${p}`;
+        const pageUrl = (p: number) => sort !== 'latest' ? `${baseUrl}?sort=${sort}&page=${p}` : `${baseUrl}?page=${p}`;
 
         const getPageNumbers = () => {
           const delta = 2;

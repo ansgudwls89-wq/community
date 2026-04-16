@@ -30,15 +30,28 @@ export default async function Home() {
     .order('views', { ascending: false })
     .limit(10);
 
-  // 모든 게시글을 가져와 카테고리별로 그룹화 (최신순 5개씩)
-  const { data: allPosts } = await supabase
+  // 카테고리 목록 조회
+  const { data: categoryRows } = await supabase
     .from('posts')
-    .select('*')
+    .select('category')
     .order('created_at', { ascending: false });
 
-  const categories = Array.from(new Set(allPosts?.map(p => p.category) || []));
-  const postsByCategory = categories.reduce((acc, cat) => {
-    acc[cat] = allPosts?.filter(p => p.category === cat).slice(0, 5) || [];
+  const categories = Array.from(new Set(categoryRows?.map(p => p.category) || []));
+
+  // 카테고리별 최신 5개 병렬 조회
+  const categoryResults = await Promise.all(
+    categories.map(cat =>
+      supabase
+        .from('posts')
+        .select('id, idx, category, title, views, likes, comments_count, has_image, created_at, author')
+        .eq('category', cat)
+        .order('created_at', { ascending: false })
+        .limit(5)
+    )
+  );
+
+  const postsByCategory = categories.reduce((acc, cat, i) => {
+    acc[cat] = categoryResults[i].data || [];
     return acc;
   }, {} as Record<string, any[]>);
 

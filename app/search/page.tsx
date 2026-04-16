@@ -82,7 +82,15 @@ export default async function SearchResultsPage({ searchParams }: { searchParams
           </thead>
           <tbody className="text-[13px]">
             {(!posts || posts.length === 0) ? (
-              <tr><td colSpan={5} className="py-20 text-center text-zinc-400 dark:text-zinc-600 italic transition-colors">일치하는 검색 결과가 없습니다.</td></tr>
+              <tr><td colSpan={5} className="py-16 text-center transition-colors">
+                <p className="text-zinc-400 dark:text-zinc-600 italic mb-3">
+                  "<span className="font-bold not-italic text-zinc-600 dark:text-zinc-400">{query}</span>"에 대한 검색 결과가 없습니다.
+                </p>
+                <div className="flex items-center justify-center gap-2 text-[11px]">
+                  <span className="text-zinc-400">다른 검색어를 시도하거나</span>
+                  <a href="/" className="text-blue-600 dark:text-blue-400 font-bold hover:underline">스페이스 둘러보기</a>
+                </div>
+              </td></tr>
             ) : (
               posts.map((post) => (
                 <tr key={post.id} className="border-b border-zinc-100 dark:border-zinc-900 last:border-0 hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-all group cursor-pointer text-zinc-600 dark:text-zinc-400">

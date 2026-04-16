@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import ThemeToggle from './ThemeToggle';
 import { signOut } from '@/app/auth/actions';
 
@@ -9,6 +10,7 @@ interface MobileMenuProps {
     email?: string
     nickname?: string
     energy?: number
+    avatarUrl?: string | null
     newCommentCount?: number
   } | null
 }
@@ -71,11 +73,22 @@ export default function MobileMenu({ user }: MobileMenuProps) {
             {/* 유저 정보 */}
             {user && (
               <div className="px-5 py-4 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/30">
-                <div className="flex items-center justify-between mb-1">
-                  <p className="text-sm font-black text-zinc-900 dark:text-white truncate">{user.nickname || user.email}</p>
-                  <span className="text-blue-600 dark:text-blue-400 text-[10px] font-black bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-lg border border-blue-100 dark:border-blue-800/50">⚡ {user.energy || 0}</span>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-base font-black text-white uppercase shadow-md overflow-hidden flex-shrink-0">
+                    {user.avatarUrl ? (
+                      <Image src={user.avatarUrl} alt="프로필" width={40} height={40} className="w-full h-full object-cover" />
+                    ) : (
+                      (user.nickname?.[0] || user.email?.[0] || '?')
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2 mb-0.5">
+                      <p className="text-sm font-black text-zinc-900 dark:text-white truncate">{user.nickname || user.email}</p>
+                      <span className="text-blue-600 dark:text-blue-400 text-[10px] font-black bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-lg border border-blue-100 dark:border-blue-800/50 flex-shrink-0">⚡ {user.energy || 0}</span>
+                    </div>
+                    <p className="text-[11px] text-zinc-400 truncate">{user.email}</p>
+                  </div>
                 </div>
-                <p className="text-[11px] text-zinc-400 truncate">{user.email}</p>
               </div>
             )}
 

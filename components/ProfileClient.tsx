@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition, useRef } from 'react';
+import { useState, useTransition, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { updateNicknameAction, updateAvatarAction, updatePasswordAction } from '@/app/profile/actions';
 

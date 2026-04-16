@@ -49,7 +49,7 @@ export default async function RootLayout({
   if (user) {
     const { data } = await supabase
       .from('profiles')
-      .select('nickname, avatar_url, energy')
+      .select('nickname, avatar_url, energy, created_at')
       .eq('id', user.id)
       .single();
     profile = data;
@@ -78,6 +78,7 @@ export default async function RootLayout({
     email: user.email,
     nickname: profile?.nickname,
     energy: profile?.energy,
+    avatarUrl: profile?.avatar_url,
     newCommentCount,
   } : null;
 
