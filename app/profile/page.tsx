@@ -15,7 +15,7 @@ export default async function ProfilePage() {
   // 프로필 조회
   const { data: profile } = await supabase
     .from('profiles')
-    .select('id, nickname, energy, updated_at')
+    .select('id, nickname, energy, avatar_url, updated_at')
     .eq('id', user.id)
     .single();
 
@@ -38,6 +38,7 @@ export default async function ProfilePage() {
   const profileData = {
     id: user.id,
     nickname: profile?.nickname || '',
+    avatar_url: profile?.avatar_url || null,
     email: user.email || '',
     energy: profile?.energy || 0,
     created_at: user.created_at,

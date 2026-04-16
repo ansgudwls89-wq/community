@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useTransition } from 'react';
-import { updateNicknameAction } from '@/app/profile/actions';
+import { useState, useTransition, useRef } from 'react';
+import { updateNicknameAction, updateAvatarAction } from '@/app/profile/actions';
 
 interface Post {
   id: number;
@@ -30,6 +30,7 @@ interface ProfileClientProps {
   profile: {
     id: string;
     nickname: string;
+    avatar_url?: string | null;
     email: string;
     energy: number;
     created_at: string;
@@ -45,6 +46,26 @@ export default function ProfileClient({ profile, posts, comments }: ProfileClien
   const [nickname, setNickname] = useState(profile.nickname);
   const [errorMsg, setErrorMsg] = useState('');
   const [isPending, startTransition] = useTransition();
+  const [avatarUrl, setAvatarUrl] = useState(profile.avatar_url || '');
+  const [avatarError, setAvatarError] = useState('');
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setAvatarError('');
+    setIsUploadingAvatar(true);
+    const formData = new FormData();
+    formData.append('avatar', file);
+    const result = await updateAvatarAction(formData);
+    setIsUploadingAvatar(false);
+    if (result.error) {
+      setAvatarError(result.error);
+    } else if (result.avatarUrl) {
+      setAvatarUrl(result.avatarUrl);
+    }
+  }
 
   function handleSave() {
     setErrorMsg('');
@@ -91,8 +112,36 @@ export default function ProfileClient({ profile, posts, comments }: ProfileClien
       <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-xl">
         <div className="flex items-start gap-5">
           {/* 아바타 */}
-          <div className="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center text-2xl font-black text-white uppercase flex-shrink-0 shadow-lg shadow-blue-500/30">
-            {nickname[0] || '?'}
+          <div className="relative flex-shrink-0 group">
+            <div
+              className="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center text-2xl font-black text-white uppercase shadow-lg shadow-blue-500/30 overflow-hidden cursor-pointer"
+              onClick={() => avatarInputRef.current?.click()}
+              title="클릭하여 프로필 사진 변경"
+            >
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="프로필 사진" className="w-full h-full object-cover" />
+              ) : (
+                nickname[0] || '?'
+              )}
+            </div>
+            <div
+              className="absolute inset-0 rounded-2xl bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+              onClick={() => avatarInputRef.current?.click()}
+            >
+              <span className="text-white text-[10px] font-black">변경</span>
+            </div>
+            <input
+              ref={avatarInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleAvatarChange}
+            />
+            {isUploadingAvatar && (
+              <div className="absolute inset-0 rounded-2xl bg-white/70 dark:bg-zinc-900/70 flex items-center justify-center">
+                <span className="text-[10px] font-black text-zinc-500 animate-pulse">업로드 중</span>
+              </div>
+            )}
           </div>
 
           {/* 정보 */}
@@ -138,6 +187,9 @@ export default function ProfileClient({ profile, posts, comments }: ProfileClien
             </div>
             {errorMsg && (
               <p className="text-xs text-red-500 font-bold mb-1">{errorMsg}</p>
+            )}
+            {avatarError && (
+              <p className="text-xs text-red-500 font-bold mb-1">{avatarError}</p>
             )}
 
             <p className="text-xs text-zinc-400 dark:text-zinc-500 font-medium mb-3">
