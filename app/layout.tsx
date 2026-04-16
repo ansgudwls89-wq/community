@@ -9,6 +9,14 @@ import MobileMenu from "@/components/MobileMenu";
 import UserMenu from "@/components/UserMenu";
 import { supabase as supabaseAdmin } from "@/utils/supabase";
 import { createClient } from "@/utils/supabase/server";
+import { cacheLife } from "next/cache";
+
+async function getSpaceCategories(): Promise<string[]> {
+  'use cache';
+  cacheLife('minutes');
+  const { data: posts } = await supabaseAdmin.from('posts').select('category');
+  return Array.from(new Set(posts?.map(p => p.category) || []));
+}
 
 export const metadata: Metadata = {
   title: "NOL2 Style Community",
@@ -20,9 +28,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Fetch categories for the dropdown
-  const { data: posts } = await supabaseAdmin.from('posts').select('category');
-  const categories = Array.from(new Set(posts?.map(p => p.category) || []));
+  // Fetch categories for the dropdown (cached)
+  const categories = await getSpaceCategories();
 
   // Auth check
   const supabase = await createClient();
