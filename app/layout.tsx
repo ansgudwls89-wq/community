@@ -20,8 +20,16 @@ async function getSpaceCategories(): Promise<string[]> {
 }
 
 export const metadata: Metadata = {
-  title: "NOL2 Style Community",
-  description: "테마 기능을 지원하는 커뮤니티 플랫폼",
+  title: "NOL2 커뮤니티",
+  description: "NOL2 스타일 커뮤니티 플랫폼",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "NOL2",
+  },
+  formatDetection: { telephone: false },
+  themeColor: "#2563eb",
 };
 
 export default async function RootLayout({
