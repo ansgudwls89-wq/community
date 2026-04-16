@@ -6,8 +6,6 @@ import { toast } from 'sonner';
 import CommentForm from './CommentForm';
 import { updateCommentAction, deleteCommentAction } from '@/app/s/[category]/[idx]/actions';
 
-const supabase = createClient();
-
 interface Comment {
   id: number;
   post_id: number;
@@ -25,6 +23,7 @@ interface CommentSectionProps {
 }
 
 export default function CommentSection({ postId, initialNickname }: CommentSectionProps) {
+  const supabase = useMemo(() => createClient(), []);
   const [comments, setComments] = useState<Comment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [replyToId, setReplyToId] = useState<number | null>(null);

@@ -1,10 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { toast } from 'sonner';
-
-const supabase = createClient();
 
 interface ReportButtonProps {
   targetType: 'post' | 'comment';
@@ -14,6 +12,7 @@ interface ReportButtonProps {
 const REASONS = ['스팸/도배', '욕설/혐오표현', '개인정보 노출', '불법 콘텐츠', '기타'];
 
 export default function ReportButton({ targetType, targetId }: ReportButtonProps) {
+  const supabase = useMemo(() => createClient(), []);
   const [isOpen, setIsOpen] = useState(false);
   const [reason, setReason] = useState('');
   const [detail, setDetail] = useState('');
