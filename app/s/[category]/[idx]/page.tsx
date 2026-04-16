@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
 import VoteButtons from '@/components/VoteButtons';
 import CommentSection from '@/components/CommentSection';
 import ViewCounter from '@/components/ViewCounter';
@@ -7,10 +8,51 @@ import { createClient } from '@/utils/supabase/server';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export default async function PostDetailPage({ 
-  params 
-}: { 
-  params: Promise<{ category: string, idx: string }> 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ category: string; idx: string }>;
+}): Promise<Metadata> {
+  const { category: encodedCategory, idx } = await params;
+  const category = decodeURIComponent(encodedCategory);
+
+  const supabase = await createClient();
+  const { data: post } = await supabase
+    .from('posts')
+    .select('title, content, author, created_at')
+    .eq('category', category)
+    .eq('idx', parseInt(idx))
+    .single();
+
+  if (!post) return { title: 'NOL2 커뮤니티' };
+
+  const description = post.content
+    ? post.content.replace(/<[^>]+>/g, '').slice(0, 160)
+    : `${post.author || '익명'}님의 글`;
+
+  return {
+    title: `${post.title} — NOL2`,
+    description,
+    openGraph: {
+      title: post.title,
+      description,
+      type: 'article',
+      publishedTime: post.created_at,
+      authors: [post.author || '익명'],
+      tags: [category],
+    },
+    twitter: {
+      card: 'summary',
+      title: post.title,
+      description,
+    },
+  };
+}
+
+export default async function PostDetailPage({
+  params
+}: {
+  params: Promise<{ category: string, idx: string }>
 }) {
   const { category: encodedCategory, idx } = await params;
   const category = decodeURIComponent(encodedCategory);

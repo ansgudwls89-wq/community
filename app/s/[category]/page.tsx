@@ -1,8 +1,33 @@
 import { supabase } from '@/utils/supabase';
+import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
 
 const PAGE_SIZE = 20;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ category: string }>;
+}): Promise<Metadata> {
+  const { category: encodedCategory } = await params;
+  const category = decodeURIComponent(encodedCategory);
+
+  const titleMap: Record<string, string> = {
+    best: '실시간 베스트',
+    popular: '주간 인기',
+  };
+  const title = titleMap[category.toLowerCase()] ?? `${category.toUpperCase()} 스페이스`;
+
+  return {
+    title: `${title} — NOL2`,
+    description: `NOL2 커뮤니티 ${title} 게시판`,
+    openGraph: {
+      title: `${title} — NOL2`,
+      description: `NOL2 커뮤니티 ${title} 게시판`,
+    },
+  };
+}
 
 export default async function SpacePage({
   params,
