@@ -26,20 +26,42 @@ interface TipTapEditorProps {
   onChange: (content: string) => void;
 }
 
+async function compressImage(file: File, maxWidth = 1920, quality = 0.82): Promise<Blob> {
+  return new Promise((resolve) => {
+    const img = new window.Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      let { width, height } = img;
+      if (width > maxWidth) {
+        height = Math.round((height * maxWidth) / width);
+        width = maxWidth;
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d')!;
+      ctx.drawImage(img, 0, 0, width, height);
+      canvas.toBlob((blob) => resolve(blob!), 'image/jpeg', quality);
+    };
+    img.src = url;
+  });
+}
+
 export default function TipTapEditor({ content, onChange }: TipTapEditorProps) {
   const uploadImage = useCallback(async (file: File) => {
-    if (file.size > 5 * 1024 * 1024) {
-      alert('이미지 크기는 5MB 이하여야 합니다.');
+    if (file.size > 20 * 1024 * 1024) {
+      alert('이미지 크기는 20MB 이하여야 합니다.');
       return null;
     }
 
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
+    const compressed = await compressImage(file);
+    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`;
     const filePath = `post-images/${fileName}`;
 
     const { error: uploadError } = await supabase.storage
       .from('images')
-      .upload(filePath, file);
+      .upload(filePath, compressed, { contentType: 'image/jpeg' });
 
     if (uploadError) {
       console.error('Error uploading image:', uploadError.message);
