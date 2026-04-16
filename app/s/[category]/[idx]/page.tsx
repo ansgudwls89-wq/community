@@ -116,7 +116,13 @@ export default async function PostDetailPage({
 
           <div className="flex flex-wrap items-center justify-between gap-4 text-[11px] text-zinc-500 transition-colors">
             <div className="flex items-center gap-3">
-              <span className="font-black text-zinc-700 dark:text-zinc-200 transition-colors">{post.author || '익명'}</span>
+              {post.author && post.author !== '익명' && post.author !== '시스템' ? (
+                <a href={`/profile/${encodeURIComponent(post.author)}`} className="font-black text-zinc-700 dark:text-zinc-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                  {post.author}
+                </a>
+              ) : (
+                <span className="font-black text-zinc-700 dark:text-zinc-200">{post.author || '익명'}</span>
+              )}
               <span className="text-zinc-200 dark:text-zinc-800">|</span>
               <span>{new Date(post.created_at).toLocaleString('ko-KR')}</span>
             </div>
