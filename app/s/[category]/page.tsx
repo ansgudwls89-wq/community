@@ -50,7 +50,8 @@ export default async function SpacePage({
     query = query.order('created_at', { ascending: false });
     title = '실시간 베스트';
   } else if (category.toLowerCase() === 'popular') {
-    query = query.order('views', { ascending: false });
+    const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    query = query.gte('created_at', since).order('views', { ascending: false });
     title = '주간 인기';
   } else {
     query = query.eq('category', category).order('created_at', { ascending: false });

@@ -21,10 +21,12 @@ export default async function Home() {
     .order('created_at', { ascending: false })
     .limit(10);
 
-  // 주간 인기 (조회수순)
+  // 주간 인기 (최근 7일 내 조회수순)
+  const weeklyFrom = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
   const { data: weeklyPosts } = await supabase
     .from('posts')
     .select('*')
+    .gte('created_at', weeklyFrom)
     .order('views', { ascending: false })
     .limit(10);
 
