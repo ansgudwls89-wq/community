@@ -3,7 +3,7 @@
 import { supabase } from '@/utils/supabase';
 import { useEffect, useState, useTransition } from 'react';
 import { signOut } from '@/app/auth/actions';
-import { renameSpace, deleteSpace, createSpace, syncSpacesFromPosts } from './actions';
+import { renameSpace, deleteSpace, createSpace, syncSpacesFromPosts, updateReportStatus, deleteReportedContent } from './actions';
 
 interface Profile {
   id: string;
@@ -18,6 +18,16 @@ interface Space {
   name: string;
 }
 
+interface Report {
+  id: number;
+  target_type: 'post' | 'comment';
+  target_id: number;
+  reason: string;
+  detail: string | null;
+  status: 'pending' | 'resolved' | 'dismissed';
+  created_at: string;
+}
+
 export default function AdminPage() {
   const [spaces, setSpaces] = useState<Space[]>([]);
   const [users, setUsers] = useState<Profile[]>([]);
@@ -26,7 +36,9 @@ export default function AdminPage() {
   const [editingSlug, setEditingSlug] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'spaces' | 'users'>('spaces');
+  const [reports, setReports] = useState<Report[]>([]);
+  const [reportFilter, setReportFilter] = useState<'pending' | 'resolved' | 'dismissed'>('pending');
+  const [activeTab, setActiveTab] = useState<'spaces' | 'users' | 'reports'>('spaces');
   const [isPending, startTransition] = useTransition();
   const [syncMsg, setSyncMsg] = useState('');
 
@@ -50,6 +62,13 @@ export default function AdminPage() {
       .select('*')
       .order('energy', { ascending: false });
     setUsers(profileData || []);
+
+    // Fetch Reports
+    const { data: reportsData } = await supabase
+      .from('reports')
+      .select('*')
+      .order('created_at', { ascending: false });
+    setReports(reportsData || []);
 
     setLoading(false);
   }
@@ -122,6 +141,17 @@ export default function AdminPage() {
               className={`px-4 py-1.5 text-xs font-black rounded-lg transition-all ${activeTab === 'users' ? 'bg-white dark:bg-zinc-800 text-blue-600 shadow-sm' : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'}`}
             >
               회원 관리
+            </button>
+            <button
+              onClick={() => setActiveTab('reports')}
+              className={`px-4 py-1.5 text-xs font-black rounded-lg transition-all relative ${activeTab === 'reports' ? 'bg-white dark:bg-zinc-800 text-red-600 shadow-sm' : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'}`}
+            >
+              신고 관리
+              {reports.filter(r => r.status === 'pending').length > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center">
+                  {reports.filter(r => r.status === 'pending').length}
+                </span>
+              )}
             </button>
           </div>
           <a href="/" className="text-xs font-bold text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all">
@@ -246,6 +276,81 @@ export default function AdminPage() {
             </div>
           </div>
         </>
+      ) : activeTab === 'reports' ? (
+        /* 신고 관리 섹션 */
+        <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-xl transition-colors">
+          <div className="p-6 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/30 transition-colors flex justify-between items-center">
+            <h2 className="text-sm font-black text-zinc-900 dark:text-white uppercase tracking-widest transition-colors">
+              신고 목록
+            </h2>
+            <div className="flex gap-1 bg-zinc-100 dark:bg-zinc-900 p-1 rounded-lg border border-zinc-200 dark:border-zinc-800">
+              {(['pending', 'resolved', 'dismissed'] as const).map(s => (
+                <button
+                  key={s}
+                  onClick={() => setReportFilter(s)}
+                  className={`px-3 py-1 text-[10px] font-black rounded-md transition-all ${reportFilter === s ? 'bg-white dark:bg-zinc-800 shadow-sm text-zinc-900 dark:text-white' : 'text-zinc-400 hover:text-zinc-600'}`}
+                >
+                  {s === 'pending' ? `미처리 (${reports.filter(r => r.status === 'pending').length})` : s === 'resolved' ? '처리됨' : '기각됨'}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="divide-y divide-zinc-100 dark:divide-zinc-900">
+            {loading ? (
+              <div className="p-10 text-center text-zinc-400 animate-pulse">불러오는 중...</div>
+            ) : reports.filter(r => r.status === reportFilter).length === 0 ? (
+              <div className="p-10 text-center text-zinc-400 italic">신고 내역이 없습니다.</div>
+            ) : (
+              reports.filter(r => r.status === reportFilter).map(report => (
+                <div key={report.id} className="p-5 hover:bg-zinc-50 dark:hover:bg-zinc-900/30 transition-colors">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className={`text-[10px] font-black px-2 py-0.5 rounded uppercase ${report.target_type === 'post' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400'}`}>
+                          {report.target_type === 'post' ? '게시글' : '댓글'} #{report.target_id}
+                        </span>
+                        <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-500">
+                          {new Date(report.created_at).toLocaleString('ko-KR', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      </div>
+                      <p className="text-sm font-black text-zinc-800 dark:text-zinc-200">{report.reason}</p>
+                      {report.detail && (
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">{report.detail}</p>
+                      )}
+                    </div>
+                    {report.status === 'pending' && (
+                      <div className="flex gap-2 flex-shrink-0">
+                        <button
+                          onClick={() => {
+                            if (!confirm('해당 콘텐츠를 삭제하고 신고를 처리하시겠습니까?')) return;
+                            startTransition(async () => {
+                              await deleteReportedContent(report.target_type, report.target_id, report.id);
+                              fetchData();
+                            });
+                          }}
+                          className="text-[10px] font-black text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 px-3 py-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-all"
+                        >
+                          콘텐츠 삭제
+                        </button>
+                        <button
+                          onClick={() => {
+                            startTransition(async () => {
+                              await updateReportStatus(report.id, 'dismissed');
+                              fetchData();
+                            });
+                          }}
+                          className="text-[10px] font-black text-zinc-400 border border-zinc-200 dark:border-zinc-800 px-3 py-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all"
+                        >
+                          기각
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
       ) : (
         /* 회원 관리 섹션 */
         <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-xl transition-colors">

@@ -43,6 +43,25 @@ export async function deleteSpace(slug: string) {
   return { error: null };
 }
 
+export async function updateReportStatus(id: number, status: 'resolved' | 'dismissed') {
+  await assertAdmin();
+  const supabase = createAdminClient();
+  const { error } = await supabase.from('reports').update({ status }).eq('id', id);
+  return { error: error?.message || null };
+}
+
+export async function deleteReportedContent(targetType: 'post' | 'comment', targetId: number, reportId: number) {
+  await assertAdmin();
+  const supabase = createAdminClient();
+  if (targetType === 'post') {
+    await supabase.from('posts').delete().eq('id', targetId);
+  } else {
+    await supabase.from('comments').delete().eq('id', targetId);
+  }
+  await supabase.from('reports').update({ status: 'resolved' }).eq('id', reportId);
+  return { error: null };
+}
+
 export async function createSpace(slug: string, name: string) {
   await assertAdmin();
   const supabase = createAdminClient();

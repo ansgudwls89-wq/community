@@ -31,6 +31,7 @@ export default function ReportButton({ targetType, targetId }: ReportButtonProps
         target_id: targetId,
         reason,
         detail: detail.trim() || null,
+        reporter_id: user.id,
       }]);
     } catch {}
     setIsSubmitting(false);
