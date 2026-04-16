@@ -36,6 +36,7 @@ export default async function RootLayout({
   const { data: { user } } = await supabase.auth.getUser();
   
   let profile = null;
+  let newCommentCount = 0;
   if (user) {
     const { data } = await supabase
       .from('profiles')
@@ -43,12 +44,32 @@ export default async function RootLayout({
       .eq('id', user.id)
       .single();
     profile = data;
+
+    // 내 글에 달린 최근 24시간 댓글 수 (본인 제외)
+    if (profile?.nickname) {
+      const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+      const { data: myPosts } = await supabase
+        .from('posts')
+        .select('id')
+        .eq('author', profile.nickname);
+      if (myPosts && myPosts.length > 0) {
+        const postIds = myPosts.map(p => p.id);
+        const { count } = await supabase
+          .from('comments')
+          .select('id', { count: 'exact', head: true })
+          .in('post_id', postIds)
+          .neq('author', profile.nickname)
+          .gte('created_at', since);
+        newCommentCount = count || 0;
+      }
+    }
   }
 
   const userData = user ? {
     email: user.email,
     nickname: profile?.nickname,
-    energy: profile?.energy
+    energy: profile?.energy,
+    newCommentCount,
   } : null;
 
   return (
