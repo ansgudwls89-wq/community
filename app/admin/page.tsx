@@ -1,8 +1,9 @@
 'use client';
 
 import { supabase } from '@/utils/supabase';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { signOut } from '@/app/auth/actions';
+import { renameSpace, deleteSpace, createSpace, syncSpacesFromPosts } from './actions';
 
 interface Profile {
   id: string;
@@ -26,6 +27,8 @@ export default function AdminPage() {
   const [editingName, setEditingName] = useState('');
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'spaces' | 'users'>('spaces');
+  const [isPending, startTransition] = useTransition();
+  const [syncMsg, setSyncMsg] = useState('');
 
   useEffect(() => {
     fetchData();
@@ -61,47 +64,42 @@ export default function AdminPage() {
     const slug = newSlug.trim().toLowerCase();
     const name = newName.trim() || slug;
 
-    // spaces 테이블에 등록
-    const { error: spaceError } = await supabase
-      .from('spaces')
-      .upsert({ slug, name });
-    if (spaceError) { alert('스페이스 생성 실패: ' + spaceError.message); return; }
-
-    // 첫 게시글 생성
-    await supabase.from('posts').insert([{
-      title: `${name} 스페이스가 생성되었습니다.`,
-      category: slug,
-      content: '새로운 스페이스의 시작을 축하합니다!',
-      author: '시스템',
-      idx: 1,
-      views: 0,
-      likes: 0,
-      comments_count: 0
-    }]);
-
-    setNewSlug('');
-    setNewName('');
-    fetchData();
+    startTransition(async () => {
+      const result = await createSpace(slug, name);
+      if (result.error) { alert('스페이스 생성 실패: ' + result.error); return; }
+      setNewSlug('');
+      setNewName('');
+      fetchData();
+    });
   }
 
   async function handleRenameSpace(slug: string) {
     if (!editingName.trim()) return;
-    const { error } = await supabase
-      .from('spaces')
-      .update({ name: editingName.trim() })
-      .eq('slug', slug);
-    if (!error) {
+    startTransition(async () => {
+      const result = await renameSpace(slug, editingName.trim());
+      if (result.error) { alert('이름 변경 실패: ' + result.error); return; }
       setEditingSlug(null);
       setEditingName('');
       fetchData();
-    }
+    });
   }
 
   async function handleDeleteSpace(slug: string, name: string) {
     if (!confirm(`'${name}' 스페이스의 모든 게시글이 삭제됩니다. 정말 삭제하시겠습니까?`)) return;
-    await supabase.from('posts').delete().eq('category', slug);
-    await supabase.from('spaces').delete().eq('slug', slug);
-    fetchData();
+    startTransition(async () => {
+      await deleteSpace(slug);
+      fetchData();
+    });
+  }
+
+  function handleSyncSpaces() {
+    startTransition(async () => {
+      setSyncMsg('동기화 중...');
+      const result = await syncSpacesFromPosts();
+      setSyncMsg(result.error ? '오류: ' + result.error : `완료! ${result.count}개 스페이스 동기화됨`);
+      fetchData();
+      setTimeout(() => setSyncMsg(''), 3000);
+    });
   }
 
   async function handleImpersonate(email: string) {
@@ -179,10 +177,20 @@ export default function AdminPage() {
 
           {/* 스페이스 관리 섹션 */}
           <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-xl transition-colors">
-            <div className="p-6 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/30 transition-colors">
+            <div className="p-6 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/30 transition-colors flex items-center justify-between">
               <h2 className="text-sm font-black text-zinc-900 dark:text-white uppercase tracking-widest transition-colors">
                 스페이스 목록 ({spaces.length})
               </h2>
+              <div className="flex items-center gap-3">
+                {syncMsg && <span className="text-[11px] text-blue-600 dark:text-blue-400 font-bold">{syncMsg}</span>}
+                <button
+                  onClick={handleSyncSpaces}
+                  disabled={isPending}
+                  className="text-[10px] font-black text-blue-600 dark:text-blue-500 hover:underline disabled:opacity-50"
+                >
+                  게시판→스페이스 동기화
+                </button>
+              </div>
             </div>
 
             <div className="divide-y divide-zinc-100 dark:divide-zinc-900 transition-colors">
