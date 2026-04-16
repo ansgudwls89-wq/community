@@ -1,4 +1,5 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import "./globals.css";
 import AdBanner from "@/components/AdBanner";
 import RecentlyViewed from "@/components/RecentlyViewed";
@@ -6,10 +7,8 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import ThemeToggle from "@/components/ThemeToggle";
 import SpaceDropdown from "@/components/SpaceDropdown";
 import SearchBar from "@/components/SearchBar";
-import MobileMenu from "@/components/MobileMenu";
-import UserMenu from "@/components/UserMenu";
+import HeaderUserNav from "@/components/HeaderUserNav";
 import { supabase as supabaseAdmin } from "@/utils/supabase";
-import { createClient } from "@/utils/supabase/server";
 import { cacheLife } from "next/cache";
 
 async function getSpaceCategories(): Promise<string[]> {
@@ -18,6 +17,10 @@ async function getSpaceCategories(): Promise<string[]> {
   const { data: posts } = await supabaseAdmin.from('posts').select('category');
   return Array.from(new Set(posts?.map(p => p.category) || []));
 }
+
+export const viewport: Viewport = {
+  themeColor: "#2563eb",
+};
 
 export const metadata: Metadata = {
   title: "NOL2 커뮤니티",
@@ -29,7 +32,6 @@ export const metadata: Metadata = {
     title: "NOL2",
   },
   formatDetection: { telephone: false },
-  themeColor: "#2563eb",
 };
 
 export default async function RootLayout({
@@ -37,50 +39,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Fetch categories for the dropdown (cached)
   const categories = await getSpaceCategories();
-
-  // Auth check
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  
-  let profile = null;
-  let newCommentCount = 0;
-  if (user) {
-    const { data } = await supabase
-      .from('profiles')
-      .select('nickname, avatar_url, energy, created_at')
-      .eq('id', user.id)
-      .single();
-    profile = data;
-
-    // 내 글에 달린 최근 24시간 댓글 수 (본인 제외)
-    if (profile?.nickname) {
-      const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-      const { data: myPosts } = await supabase
-        .from('posts')
-        .select('id')
-        .eq('author', profile.nickname);
-      if (myPosts && myPosts.length > 0) {
-        const postIds = myPosts.map(p => p.id);
-        const { count } = await supabase
-          .from('comments')
-          .select('id', { count: 'exact', head: true })
-          .in('post_id', postIds)
-          .neq('author', profile.nickname)
-          .gte('created_at', since);
-        newCommentCount = count || 0;
-      }
-    }
-  }
-
-  const userData = user ? {
-    email: user.email,
-    nickname: profile?.nickname,
-    energy: profile?.energy,
-    avatarUrl: profile?.avatar_url,
-    newCommentCount,
-  } : null;
 
   return (
     <html lang="ko" suppressHydrationWarning>
@@ -102,23 +61,16 @@ export default async function RootLayout({
               </div>
 
               <div className="flex items-center gap-1 sm:gap-2">
-                {/* Desktop Buttons */}
-                <div className="hidden md:flex items-center gap-2">
-                  {userData ? (
-                    <>
-                      <ThemeToggle />
-                      <UserMenu user={userData} />
-                    </>
-                  ) : (
-                    <>
-                      <ThemeToggle />
-                      <a href="/login" className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all text-sm font-bold px-3 py-2">로그인</a>
-                      <a href="/signup" className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-4 py-2 rounded-xl shadow-lg shadow-blue-900/20 transition-all whitespace-nowrap">회원가입</a>
-                    </>
-                  )}
-                </div>
-                {/* Mobile Menu Button */}
-                <MobileMenu user={userData} />
+                {/* Auth-dependent nav: Suspense로 동적 렌더링 격리 */}
+                <Suspense fallback={
+                  <div className="hidden md:flex items-center gap-2">
+                    <ThemeToggle />
+                    <a href="/login" className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all text-sm font-bold px-3 py-2">로그인</a>
+                    <a href="/signup" className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-4 py-2 rounded-xl shadow-lg shadow-blue-900/20 transition-all whitespace-nowrap">회원가입</a>
+                  </div>
+                }>
+                  <HeaderUserNav />
+                </Suspense>
               </div>
             </div>
           </header>
