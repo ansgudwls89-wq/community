@@ -8,49 +8,13 @@ import ViewRecorder from '@/components/ViewRecorder';
 import VoteButtons from '@/components/VoteButtons';
 import CommentSection from '@/components/CommentSection';
 import ViewCounter from '@/components/ViewCounter';
-import { supabase as publicSupabase } from '@/utils/supabase';
 import { createClient } from '@/utils/supabase/server';
 
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ category: string; idx: string }>;
-}): Promise<Metadata> {
-  const { category: encodedCategory, idx } = await params;
-  const category = decodeURIComponent(encodedCategory);
-
-  const { data: post } = await publicSupabase
-    .from('posts')
-    .select('title, content, author, created_at')
-    .eq('category', category)
-    .eq('idx', parseInt(idx))
-    .single();
-
-  if (!post) return { title: 'NOL2 커뮤니티' };
-
-  const description = post.content
-    ? post.content.replace(/<[^>]+>/g, '').slice(0, 160)
-    : `${post.author || '익명'}님의 글`;
-
-  return {
-    title: `${post.title} — NOL2`,
-    description,
-    openGraph: {
-      title: post.title,
-      description,
-      type: 'article',
-      publishedTime: post.created_at,
-      authors: [post.author || '익명'],
-      tags: [category],
-    },
-    twitter: {
-      card: 'summary',
-      title: post.title,
-      description,
-    },
-  };
-}
+export const metadata: Metadata = {
+  title: 'NOL2 커뮤니티',
+  description: 'NOL2 커뮤니티 게시글',
+};
 
 export default async function PostDetailPage({
   params
