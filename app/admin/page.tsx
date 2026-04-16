@@ -124,39 +124,34 @@ export default function AdminPage() {
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8 pb-20">
-      <div className="flex items-center justify-between pb-4 border-b border-zinc-200 dark:border-zinc-800 transition-colors">
-        <h1 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tighter transition-colors">
-          관리자 <span className="text-blue-600 dark:text-blue-500 ml-1">패널</span>
-        </h1>
-        <div className="flex gap-4 items-center">
-          <div className="flex bg-zinc-100 dark:bg-zinc-900 p-1 rounded-xl border border-zinc-200 dark:border-zinc-800">
+      <div className="pb-4 border-b border-zinc-200 dark:border-zinc-800 transition-colors space-y-3">
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white tracking-tighter transition-colors">
+            관리자 <span className="text-blue-600 dark:text-blue-500 ml-1">패널</span>
+          </h1>
+          <a href="/" className="text-xs font-bold text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all">
+            ← 메인으로
+          </a>
+        </div>
+        <div className="flex bg-zinc-100 dark:bg-zinc-900 p-1 rounded-xl border border-zinc-200 dark:border-zinc-800 w-full">
+          {([
+            { key: 'spaces', label: '스페이스' },
+            { key: 'users', label: '회원' },
+            { key: 'reports', label: '신고' },
+          ] as const).map(tab => (
             <button
-              onClick={() => setActiveTab('spaces')}
-              className={`px-4 py-1.5 text-xs font-black rounded-lg transition-all ${activeTab === 'spaces' ? 'bg-white dark:bg-zinc-800 text-blue-600 shadow-sm' : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'}`}
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={`flex-1 px-2 py-1.5 text-xs font-black rounded-lg transition-all relative ${activeTab === tab.key ? 'bg-white dark:bg-zinc-800 text-blue-600 shadow-sm' : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'}`}
             >
-              스페이스 관리
-            </button>
-            <button
-              onClick={() => setActiveTab('users')}
-              className={`px-4 py-1.5 text-xs font-black rounded-lg transition-all ${activeTab === 'users' ? 'bg-white dark:bg-zinc-800 text-blue-600 shadow-sm' : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'}`}
-            >
-              회원 관리
-            </button>
-            <button
-              onClick={() => setActiveTab('reports')}
-              className={`px-4 py-1.5 text-xs font-black rounded-lg transition-all relative ${activeTab === 'reports' ? 'bg-white dark:bg-zinc-800 text-red-600 shadow-sm' : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'}`}
-            >
-              신고 관리
-              {reports.filter(r => r.status === 'pending').length > 0 && (
+              {tab.label}
+              {tab.key === 'reports' && reports.filter(r => r.status === 'pending').length > 0 && (
                 <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center">
                   {reports.filter(r => r.status === 'pending').length}
                 </span>
               )}
             </button>
-          </div>
-          <a href="/" className="text-xs font-bold text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all">
-            ← 메인으로
-          </a>
+          ))}
         </div>
       </div>
 
@@ -370,10 +365,10 @@ export default function AdminPage() {
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-100 dark:border-zinc-800 text-[10px] font-black text-zinc-400 uppercase tracking-widest text-center">
-                  <th className="py-3 px-4">아이디 (이메일)</th>
+                  <th className="py-3 px-4 text-left">이메일</th>
                   <th className="py-3 px-4">닉네임</th>
-                  <th className="py-3 px-4">에너지</th>
-                  <th className="py-3 px-4">관리</th>
+                  <th className="py-3 px-4 hidden sm:table-cell">에너지</th>
+                  <th className="py-3 px-4 hidden sm:table-cell">가입일</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-100 dark:divide-zinc-900 transition-colors">
@@ -384,19 +379,18 @@ export default function AdminPage() {
                 ) : (
                   users.map(user => (
                     <tr key={user.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-900/40 transition-all text-xs">
-                      <td className="py-4 px-4 font-bold text-zinc-700 dark:text-zinc-300">
-                        {user.email?.replace('@nol2.com', '')}
-                        <span className="text-[10px] text-zinc-400 dark:text-zinc-600 font-normal ml-1">({user.email})</span>
+                      <td className="py-3 px-4 font-bold text-zinc-700 dark:text-zinc-300 max-w-[160px] truncate">
+                        {user.email}
                       </td>
-                      <td className="py-4 px-4 text-center font-black text-zinc-900 dark:text-zinc-100">
+                      <td className="py-3 px-4 text-center font-black text-zinc-900 dark:text-zinc-100">
                         {user.nickname}
                       </td>
-                      <td className="py-4 px-4 text-center">
-                        <span className="bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-2 py-1 rounded-lg font-black border border-blue-100 dark:border-blue-800/50">
+                      <td className="py-3 px-4 text-center hidden sm:table-cell">
+                        <span className="bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-2 py-1 rounded-lg font-black border border-blue-100 dark:border-blue-800/50 text-[11px]">
                           ⚡ {user.energy || 0}
                         </span>
                       </td>
-                      <td className="py-4 px-4 text-center text-[11px] text-zinc-400 dark:text-zinc-600">
+                      <td className="py-3 px-4 text-center text-[11px] text-zinc-400 dark:text-zinc-600 hidden sm:table-cell">
                         {new Date(user.updated_at).toLocaleDateString('ko-KR')}
                       </td>
                     </tr>
