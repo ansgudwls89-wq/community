@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import TipTapEditor from './TipTapEditor';
 import { createPostAction } from '@/app/s/[category]/write/actions';
@@ -13,11 +13,55 @@ interface WriteFormProps {
 
 export default function WriteForm({ categories, defaultCategory, initialNickname }: WriteFormProps) {
   const router = useRouter();
+  const draftKey = `nol2_draft_${defaultCategory || 'general'}`;
+
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState(defaultCategory || (categories.length > 0 ? categories[0] : ''));
   const [author, setAuthor] = useState(initialNickname || '');
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [draftSaved, setDraftSaved] = useState(false);
+  const [hasDraft, setHasDraft] = useState(false);
+
+  // 임시저장 불러오기
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(draftKey);
+      if (saved) {
+        const draft = JSON.parse(saved);
+        if (draft.title || draft.content) setHasDraft(true);
+      }
+    } catch {}
+  }, [draftKey]);
+
+  // 자동 저장 (1초 디바운스)
+  const saveDraft = useCallback(() => {
+    if (!title && !content) return;
+    localStorage.setItem(draftKey, JSON.stringify({ title, content, savedAt: new Date().toISOString() }));
+    setDraftSaved(true);
+    setTimeout(() => setDraftSaved(false), 1500);
+  }, [title, content, draftKey]);
+
+  useEffect(() => {
+    const timer = setTimeout(saveDraft, 1000);
+    return () => clearTimeout(timer);
+  }, [saveDraft]);
+
+  function loadDraft() {
+    try {
+      const saved = localStorage.getItem(draftKey);
+      if (!saved) return;
+      const draft = JSON.parse(saved);
+      if (draft.title) setTitle(draft.title);
+      if (draft.content) setContent(draft.content);
+      setHasDraft(false);
+    } catch {}
+  }
+
+  function clearDraft() {
+    localStorage.removeItem(draftKey);
+    setHasDraft(false);
+  }
 
   const isLoggedIn = !!initialNickname;
 
@@ -38,14 +82,9 @@ export default function WriteForm({ categories, defaultCategory, initialNickname
 
     setIsSubmitting(true);
     try {
-      await createPostAction({
-        title,
-        category,
-        content,
-        author
-      });
+      await createPostAction({ title, category, content, author });
+      clearDraft();
     } catch (error: any) {
-      // NEXT_REDIRECT 에러는 정상적인 리다이렉트 과정이므로 무시합니다.
       if (error.message === 'NEXT_REDIRECT') return;
       alert(`글 작성 중 오류가 발생했습니다: ${error.message}`);
     } finally {
@@ -71,11 +110,21 @@ export default function WriteForm({ categories, defaultCategory, initialNickname
 
   return (
     <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-2xl transition-colors">
-      <header className="p-6 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/30 text-center sm:text-left transition-colors">
-        <h1 className="text-xl font-black text-zinc-900 dark:text-white uppercase tracking-tight transition-colors">
-          <span className="text-blue-600 dark:text-blue-500 mr-2">[{category}]</span>
-          새 글 작성
-        </h1>
+      <header className="p-6 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/30 transition-colors">
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-black text-zinc-900 dark:text-white uppercase tracking-tight transition-colors">
+            <span className="text-blue-600 dark:text-blue-500 mr-2">[{category}]</span>
+            새 글 작성
+          </h1>
+          <div className="flex items-center gap-2">
+            {draftSaved && <span className="text-[10px] text-zinc-400 font-bold animate-pulse">임시저장됨</span>}
+            {hasDraft && (
+              <button onClick={loadDraft} className="text-[10px] font-black text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 px-2 py-1 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all">
+                임시저장 불러오기
+              </button>
+            )}
+          </div>
+        </div>
       </header>
 
       <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6">
